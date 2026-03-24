@@ -138,8 +138,9 @@ export default function Journal() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     shrink: 0,
-                    background: trade.side === "buy" ? 'var(--green)' : 'var(--red)',
-                    background: trade.side === "buy" ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'
+                    background: trade.side === "buy"
+                        ? 'rgba(34, 197, 94, 0.1)' 
+                        : 'rgba(239, 68, 68, 0.1)'
                   }}>
                     <span style={{
                       fontSize: '12px',
