@@ -173,3 +173,206 @@
     box-shadow: 0 0 20px hsl(0 72% 55% / 0.15), 0 0 60px hsl(0 72% 55% / 0.05);
   }
 }
+
+/* ─── Mobile Responsive Styles ────────────────────────────────────────── */
+
+/* Base mobile styles */
+@media (max-width: 768px) {
+  /* Navigation */
+  nav {
+    padding: 0 16px !important;
+  }
+  
+  .nav-links {
+    display: none !important;
+  }
+  
+  /* Hero section */
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
+  
+  .hero-left {
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+    padding: 40px 20px !important;
+  }
+  
+  .hero-right {
+    padding: 40px 20px !important;
+  }
+  
+  .hero-h1 {
+    font-size: clamp(36px, 8vw, 52px) !important;
+    letter-spacing: -2px !important;
+  }
+  
+  .hero-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  /* Sections */
+  section {
+    padding: 60px 20px 40px !important;
+    min-height: auto !important;
+  }
+  
+  /* Features grid */
+  .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Ledger layout */
+  .ledger-layout {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+    height: auto !important;
+  }
+  
+  /* Analytics layout */
+  .analytics-layout {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+    height: auto !important;
+  }
+  
+  /* How it works grid */
+  .how-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Testimonials */
+  .testi-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Security grid */
+  .sec-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+  
+  /* Metrics grid */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  /* Footer */
+  .footer-top {
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+  
+  .footer-links-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .footer-bottom {
+    flex-direction: column !important;
+    gap: 16px !important;
+    text-align: center !important;
+  }
+  
+  /* Tables */
+  .table-scroll {
+    overflow-x: auto !important;
+  }
+  
+  table {
+    min-width: 600px !important;
+  }
+  
+  /* Tab buttons */
+  .tab-button {
+    padding: 12px 8px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Cards */
+  .stat-card,
+  .metric-card,
+  .feature-card {
+    padding: 20px !important;
+  }
+  
+  /* Form inputs */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .hero-h1 {
+    font-size: clamp(28px, 10vw, 36px) !important;
+  }
+  
+  .section-h2 {
+    font-size: clamp(28px, 6vw, 36px) !important;
+  }
+  
+  .footer-links-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .cta-email {
+    width: 100% !important;
+  }
+  
+  .cta-input-row {
+    flex-direction: column !important;
+  }
+  
+  .ticker-item {
+    padding: 0 16px !important;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (pointer: coarse) {
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .tab-button {
+    min-height: 44px;
+  }
+}
+
+/* Prevent horizontal overflow */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Ensure images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+}

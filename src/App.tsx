@@ -12,7 +12,6 @@ import Journal from "@/pages/Journal";
 import Analytics from "@/pages/Analytics";
 import Companies from "@/pages/Companies";
 import NotFound from "@/pages/NotFound";
-import "@/styles/landing.css";
 
 const queryClient = new QueryClient();
 
@@ -52,14 +51,11 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/auth" element={<AuthRoute />} />
+              <Route path="/auth/callback" element={<AuthPage />} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
               <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-              <Route path="/" element={<Landing />} />
-              <Route path="/auth" element={<AuthRoute />} />
-              <Route path="/auth/callback" element={<AuthPage />} />
               <Route path="/companies" element={<ProtectedRoute><Companies /></ProtectedRoute>} />
-              <Route path="/~oauth/*" element={<AuthPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
