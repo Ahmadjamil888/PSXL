@@ -275,7 +275,7 @@ function Nav({theme,onToggle}: {theme:Theme;onToggle:()=>void}) {
         PSX<LogoMark size={28}/>
       </a>
       <ul style={{display:"flex",alignItems:"center",gap:32,listStyle:"none"}}>
-        {[["#psxl-features","Features"],["#psxl-ledger","Ledger"],["#psxl-analytics","Analytics"],["#psxl-pricing","Pricing"],["#psxl-faq","FAQ"]].map(([href,label])=>(
+        {[["#psxl-features","Features"],["#psxl-ledger","Ledger"],["#psxl-analytics","Analytics"],["#psxl-faq","FAQ"]].map(([href,label])=>(
           <li key={href}><a href={href} style={{fontSize:12,fontWeight:400,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--ltx2)",textDecoration:"none"}}>{label}</a></li>
         ))}
       </ul>
@@ -285,7 +285,7 @@ function Nav({theme,onToggle}: {theme:Theme;onToggle:()=>void}) {
           <div style={{position:"absolute",top:2,left:2,width:16,height:16,borderRadius:"50%",background:"var(--lgrn)",transition:"transform .3s",transform:theme==="light"?"translateX(18px)":"translateX(0)"}}/>
         </div>
         <a href="/auth" style={{fontFamily:ff,fontSize:11,fontWeight:500,letterSpacing:"0.1em",textTransform:"uppercase",color:"#000",background:"var(--lgrn)",border:"none",padding:"8px 18px",cursor:"pointer",textDecoration:"none",display:"inline-block"}}>
-          Start Free
+          Start Now
         </a>
       </div>
     </nav>
@@ -637,7 +637,7 @@ function CTA() {
 // ─── FOOTER ──────────────────────────────────────────────────────────────────
 function Footer() {
   const cols=[
-    {title:"Product",   links:["Features","Pricing","Changelog","Roadmap"]},
+    {title:"Product",   links:["Features","Changelog","Roadmap"]},
     {title:"Resources", links:["Documentation","CSV Templates","Tax Guide","Blog"]},
     {title:"Company",   links:["About","Contact","Press","Careers"]},
     {title:"Legal",     links:["Privacy Policy","Terms of Use","Disclaimer","Cookie Policy"]},

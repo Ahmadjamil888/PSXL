@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Plus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import "@/styles/landing.css";
 
 export default function TradeForm() {
   const [open, setOpen] = useState(false);

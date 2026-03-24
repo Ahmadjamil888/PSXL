@@ -1,22 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
-import { TrendingUp, Eye, EyeOff, Mail } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Eye, EyeOff, Mail } from "lucide-react";
 import { toast } from "sonner";
 import ThemeToggle from "@/components/ThemeToggle";
-import { useTheme } from "@/components/theme-provider";
 import Logo from "@/components/Logo";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function AuthPage() {
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const { signIn, signUp, signInWithGoogle, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [callbackLoading, setCallbackLoading] = useState(true);
+
+  // Handle OAuth callback
+  useEffect(() => {
+    // Check if user is already logged in (from OAuth callback)
+    if (user) {
+      navigate('/dashboard', { replace: true });
+      return;
+    }
+    
+    // Check for hash fragment (OAuth callback)
+    const hash = window.location.hash;
+    if (hash && (hash.includes('access_token') || hash.includes('refresh_token'))) {
+      // Supabase handles the hash automatically, we just need to wait for auth state change
+      // The user will be set by AuthContext, which will trigger the redirect above
+      setTimeout(() => setCallbackLoading(false), 2000);
+    } else {
+      setCallbackLoading(false);
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,12 +76,40 @@ export default function AuthPage() {
         <ThemeToggle />
       </div>
       
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
+      {/* OAuth Callback Loading */}
+      {callbackLoading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-col items-center justify-center"
+        >
+          <div style={{
+            width: '48px',
+            height: '48px',
+            border: '3px solid var(--border)',
+            borderTop: '3px solid var(--green)',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }} />
+          <p style={{ marginTop: '16px', color: 'var(--text2)', fontSize: '14px' }}>
+            Completing sign in...
+          </p>
+          <style>{`
+            @keyframes spin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+        </motion.div>
+      )}
+      
+      {!callbackLoading && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
@@ -276,6 +324,7 @@ export default function AuthPage() {
           </p>
         </div>
       </motion.div>
+      )}
     </div>
   );
 }

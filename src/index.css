@@ -8,6 +8,19 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
+    
+    /* Custom auth/landing page variables */
+    --bg: #ffffff;
+    --bg2: #f7f7f7;
+    --bg3: #f0f0f0;
+    --surface: #ebebeb;
+    --border: #e0e0e0;
+    --border2: #d0d0d0;
+    --text: #000000;
+    --text2: #555555;
+    --text3: #999999;
+    --green: #22c55e;
+    --red: #ef4444;
 
     --card: 0 0% 98%;
     --card-foreground: 0 0% 0%;
@@ -35,7 +48,6 @@
     --loss: 0 70% 50%;
     --loss-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
     --input: 0 0% 92%;
     --ring: 142 71% 45%;
 
@@ -64,6 +76,19 @@
   .dark {
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
+    
+    /* Custom auth/landing page variables */
+    --bg: #000000;
+    --bg2: #0a0a0a;
+    --bg3: #111111;
+    --surface: #161616;
+    --border: #222222;
+    --border2: #2a2a2a;
+    --text: #ffffff;
+    --text2: #999999;
+    --text3: #555555;
+    --green: #22c55e;
+    --red: #ef4444;
 
     --card: 0 0% 5%;
     --card-foreground: 0 0% 100%;
@@ -91,7 +116,6 @@
     --loss: 0 70% 50%;
     --loss-foreground: 0 0% 100%;
 
-    --border: 0 0% 15%;
     --input: 0 0% 12%;
     --ring: 142 71% 45%;
 
@@ -118,11 +142,12 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    background-color: var(--bg);
+    color: var(--text);
     font-family: 'Helvetica World', 'Helvetica', 'Arial', system-ui, sans-serif;
     margin: 0;
     padding: 0;
@@ -133,23 +158,27 @@
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: hsl(var(--background));
+    background: var(--bg2);
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--border));
+    background: var(--border);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground));
+    background: var(--text3);
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-card/60 backdrop-blur-xl border border-glass-border;
+    background-color: var(--surface);
+    backdrop-filter: blur(24px);
+    border: 1px solid var(--border);
   }
   .glass-strong {
-    @apply bg-card/80 backdrop-blur-2xl border border-glass-border;
+    background-color: var(--surface);
+    backdrop-filter: blur(40px);
+    border: 1px solid var(--border);
   }
   .text-profit {
     color: hsl(var(--profit));

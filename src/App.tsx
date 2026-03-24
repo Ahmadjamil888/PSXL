@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
+import { DynamicFavicon } from "@/components/DynamicFavicon";
 import AppLayout from "@/components/AppLayout";
 import AuthPage from "@/pages/Auth";
 import Landing from "@/pages/home";
@@ -44,6 +45,7 @@ function AuthRoute() {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="dark" storageKey="psx-theme">
+      <DynamicFavicon />
       <TooltipProvider>
         <Sonner />
         <BrowserRouter>
