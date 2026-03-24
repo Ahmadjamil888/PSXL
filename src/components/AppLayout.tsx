@@ -17,16 +17,11 @@ const navItems = [
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { signOut, user, profile } = useAuth();
+  const { signOut, user } = useAuth();
   const location = useLocation();
   const { theme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-
-  // Get user display name and avatar
-  const displayName = profile?.name || user?.email?.split("@")[0] || "User";
-  const userEmail = profile?.email || user?.email || "";
-  const avatarUrl = profile?.avatar_url;
 
   useEffect(() => {
     const checkMobile = () => {
@@ -139,46 +134,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 className="px-4 py-3 mb-3 flex items-center gap-3"
                 style={{ background: "var(--bg2)", border: "1px solid var(--border)" }}
               >
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={displayName}
-                    className="w-8 h-8 object-cover"
-                    style={{ borderRadius: "50%" }}
-                    onError={(e) => {
-                      // Fallback to initial on image load error
-                      (e.target as HTMLImageElement).style.display = "none";
-                      const parent = (e.target as HTMLImageElement).parentElement;
-                      if (parent) {
-                        const fallback = document.createElement("div");
-                        fallback.className = "w-8 h-8 flex items-center justify-center text-sm font-medium";
-                        fallback.style.cssText = "background: var(--green); color: #000; border-radius: 50%;";
-                        fallback.textContent = displayName.charAt(0).toUpperCase();
-                        parent.appendChild(fallback);
-                      }
-                    }}
-                  />
-                ) : (
-                  <div
-                    className="w-8 h-8 flex items-center justify-center text-sm font-medium"
-                    style={{
-                      background: "var(--green)",
-                      color: "#000",
-                      borderRadius: "50%",
-                    }}
-                  >
-                    {displayName.charAt(0).toUpperCase()}
-                  </div>
-                )}
+                <div
+                  className="w-8 h-8 flex items-center justify-center text-sm font-medium"
+                  style={{
+                    background: "var(--green)",
+                    color: "#000",
+                    borderRadius: "50%",
+                  }}
+                >
+                  {user?.email?.charAt(0).toUpperCase() || "U"}
+                </div>
                 <div className="flex-1 min-w-0">
                   <p
                     className="truncate text-sm font-medium"
                     style={{ color: "var(--text)" }}
                   >
-                    {displayName}
+                    {user?.email?.split("@")[0] || "User"}
                   </p>
                   <p className="truncate text-xs" style={{ color: "var(--text3)" }}>
-                    {userEmail}
+                    {user?.email || ""}
                   </p>
                 </div>
               </div>
