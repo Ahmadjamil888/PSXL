@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CompanySearch from '@/components/CompanySearch';
 import { PSXCompany } from '@/data/psxCompanies';
 import { TrendingUp, Building, DollarSign, BarChart3 } from 'lucide-react';
-import './Landing.css';
 
 const Companies = () => {
   const [selectedCompany, setSelectedCompany] = useState<PSXCompany | null>(null);

@@ -8,7 +8,6 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell,
 } from "recharts";
-import "./Landing.css";
 
 export default function Dashboard() {
   const { data: trades = [], isLoading } = useTrades();

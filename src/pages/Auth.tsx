@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useTheme } from "@/components/theme-provider";
 import Logo from "@/components/Logo";
-import "./Landing.css";
 
 export default function AuthPage() {
   const { signIn, signUp, signInWithGoogle } = useAuth();

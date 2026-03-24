@@ -6,7 +6,6 @@ import {
   BarChart, Bar, Cell, PieChart, Pie,
 } from "recharts";
 import { BarChart3 } from "lucide-react";
-import "./Landing.css";
 
 export default function Analytics() {
   const { data: trades = [], isLoading } = useTrades();

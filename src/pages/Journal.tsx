@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Search, Trash2, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import "./Landing.css";
 
 export default function Journal() {
   const { data: trades = [], isLoading } = useTrades();
