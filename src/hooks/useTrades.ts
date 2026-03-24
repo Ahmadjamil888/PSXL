@@ -29,20 +29,24 @@ export interface TradeInput {
   date?: string;
 }
 
-export function useTrades() {
+export function useTrades(limit: number = 1000) {
   const { user } = useAuth();
   return useQuery({
-    queryKey: ["trades", user?.id],
+    queryKey: ["trades", user?.id, limit],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("trades")
         .select("*")
         .order("date", { ascending: false })
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(limit);
       if (error) throw error;
       return data as Trade[];
     },
     enabled: !!user,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -89,7 +93,23 @@ export function useDeleteTrade() {
   });
 }
 
-// Computed helpers
+export function useTradesCount() {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ["trades-count", user?.id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("trades")
+        .select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+}
 export function calcPnL(trade: Trade): number | null {
   if (!trade.exit_price) return null;
   const gross = trade.side === "buy"
