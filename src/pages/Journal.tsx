@@ -137,7 +137,7 @@ export default function Journal() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    shrink: 0,
+                    flexShrink: 0,
                     background: trade.side === "buy"
                         ? 'rgba(34, 197, 94, 0.1)' 
                         : 'rgba(239, 68, 68, 0.1)'
