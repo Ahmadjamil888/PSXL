@@ -57,6 +57,7 @@ const App = () => (
               <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
               <Route path="/companies" element={<ProtectedRoute><Companies /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
+              <Route path="/~oauth/initiate" element={<AuthPage />} />
             </Routes>
           </AuthProvider>
         </BrowserRouter>
