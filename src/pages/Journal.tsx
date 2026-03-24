@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Trash2, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import "./Landing.css";
 
 export default function Journal() {
   const { data: trades = [], isLoading } = useTrades();
@@ -37,11 +38,27 @@ export default function Journal() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ color: 'var(--text)' }}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Trade Journal</h1>
-          <p className="text-sm text-muted-foreground">{trades.length} trades logged</p>
+          <h1 style={{ 
+            fontSize: 'clamp(36px, 4vw, 60px)',
+            fontWeight: '700',
+            letterSpacing: '-2px',
+            lineHeight: '1.0',
+            color: 'var(--text)',
+            marginBottom: '8px'
+          }}>
+            Trade Journal
+          </h1>
+          <p style={{ 
+            fontSize: '15px',
+            fontWeight: '300',
+            lineHeight: '1.7',
+            color: 'var(--text2)'
+          }}>
+            {trades.length} trades logged
+          </p>
         </div>
         <TradeForm />
       </div>
@@ -49,12 +66,17 @@ export default function Journal() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text3)' }} />
+          <input
+            type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by symbol or note..."
-            className="pl-9 h-10 bg-input border-border"
+            className="input-field"
+            style={{ 
+              paddingLeft: '36px',
+              width: '100%'
+            }}
           />
         </div>
         <div className="flex gap-2">
@@ -62,11 +84,22 @@ export default function Journal() {
             <button
               key={s}
               onClick={() => setSideFilter(s)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                sideFilter === s
-                  ? s === "buy" ? "bg-profit/20 text-profit" : s === "sell" ? "bg-loss/20 text-loss" : "bg-primary/20 text-primary"
-                  : "bg-secondary text-muted-foreground hover:text-foreground"
-              }`}
+              style={{
+                padding: '8px 16px',
+                fontSize: '12px',
+                fontWeight: '400',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                background: sideFilter === s 
+                  ? s === "buy" ? 'var(--green)' : s === "sell" ? 'var(--red)' : 'var(--surface)'
+                  : 'transparent',
+                color: sideFilter === s 
+                  ? s === "buy" || s === "sell" ? '#000' : 'var(--text)'
+                  : 'var(--text2)',
+                border: '1px solid var(--border2)',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
             >
               {s.charAt(0).toUpperCase() + s.slice(1)}
             </button>
@@ -76,7 +109,7 @@ export default function Journal() {
 
       {/* Trade List */}
       {filtered.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-1" style={{ background: 'var(--border)' }}>
           {filtered.map((trade, i) => {
             const pnl = calcPnL(trade);
             const pnlPct = calcPnLPercent(trade);
@@ -86,22 +119,51 @@ export default function Journal() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="glass rounded-xl p-4 flex items-center justify-between gap-4"
+                className="stat-card"
+                style={{
+                  padding: '20px 24px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '16px',
+                  borderBottom: '1px solid var(--border)'
+                }}
               >
                 <div className="flex items-center gap-4 min-w-0">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-                    trade.side === "buy" ? "bg-profit/10" : "bg-loss/10"
-                  }`}>
-                    <span className={`text-xs font-bold ${trade.side === "buy" ? "text-profit" : "text-loss"}`}>
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    shrink: 0,
+                    background: trade.side === "buy" ? 'var(--green)' : 'var(--red)',
+                    background: trade.side === "buy" ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'
+                  }}>
+                    <span style={{
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      color: trade.side === "buy" ? 'var(--green)' : 'var(--red)'
+                    }}>
                       {trade.side === "buy" ? "B" : "S"}
                     </span>
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-semibold text-foreground">{trade.symbol}</span>
-                      <span className="text-xs text-muted-foreground">{trade.date}</span>
+                      <span style={{
+                        fontFamily: 'monospace',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        color: 'var(--text)'
+                      }}>{trade.symbol}</span>
+                      <span style={{ fontSize: '11px', color: 'var(--text3)' }}>{trade.date}</span>
                     </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: 'var(--text2)', 
+                      marginTop: '2px' 
+                    }}>
                       {trade.quantity} × ₨{trade.entry_price}
                       {trade.exit_price ? ` → ₨${trade.exit_price}` : " (Open)"}
                       {trade.note && ` · ${trade.note}`}
@@ -111,19 +173,46 @@ export default function Journal() {
                 <div className="flex items-center gap-3 shrink-0">
                   {pnl !== null ? (
                     <div className="text-right">
-                      <p className={`font-mono font-semibold ${pnl >= 0 ? "text-profit" : "text-loss"}`}>
+                      <p style={{
+                        fontFamily: 'monospace',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        color: pnl >= 0 ? 'var(--green)' : 'var(--red)'
+                      }}>
                         {formatCurrency(pnl)}
                       </p>
-                      <p className={`text-xs ${pnlPct! >= 0 ? "text-profit" : "text-loss"}`}>
+                      <p style={{
+                        fontSize: '11px',
+                        color: pnlPct! >= 0 ? 'var(--green)' : 'var(--red)'
+                      }}>
                         {formatPercent(pnlPct!)}
                       </p>
                     </div>
                   ) : (
-                    <span className="text-xs text-muted-foreground font-medium">OPEN</span>
+                    <span style={{ 
+                      fontSize: '11px', 
+                      color: 'var(--text3)', 
+                      fontWeight: '500' 
+                    }}>
+                      OPEN
+                    </span>
                   )}
                   <button
                     onClick={() => handleDelete(trade.id)}
-                    className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text2)',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      transition: 'color 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = 'var(--red)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'var(--text2)';
+                    }}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -133,8 +222,8 @@ export default function Journal() {
           })}
         </div>
       ) : (
-        <div className="text-center py-16 text-muted-foreground">
-          <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-30" />
+        <div className="text-center py-16" style={{ color: 'var(--text2)' }}>
+          <BookOpen className="w-12 h-12 mx-auto mb-3" style={{ opacity: '0.3' }} />
           <p>{trades.length === 0 ? "No trades yet. Log your first trade!" : "No trades match your filters."}</p>
         </div>
       )}

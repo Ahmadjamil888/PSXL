@@ -63,10 +63,10 @@ export default function TradeForm() {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="gap-2">
+      <button onClick={() => setOpen(true)} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <Plus className="w-4 h-4" />
         Log Trade
-      </Button>
+      </button>
 
       <AnimatePresence>
         {open && (
@@ -74,42 +74,119 @@ export default function TradeForm() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 50,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(4px)',
+              padding: '16px'
+            }}
             onClick={() => setOpen(false)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              style={{
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: '0px',
+                padding: '24px',
+                width: '100%',
+                maxWidth: '480px'
+              }}
               onClick={(e) => e.stopPropagation()}
-              className="glass-strong rounded-2xl p-6 w-full max-w-lg"
             >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-foreground">Log Trade</h2>
-                <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+                <h2 style={{
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  color: 'var(--text)'
+                }}>
+                  Log Trade
+                </h2>
+                <button 
+                  onClick={() => setOpen(false)} 
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text2)',
+                    cursor: 'pointer',
+                    padding: '4px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--text)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--text2)';
+                  }}
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Symbol with autocomplete */}
-                <div className="relative">
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">Symbol</label>
-                  <Input
+                <div style={{ position: 'relative' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: '400',
+                    color: 'var(--text)',
+                    marginBottom: '6px'
+                  }}>
+                    Symbol
+                  </label>
+                  <input
+                    type="text"
                     value={symbol}
                     onChange={(e) => handleSymbolChange(e.target.value)}
                     placeholder="e.g. ENGRO"
-                    className="h-11 bg-input border-border font-mono"
+                    className="input-field"
+                    style={{ 
+                      fontFamily: 'monospace',
+                      width: '100%'
+                    }}
                     required
                   />
                   {suggestions.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 glass-strong rounded-lg overflow-hidden">
+                    <div style={{
+                      position: 'absolute',
+                      zIndex: 10,
+                      width: '100%',
+                      marginTop: '4px',
+                      background: 'var(--surface)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '0px',
+                      overflow: 'hidden'
+                    }}>
                       {suggestions.map((s) => (
                         <button
                           key={s}
                           type="button"
                           onClick={() => { setSymbol(s); setSuggestions([]); }}
-                          className="block w-full text-left px-3 py-2 text-sm font-mono text-foreground hover:bg-accent transition-colors"
+                          style={{
+                            display: 'block',
+                            width: '100%',
+                            textAlign: 'left',
+                            padding: '8px 12px',
+                            fontSize: '13px',
+                            fontFamily: 'monospace',
+                            color: 'var(--text)',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'var(--bg2)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'none';
+                          }}
                         >
                           {s}
                         </button>
@@ -120,27 +197,51 @@ export default function TradeForm() {
 
                 {/* Side toggle */}
                 <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">Side</label>
-                  <div className="flex gap-2">
+                  <label style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: '400',
+                    color: 'var(--text)',
+                    marginBottom: '6px'
+                  }}>
+                    Side
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     <button
                       type="button"
                       onClick={() => setSide("buy")}
-                      className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                        side === "buy"
-                          ? "bg-profit text-profit-foreground"
-                          : "bg-secondary text-muted-foreground hover:text-foreground"
-                      }`}
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        fontSize: '12px',
+                        fontWeight: '400',
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        background: side === "buy" ? 'var(--green)' : 'transparent',
+                        color: side === "buy" ? '#000' : 'var(--text2)',
+                        border: '1px solid var(--border2)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
                     >
                       BUY
                     </button>
                     <button
                       type="button"
                       onClick={() => setSide("sell")}
-                      className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                        side === "sell"
-                          ? "bg-loss text-loss-foreground"
-                          : "bg-secondary text-muted-foreground hover:text-foreground"
-                      }`}
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        fontSize: '12px',
+                        fontWeight: '400',
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        background: side === "sell" ? 'var(--red)' : 'transparent',
+                        color: side === "sell" ? '#000' : 'var(--text2)',
+                        border: '1px solid var(--border2)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
                     >
                       SELL
                     </button>
@@ -148,71 +249,134 @@ export default function TradeForm() {
                 </div>
 
                 {/* Qty + Entry + Exit */}
-                <div className="grid grid-cols-3 gap-3">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-1.5 block">Qty</label>
-                    <Input
+                    <label style={{
+                      display: 'block',
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      color: 'var(--text)',
+                      marginBottom: '6px'
+                    }}>
+                      Qty
+                    </label>
+                    <input
                       type="number"
                       value={quantity}
                       onChange={(e) => setQuantity(e.target.value)}
                       placeholder="100"
-                      className="h-11 bg-input border-border font-mono"
+                      className="input-field"
+                      style={{ 
+                        fontFamily: 'monospace',
+                        width: '100%'
+                      }}
                       required
                       min="1"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-1.5 block">Entry ₨</label>
-                    <Input
+                    <label style={{
+                      display: 'block',
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      color: 'var(--text)',
+                      marginBottom: '6px'
+                    }}>
+                      Entry ₨
+                    </label>
+                    <input
                       type="number"
                       step="0.01"
                       value={entryPrice}
                       onChange={(e) => setEntryPrice(e.target.value)}
                       placeholder="245.00"
-                      className="h-11 bg-input border-border font-mono"
+                      className="input-field"
+                      style={{ 
+                        fontFamily: 'monospace',
+                        width: '100%'
+                      }}
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-1.5 block">Exit ₨</label>
-                    <Input
+                    <label style={{
+                      display: 'block',
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      color: 'var(--text)',
+                      marginBottom: '6px'
+                    }}>
+                      Exit ₨
+                    </label>
+                    <input
                       type="number"
                       step="0.01"
                       value={exitPrice}
                       onChange={(e) => setExitPrice(e.target.value)}
                       placeholder="260.00"
-                      className="h-11 bg-input border-border font-mono"
+                      className="input-field"
+                      style={{ 
+                        fontFamily: 'monospace',
+                        width: '100%'
+                      }}
                     />
                   </div>
                 </div>
 
                 {/* Fees + Note */}
-                <div className="grid grid-cols-2 gap-3">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-1.5 block">Fees (optional)</label>
-                    <Input
+                    <label style={{
+                      display: 'block',
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      color: 'var(--text)',
+                      marginBottom: '6px'
+                    }}>
+                      Fees (optional)
+                    </label>
+                    <input
                       type="number"
                       step="0.01"
                       value={fees}
                       onChange={(e) => setFees(e.target.value)}
                       placeholder="0"
-                      className="h-11 bg-input border-border font-mono"
+                      className="input-field"
+                      style={{ 
+                        fontFamily: 'monospace',
+                        width: '100%'
+                      }}
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-1.5 block">Note (optional)</label>
-                    <Input
+                    <label style={{
+                      display: 'block',
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      color: 'var(--text)',
+                      marginBottom: '6px'
+                    }}>
+                      Note (optional)
+                    </label>
+                    <input
+                      type="text"
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                       placeholder="Breakout trade"
-                      className="h-11 bg-input border-border"
+                      className="input-field"
+                      style={{ width: '100%' }}
                     />
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full h-11" disabled={addTrade.isPending}>
+                <button 
+                  type="submit" 
+                  className="btn-primary"
+                  style={{ width: '100%' }}
+                  disabled={addTrade.isPending}
+                >
                   {addTrade.isPending ? "Logging..." : "Log Trade"}
-                </Button>
+                </button>
               </form>
             </motion.div>
           </motion.div>

@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSXL — Pakistan Stock Exchange Ledger</title>
+<link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ─── RESET & BASE ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ff: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --green: #22c55e;
+    --green-dim: #16a34a;
+    --red: #ef4444;
+    --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  [data-theme="dark"] {
+    --bg: #000000;
+    --bg2: #0a0a0a;
+    --bg3: #111111;
+    --surface: #161616;
+    --border: #222222;
+    --border2: #2a2a2a;
+    --text: #ffffff;
+    --text2: #999999;
+    --text3: #555555;
+    --logo-text: #ffffff;
+  }
+
+  [data-theme="light"] {
+    --bg: #ffffff;
+    --bg2: #f7f7f7;
+    --bg3: #f0f0f0;
+    --surface: #ebebeb;
+    --border: #e0e0e0;
+    --border2: #d0d0d0;
+    --text: #000000;
+    --text2: #555555;
+    --text3: #999999;
+    --logo-text: #000000;
+  }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: var(--ff);
+    background: var(--bg);
+    color: var(--text);
+    transition: background var(--transition), color var(--transition);
+    overflow-x: hidden;
+  }
+
+  /* ─── SCROLLBAR ─────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 2px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--green); }
+
+  /* ─── ANIMATIONS ────────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes slideRight {
+    from { transform: scaleX(0); } to { transform: scaleX(1); }
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+  }
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes lineGrow {
+    from { height: 0; } to { height: 100%; }
+  }
+  @keyframes barGrow {
+    from { width: 0; } to { width: var(--w); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── NAV ───────────────────────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    transition: background var(--transition), border-color var(--transition);
+    animation: fadeIn 0.6s ease both;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--logo-text);
+    text-decoration: none;
+  }
+  .nav-logo .psx { color: var(--logo-text); }
+  .nav-logo .l-mark {
+    display: inline-block;
+    width: 14px;
+    height: 28px;
+    position: relative;
+    margin-left: 1px;
+  }
+  .nav-logo .l-mark svg { width: 14px; height: 28px; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  /* ─── THEME TOGGLE ──────────────────────────────────────── */
+  .toggle {
+    width: 40px; height: 22px;
+    background: var(--border2);
+    border-radius: 11px;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--green);
+    transition: transform 0.3s;
+  }
+  [data-theme="light"] .toggle::after { transform: translateX(18px); }
+
+  .btn-nav {
+    font-family: var(--ff);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #000;
+    background: var(--green);
+    border: none;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-nav:hover { opacity: 0.85; }
+
+  /* ─── TICKER BAR ────────────────────────────────────────── */
+  .ticker-wrap {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 99;
+    height: 32px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  .ticker-track {
+    display: flex;
+    gap: 0;
+    white-space: nowrap;
+    animation: ticker 60s linear infinite;
+    will-change: transform;
+  }
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 32px;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    border-right: 1px solid var(--border);
+  }
+  .ticker-sym { font-weight: 700; color: var(--text); }
+  .ticker-val { color: var(--text2); }
+  .ticker-chg.pos { color: var(--green); }
+  .ticker-chg.neg { color: var(--red); }
+
+  /* ─── SECTIONS ──────────────────────────────────────────── */
+  section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 40px 40px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ─── HERO ──────────────────────────────────────────────── */
+  #hero {
+    background: var(--bg);
+    overflow: hidden;
+    padding-top: 56px;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    height: calc(100vh - 56px - 32px);
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 60px 60px 0;
+    border-right: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-h1 {
+    font-size: clamp(52px, 6vw, 88px);
+    font-weight: 700;
+    letter-spacing: -3px;
+    line-height: 0.95;
+    color: var(--text);
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .hero-h1 em { font-style: normal; color: var(--green); }
+
+  .hero-desc {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text2);
+    max-width: 420px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+
+  .btn-primary {
+    font-family: var(--ff);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #000;
+    background: var(--green);
+    border: 1px solid var(--green);
+    padding: 14px 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-ghost {
+    font-family: var(--ff);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border2);
+    padding: 14px 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--text2); }
+
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 0 60px 60px;
+    gap: 1px;
+    background: var(--border);
+    animation: fadeIn 0.8s 0.4s ease both;
+  }
+
+  .hero-stat-card {
+    background: var(--bg);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition);
+  }
+  .hero-stat-card:last-child { border-bottom: none; }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .stat-val {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: var(--text);
+  }
+  .stat-val.pos { color: var(--green); }
+  .stat-val.neg { color: var(--red); }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--text3);
+    font-weight: 300;
+  }
+
+  /* ─── SECTION TITLES ─────────────────────────────────────── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+  .section-h2 {
+    font-size: clamp(36px, 4vw, 60px);
+    font-weight: 700;
+    letter-spacing: -2px;
+    line-height: 1.0;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .section-desc {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text2);
+    max-width: 560px;
+  }
+
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: var(--green);
+    margin-bottom: 40px;
+    transform-origin: left;
+  }
+  .divider.animated { animation: slideRight 0.8s 0.2s ease both; }
+
+  /* ─── FEATURES ──────────────────────────────────────────── */
+  #features { background: var(--bg2); padding-top: 100px; }
+
+  .features-header {
+    max-width: 600px;
+    margin-bottom: 80px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .feature-card {
+    background: var(--bg2);
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: background 0.2s;
+    position: relative;
+  }
+  .feature-card:hover { background: var(--bg3); }
+
+  .feature-num {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+  }
+  .feature-icon {
+    width: 32px; height: 32px;
+    color: var(--green);
+  }
+  .feature-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .feature-body {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text2);
+  }
+  .feature-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green);
+    border: 1px solid var(--green-dim);
+    padding: 3px 10px;
+    margin-top: auto;
+    width: fit-content;
+  }
+
+  /* ─── LEDGER DEMO ───────────────────────────────────────── */
+  #ledger { background: var(--bg); }
+
+  .ledger-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 60px;
+    align-items: center;
+    height: calc(100vh - 160px);
+  }
+
+  .ledger-info { display: flex; flex-direction: column; }
+  .ledger-info .section-h2 { margin-bottom: 24px; }
+
+  .ledger-features-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+  .ledger-features-list li {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ledger-features-list li::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  .ledger-table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    height: 100%;
+    max-height: 620px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .table-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg3);
+  }
+  .table-header-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+  .table-badge {
+    font-size: 10px;
+    padding: 3px 10px;
+    background: var(--green);
+    color: #000;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .table-scroll { overflow-y: auto; flex: 1; }
+  .table-scroll::-webkit-scrollbar { width: 2px; }
+  .table-scroll::-webkit-scrollbar-thumb { background: var(--border2); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+    position: sticky; top: 0;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: var(--bg3); }
+  tbody td {
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 300;
+  }
+  tbody td.sym { font-weight: 600; font-size: 13px; }
+  tbody td.pos { color: var(--green); }
+  tbody td.neg { color: var(--red); }
+
+  /* ─── ANALYTICS ─────────────────────────────────────────── */
+  #analytics { background: var(--bg2); }
+
+  .analytics-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .chart-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 32px;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+  }
+  .chart-title {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--text);
+  }
+  .chart-period {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+  }
+
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 160px;
+  }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .bar {
+    width: 100%;
+    background: var(--green);
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    animation: barGrow 1s ease both;
+    transform-origin: bottom;
+  }
+  .bar:hover { opacity: 1; }
+  .bar.loss { background: var(--red); }
+  .bar-label { font-size: 9px; color: var(--text3); letter-spacing: 0.05em; }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-top: 32px;
+  }
+  .metric-card {
+    background: var(--surface);
+    padding: 20px 24px;
+  }
+  .metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text3); margin-bottom: 6px; }
+  .metric-val { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+  .metric-val.pos { color: var(--green); }
+  .metric-val.neg { color: var(--red); }
+
+  /* ─── HOW IT WORKS ──────────────────────────────────────── */
+  #how { background: var(--bg); }
+
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-top: 80px;
+  }
+
+  .step-card {
+    background: var(--bg);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+  .step-card:hover { background: var(--bg2); }
+
+  .step-line {
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px;
+    background: var(--green);
+    animation: lineGrow 1s ease both;
+  }
+
+  .step-num {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -2px;
+    color: var(--border2);
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .step-body {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text2);
+  }
+
+  /* ─── PRICING ───────────────────────────────────────────── */
+  #pricing { background: var(--bg2); }
+
+  .pricing-header { max-width: 480px; margin-bottom: 80px; }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .plan-card {
+    background: var(--bg2);
+    padding: 44px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: background 0.2s;
+  }
+  .plan-card.featured { background: var(--bg); border-top: 2px solid var(--green); }
+  .plan-card:hover { background: var(--bg3); }
+
+  .plan-badge {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 12px;
+    height: 16px;
+  }
+  .plan-name {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .plan-price {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -2px;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .plan-price span { font-size: 16px; font-weight: 300; letter-spacing: 0; color: var(--text2); }
+  .plan-desc {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--text3);
+    margin-bottom: 36px;
+    line-height: 1.5;
+  }
+  .plan-divider { height: 1px; background: var(--border); margin-bottom: 28px; }
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 36px;
+    flex: 1;
+  }
+  .plan-features li {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text2);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .plan-features li::before {
+    content: '—';
+    color: var(--green);
+    font-weight: 300;
+    flex-shrink: 0;
+  }
+  .plan-features li.inactive { color: var(--text3); }
+  .plan-features li.inactive::before { color: var(--text3); }
+
+  /* ─── TESTIMONIALS ──────────────────────────────────────── */
+  #testimonials { background: var(--bg); }
+
+  .testi-header { max-width: 480px; margin-bottom: 80px; }
+
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .testi-card {
+    background: var(--bg);
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: background 0.2s;
+  }
+  .testi-card:hover { background: var(--bg2); }
+
+  .testi-quote {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--text2);
+    flex: 1;
+  }
+  .testi-quote::before { content: '"'; color: var(--green); font-size: 28px; line-height: 0; vertical-align: -12px; margin-right: 4px; }
+
+  .testi-divider { height: 1px; background: var(--border); }
+
+  .testi-author {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .testi-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .testi-role { font-size: 11px; font-weight: 300; color: var(--text3); letter-spacing: 0.05em; }
+
+  /* ─── SECURITY ──────────────────────────────────────────── */
+  #security { background: var(--bg2); }
+
+  .sec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 120px;
+    align-items: center;
+  }
+
+  .sec-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .sec-item {
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .sec-icon {
+    width: 18px; height: 18px;
+    color: var(--green);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .sec-content {}
+  .sec-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .sec-body { font-size: 13px; font-weight: 300; color: var(--text2); line-height: 1.6; }
+
+  .sec-visual {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .sec-vis-header {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sec-vis-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sec-vis-row:last-child { border-bottom: none; }
+  .sec-vis-key { font-size: 12px; font-weight: 300; color: var(--text2); }
+  .sec-vis-val { font-size: 12px; font-weight: 500; color: var(--green); font-family: monospace; }
+
+  /* ─── FAQ ────────────────────────────────────────────────── */
+  #faq { background: var(--bg); }
+
+  .faq-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 120px;
+    align-items: start;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .faq-q {
+    width: 100%;
+    background: none;
+    border: none;
+    font-family: var(--ff);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text);
+    text-align: left;
+    padding: 20px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    transition: color 0.2s;
+  }
+  .faq-q:hover { color: var(--green); }
+  .faq-q-arrow {
+    width: 12px; height: 12px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .faq-item.open .faq-q-arrow { transform: rotate(225deg); }
+
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .faq-item.open .faq-a { max-height: 200px; }
+  .faq-a-inner {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text2);
+    padding-bottom: 20px;
+  }
+
+  /* ─── CTA ────────────────────────────────────────────────── */
+  #cta { background: var(--bg2); }
+
+  .cta-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .cta-h2 {
+    font-size: clamp(48px, 5vw, 80px);
+    font-weight: 700;
+    letter-spacing: -3px;
+    line-height: 0.95;
+    color: var(--text);
+  }
+  .cta-h2 em { font-style: normal; color: var(--green); }
+
+  .cta-sub {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .cta-input-row {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid var(--border2);
+    overflow: hidden;
+  }
+  .cta-email {
+    flex: 1;
+    font-family: var(--ff);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text);
+    background: var(--bg);
+    border: none;
+    padding: 14px 20px;
+    outline: none;
+  }
+  .cta-email::placeholder { color: var(--text3); }
+  .cta-submit {
+    font-family: var(--ff);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #000;
+    background: var(--green);
+    border: none;
+    padding: 14px 24px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  .cta-submit:hover { opacity: 0.85; }
+
+  .cta-note {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── FOOTER ─────────────────────────────────────────────── */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 60px 40px 40px;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 80px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .footer-brand {}
+  .footer-logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+  }
+  .footer-logo svg { width: 16px; height: 32px; margin-left: 1px; }
+  .footer-tagline {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--text3);
+    line-height: 1.6;
+  }
+
+  .footer-links-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+  }
+  .footer-col-title {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul a {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--text2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-col ul a:hover { color: var(--text); }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-copy {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+  }
+  .footer-legal {
+    display: flex;
+    gap: 24px;
+  }
+  .footer-legal a {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--text3);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-legal a:hover { color: var(--text); }
+
+  /* ─── RESPONSIVE ─────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-left { padding: 40px 0; border-right: none; border-bottom: 1px solid var(--border); }
+    .hero-right { padding: 40px 0; }
+    .ledger-layout { grid-template-columns: 1fr; }
+    .analytics-layout { grid-template-columns: 1fr; }
+    .sec-grid { grid-template-columns: 1fr; }
+    .faq-layout { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .how-grid { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .testi-grid { grid-template-columns: 1fr; }
+    .footer-top { grid-template-columns: 1fr; }
+    .footer-links-grid { grid-template-columns: 1fr 1fr; }
+    nav { padding: 0 20px; }
+    section { padding: 80px 20px 40px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────────────────────── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="psx">PSX</span>
+    <span class="l-mark">
+      <svg viewBox="0 0 14 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2 C10 2, 8 8, 7 14 C6 20, 7.5 24, 11 26" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      </svg>
+    </span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#ledger">Ledger</a></li>
+    <li><a href="#analytics">Analytics</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <div class="toggle" id="themeToggle" title="Toggle theme"></div>
+    <a href="/auth" class="btn-nav">Start Free</a>
+  </div>
+</nav>
+
+<!-- ─── TICKER ────────────────────────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- ─── HERO ──────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <p class="hero-eyebrow">Pakistan Stock Exchange Ledger</p>
+      <h1 class="hero-h1">Track every<br>trade with<br><em>precision.</em></h1>
+      <p class="hero-desc">PSXL is the institutional-grade trading ledger built exclusively for PSX investors. Record, analyse, and report your equity positions with the clarity of a professional desk.</p>
+      <div class="hero-actions">
+        <a href="/auth" class="btn-primary">Get Started</a>
+        <a href="#ledger" class="btn-ghost">View Demo</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-stat-card">
+        <span class="stat-label">Portfolio Value</span>
+        <span class="stat-val">₨ 4,82,350</span>
+        <span class="stat-sub">Updated at market close · 24 Mar 2026</span>
+      </div>
+      <div class="hero-stat-card">
+        <span class="stat-label">Realised P&amp;L (YTD)</span>
+        <span class="stat-val pos">+₨ 61,820</span>
+        <span class="stat-sub">+14.67% return on invested capital</span>
+      </div>
+      <div class="hero-stat-card">
+        <span class="stat-label">Unrealised Gain</span>
+        <span class="stat-val pos">+₨ 18,440</span>
+        <span class="stat-sub">Across 11 open positions</span>
+      </div>
+      <div class="hero-stat-card">
+        <span class="stat-label">Transactions Logged</span>
+        <span class="stat-val">348</span>
+        <span class="stat-sub">Since Jan 2024 — zero missing entries</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ──────────────────────────────────────────────── -->
+<section id="features">
+  <div class="features-header reveal">
+    <p class="section-label">Core Capabilities</p>
+    <div class="divider"></div>
+    <h2 class="section-h2">Every tool a PSX trader needs.</h2>
+    <p class="section-desc">Built ground-up for the Pakistan Stock Exchange settlement cycle, tax regime, and broker ecosystem. No generic solutions.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <span class="feature-num">01</span>
+      <svg class="feature-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="4" y="6" width="24" height="20" rx="1"/><line x1="4" y1="11" x2="28" y2="11"/><line x1="10" y1="6" x2="10" y2="11"/>
+        <line x1="22" y1="6" x2="22" y2="11"/><line x1="10" y1="17" x2="22" y2="17"/><line x1="10" y1="21" x2="18" y2="21"/>
+      </svg>
+      <h3 class="feature-title">Trade Entry &amp; History</h3>
+      <p class="feature-body">Log buy and sell transactions with full metadata — quantity, rate, brokerage, CDC charges, Zakat, and settlement date. Nothing is left unaccounted.</p>
+      <span class="feature-tag">T+2 Settlement</span>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-num">02</span>
+      <svg class="feature-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+        <polyline points="4,24 10,16 16,20 22,10 28,6"/><line x1="4" y1="28" x2="28" y2="28"/>
+      </svg>
+      <h3 class="feature-title">Real-Time P&amp;L Tracking</h3>
+      <p class="feature-body">See your realised and unrealised gain or loss per position and at portfolio level, updated with each entry. Weighted average cost computed automatically.</p>
+      <span class="feature-tag">FIFO / WAC</span>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-num">03</span>
+      <svg class="feature-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M16 4 L28 12 L28 24 L16 28 L4 24 L4 12 Z"/><circle cx="16" cy="16" r="4"/>
+      </svg>
+      <h3 class="feature-title">Sector &amp; Scrip Breakdown</h3>
+      <p class="feature-body">View exposure by KSE sector — Cement, Banking, E&amp;P, Tech, and more. Instantly understand concentration risk across your holdings.</p>
+      <span class="feature-tag">KSE-100 Mapped</span>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-num">04</span>
+      <svg class="feature-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="6" y="14" width="5" height="12"/><rect x="13" y="10" width="5" height="16"/><rect x="20" y="6" width="5" height="20"/>
+        <line x1="4" y1="28" x2="28" y2="28"/>
+      </svg>
+      <h3 class="feature-title">Dividend Tracker</h3>
+      <p class="feature-body">Record cash and bonus dividends, right issues, and stock splits. Adjust cost basis automatically and track dividend yield per holding.</p>
+      <span class="feature-tag">Corporate Actions</span>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-num">05</span>
+      <svg class="feature-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M8 26 L8 12 M14 26 L14 18 M20 26 L20 8 M26 26 L26 14"/>
+        <path d="M4 8 Q10 4 16 10 Q22 16 28 6"/>
+      </svg>
+      <h3 class="feature-title">Tax Computation</h3>
+      <p class="feature-body">Capital gains tax, withholding tax on dividends, and Zakat deductions — all calculated per FBR rules. Export a ready report for your tax consultant.</p>
+      <span class="feature-tag">FBR Compliant</span>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-num">06</span>
+      <svg class="feature-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M6 26 L6 6 L26 6"/><rect x="10" y="16" width="4" height="10"/><rect x="17" y="11" width="4" height="15"/>
+        <line x1="6" y1="13" x2="26" y2="13"/>
+      </svg>
+      <h3 class="feature-title">Export &amp; Reports</h3>
+      <p class="feature-body">Generate portfolio statements, gain/loss summaries, and broker reconciliation sheets. Export to Excel or PDF in one click.</p>
+      <span class="feature-tag">Excel · PDF</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── LEDGER DEMO ────────────────────────────────────────────── -->
+<section id="ledger">
+  <div class="ledger-layout">
+    <div class="ledger-info reveal">
+      <p class="section-label">The Ledger</p>
+      <div class="divider"></div>
+      <h2 class="section-h2">Clean entries. Zero ambiguity.</h2>
+      <p class="section-desc">Every row tells the complete story of a trade. Built like a double-entry accounting ledger — the standard institutions rely on.</p>
+      <ul class="ledger-features-list">
+        <li>Automatic brokerage &amp; levy calculation</li>
+        <li>Weighted average cost per symbol</li>
+        <li>Running portfolio balance after each trade</li>
+        <li>Broker statement reconciliation</li>
+        <li>Date-wise gain/loss summary</li>
+        <li>Unrealised position marking to market</li>
+      </ul>
+    </div>
+    <div class="ledger-table-wrap reveal">
+      <div class="table-header">
+        <span class="table-header-title">Trade Ledger — Q1 2026</span>
+        <span class="table-badge">Live</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Symbol</th>
+              <th>Sector</th>
+              <th>Type</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Value</th>
+              <th>Charges</th>
+              <th>P&amp;L</th>
+            </tr>
+          </thead>
+          <tbody id="ledgerBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ANALYTICS ─────────────────────────────────────────────── -->
+<section id="analytics">
+  <div class="analytics-layout">
+    <div class="reveal">
+      <p class="section-label">Analytics</p>
+      <div class="divider"></div>
+      <h2 class="section-h2">Numbers that drive decisions.</h2>
+      <p class="section-desc">Institutional reporting metrics presented cleanly. Understand your edge, your drawdowns, and your consistency over time.</p>
+      <div class="metrics-grid" style="margin-top:48px">
+        <div class="metric-card">
+          <div class="metric-label">Win Rate</div>
+          <div class="metric-val pos">68.4%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Avg Hold</div>
+          <div class="metric-val">18.2d</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Max Drawdown</div>
+          <div class="metric-val neg">−8.1%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Sharpe Ratio</div>
+          <div class="metric-val pos">1.74</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Best Month</div>
+          <div class="metric-val pos">+21.3%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Profit Factor</div>
+          <div class="metric-val pos">2.31</div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-container reveal">
+      <div class="chart-header">
+        <span class="chart-title">Monthly P&amp;L</span>
+        <span class="chart-period">Jan — Dec 2025</span>
+      </div>
+      <div class="bar-chart" id="barChart"></div>
+      <div style="margin-top:24px; border-top:1px solid var(--border); padding-top:20px; display:flex; gap:24px;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);">
+          <span style="width:10px;height:10px;background:var(--green);opacity:0.7;display:inline-block"></span> Gain
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);">
+          <span style="width:10px;height:10px;background:var(--red);opacity:0.7;display:inline-block"></span> Loss
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ───────────────────────────────────────────── -->
+<section id="how">
+  <div class="reveal" style="max-width:480px;margin-bottom:0">
+    <p class="section-label">Getting Started</p>
+    <div class="divider"></div>
+    <h2 class="section-h2">Up and running in minutes.</h2>
+    <p class="section-desc">No complex setup. No data migration headaches. Just log your first trade and PSXL takes over from there.</p>
+  </div>
+  <div class="how-grid" style="margin-top:80px">
+    <div class="step-card reveal">
+      <div class="step-line" style="height:40px"></div>
+      <div class="step-num">01</div>
+      <h3 class="step-title">Create Your Account</h3>
+      <p class="step-body">Sign up with your email. No broker API keys required. Your data is yours and stays private on your ledger.</p>
+    </div>
+    <div class="step-card reveal">
+      <div class="step-line" style="height:60px"></div>
+      <div class="step-num">02</div>
+      <h3 class="step-title">Import Past Trades</h3>
+      <p class="step-body">Upload a CSV from your broker or paste entries manually. PSXL maps fields automatically for all major PSX brokers.</p>
+    </div>
+    <div class="step-card reveal">
+      <div class="step-line" style="height:50px"></div>
+      <div class="step-num">03</div>
+      <h3 class="step-title">Log New Entries</h3>
+      <p class="step-body">After each trade, enter it in seconds. PSXL computes all charges, updates P&amp;L, and reflects the new portfolio state instantly.</p>
+    </div>
+    <div class="step-card reveal">
+      <div class="step-line" style="height:80px"></div>
+      <div class="step-num">04</div>
+      <h3 class="step-title">Review &amp; Export</h3>
+      <p class="step-body">Generate monthly or annual reports. Share with your accountant or archive for your own records. PDF and Excel formats supported.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ────────────────────────────────────────────────── -->
+<section id="pricing">
+  <div class="pricing-header reveal">
+    <p class="section-label">Plans</p>
+    <div class="divider"></div>
+    <h2 class="section-h2">Simple pricing. No surprises.</h2>
+    <p class="section-desc">Start free. Upgrade when you need more power. Cancel any time.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="plan-card reveal">
+      <div class="plan-badge"></div>
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">Free <span></span></div>
+      <div class="plan-desc">For investors just getting organised.</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Up to 100 trade entries</li>
+        <li>Basic P&amp;L report</li>
+        <li>3 symbols tracked</li>
+        <li>CSV export</li>
+        <li class="inactive">Dividend tracker</li>
+        <li class="inactive">Tax report</li>
+        <li class="inactive">Broker reconciliation</li>
+      </ul>
+      <a href="/auth" class="btn-ghost" style="text-align:center">Start Free</a>
+    </div>
+    <div class="plan-card featured reveal">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">₨1,499 <span>/ month</span></div>
+      <div class="plan-desc">For active traders who need the full picture.</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Unlimited trade entries</li>
+        <li>Full P&amp;L &amp; analytics dashboard</li>
+        <li>Unlimited symbols</li>
+        <li>CSV &amp; Excel export</li>
+        <li>Dividend &amp; corporate actions</li>
+        <li>FBR tax computation</li>
+        <li>Broker reconciliation</li>
+      </ul>
+      <a href="/auth" class="btn-primary" style="text-align:center">Get Pro</a>
+    </div>
+    <div class="plan-card reveal">
+      <div class="plan-badge"></div>
+      <div class="plan-name">Firm</div>
+      <div class="plan-price">₨5,999 <span>/ month</span></div>
+      <div class="plan-desc">For advisory firms and family offices.</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li>Everything in Pro</li>
+        <li>Multi-account management</li>
+        <li>Client-level reporting</li>
+        <li>PDF branded statements</li>
+        <li>Priority support</li>
+        <li>Audit trail &amp; permissions</li>
+        <li>Custom data export</li>
+      </ul>
+      <a href="/auth" class="btn-ghost" style="text-align:center">Contact Sales</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ──────────────────────────────────────────── -->
+<section id="testimonials">
+  <div class="testi-header reveal">
+    <p class="section-label">From Investors</p>
+    <div class="divider"></div>
+    <h2 class="section-h2">What traders say.</h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <p class="testi-quote">I used to maintain everything in a messy spreadsheet. PSXL replaced it entirely. The tax report alone saves me hours every year when filing with FBR.</p>
+      <div class="testi-divider"></div>
+      <div class="testi-author">
+        <span class="testi-name">Farrukh Malik</span>
+        <span class="testi-role">Retail Investor — Lahore</span>
+      </div>
+    </div>
+    <div class="testi-card reveal">
+      <p class="testi-quote">The ledger is exactly how a professional desk would want it. Clean rows, correct charges, automatic WAC. Nothing like this existed for PSX before.</p>
+      <div class="testi-divider"></div>
+      <div class="testi-author">
+        <span class="testi-name">Sana Qureshi</span>
+        <span class="testi-role">Portfolio Manager — Karachi</span>
+      </div>
+    </div>
+    <div class="testi-card reveal">
+      <p class="testi-quote">We use the Firm plan for our advisory clients. The multi-account view and branded PDF reports have genuinely improved how we present to investors.</p>
+      <div class="testi-divider"></div>
+      <div class="testi-author">
+        <span class="testi-name">Ahmed Raza</span>
+        <span class="testi-role">Director — Raza Capital Islamabad</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SECURITY ──────────────────────────────────────────────── -->
+<section id="security">
+  <div class="sec-grid">
+    <div class="reveal">
+      <p class="section-label">Security &amp; Privacy</p>
+      <div class="divider"></div>
+      <h2 class="section-h2">Your data. Your ledger.</h2>
+      <p class="section-desc">We hold financial records to the highest standard of privacy. PSXL never sells data, never connects to your broker, and never executes trades.</p>
+      <div class="sec-items">
+        <div class="sec-item">
+          <svg class="sec-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 2 L15 5 L15 10 C15 13.3 12.3 16 9 17 C5.7 16 3 13.3 3 10 L3 5 Z"/>
+          </svg>
+          <div class="sec-content">
+            <div class="sec-title">End-to-End Encryption</div>
+            <div class="sec-body">All ledger data encrypted at rest with AES-256 and in transit with TLS 1.3.</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <svg class="sec-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="9" cy="9" r="7"/><polyline points="9,5 9,9 12,11"/>
+          </svg>
+          <div class="sec-content">
+            <div class="sec-title">Immutable Audit Trail</div>
+            <div class="sec-body">Every change is timestamped and logged. Your historical record can never be silently altered.</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <svg class="sec-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="8" width="12" height="8" rx="1"/><path d="M6 8 L6 5 C6 3.3 7.3 2 9 2 C10.7 2 12 3.3 12 5 L12 8"/>
+          </svg>
+          <div class="sec-content">
+            <div class="sec-title">No Broker Access</div>
+            <div class="sec-body">PSXL is a manual ledger. It never connects to your brokerage account or places orders on your behalf.</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <svg class="sec-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="9" cy="9" r="7"/><line x1="9" y1="6" x2="9" y2="9"/><line x1="9" y1="12" x2="9" y2="12.5" stroke-width="2"/>
+          </svg>
+          <div class="sec-content">
+            <div class="sec-title">Zero Data Selling</div>
+            <div class="sec-body">Your portfolio data is never shared with third parties, advertisers, or financial institutions.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-visual reveal">
+      <div class="sec-vis-header">System Security Status</div>
+      <div class="sec-vis-row"><span class="sec-vis-key">Encryption</span><span class="sec-vis-val">AES-256-GCM ✓</span></div>
+      <div class="sec-vis-row"><span class="sec-vis-key">Transport</span><span class="sec-vis-val">TLS 1.3 ✓</span></div>
+      <div class="sec-vis-row"><span class="sec-vis-key">Auth</span><span class="sec-vis-val">MFA Enabled ✓</span></div>
+      <div class="sec-vis-row"><span class="sec-vis-key">Backup</span><span class="sec-vis-val">Daily · 30d Retention</span></div>
+      <div class="sec-vis-row"><span class="sec-vis-key">Uptime (30d)</span><span class="sec-vis-val">99.97%</span></div>
+      <div class="sec-vis-row"><span class="sec-vis-key">Data Residency</span><span class="sec-vis-val">Pakistan · ISO 27001</span></div>
+      <div class="sec-vis-row"><span class="sec-vis-key">Broker Access</span><span class="sec-vis-val" style="color:var(--red)">None · Read-only</span></div>
+      <div class="sec-vis-row"><span class="sec-vis-key">Last Audit</span><span class="sec-vis-val">Feb 2026</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ───────────────────────────────────────────────────── -->
+<section id="faq">
+  <div class="faq-layout">
+    <div class="reveal">
+      <p class="section-label">FAQ</p>
+      <div class="divider"></div>
+      <h2 class="section-h2">Common questions.</h2>
+      <p class="section-desc">Everything you need to know before you start.</p>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q">Is PSXL connected to my broker? <span class="faq-q-arrow"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">No. PSXL is a completely manual ledger. You enter trades yourself. It never connects to your brokerage account, cannot place orders, and has no access to your broker login credentials.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Which brokers are supported for CSV import? <span class="faq-q-arrow"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">PSXL supports direct CSV import from AKD Securities, JS Global, Topline Securities, Arif Habib, and most other PSX brokers. For unsupported formats, you can use the standard PSXL CSV template.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">How is weighted average cost calculated? <span class="faq-q-arrow"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">PSXL uses the Weighted Average Cost (WAC) method as the default, which is the standard adopted for PSX equities. FIFO is also available in Pro and Firm plans for comparison purposes.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is the tax calculation legally accurate? <span class="faq-q-arrow"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">PSXL computes capital gains tax and withholding tax based on FBR rates as currently published. However, you should always confirm figures with a qualified tax consultant before filing. PSXL is a ledger tool, not a tax advisory service.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Can I use PSXL for multiple portfolios? <span class="faq-q-arrow"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">Multi-portfolio and multi-account support is available on the Firm plan. Pro plan users have a single ledger per account. You can export and maintain separate files if needed on lower plans.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is my data backed up? <span class="faq-q-arrow"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">Yes. All data is automatically backed up daily with 30 days of retention. You can also manually export your entire ledger to Excel or CSV at any time from the dashboard.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What happens if I cancel my plan? <span class="faq-q-arrow"></span></button>
+        <div class="faq-a"><div class="faq-a-inner">You retain access until the end of your billing period. After that, your account moves to Starter limits. Your data is never deleted — you can export everything before or after downgrading.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ───────────────────────────────────────────────────── -->
+<section id="cta">
+  <div class="cta-inner reveal">
+    <p class="section-label">Start Today</p>
+    <h2 class="cta-h2">Your PSX ledger,<br><em>done right.</em></h2>
+    <p class="cta-sub">Join investors across Pakistan who track their trades the professional way. Free to start. No credit card required.</p>
+    <div class="cta-input-row">
+      <input type="email" class="cta-email" placeholder="your@email.com">
+      <button class="cta-submit">Get Access</button>
+    </div>
+    <span class="cta-note">Free plan · No credit card · Cancel any time</span>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        PSX<svg viewBox="0 0 16 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11 2 C11 2, 9 9, 8 16 C7 23, 8.5 27, 12.5 30" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <p class="footer-tagline">The institutional-grade trading ledger for Pakistan Stock Exchange investors.</p>
+    </div>
+    <div class="footer-links-grid">
+      <div class="footer-col">
+        <div class="footer-col-title">Product</div>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Resources</div>
+        <ul>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">CSV Templates</a></li>
+          <li><a href="#">Tax Guide</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Legal</div>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Use</a></li>
+          <li><a href="#">Disclaimer</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 PSXL. All rights reserved. Not affiliated with the Pakistan Stock Exchange.</span>
+    <div class="footer-legal">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Disclaimer</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── THEME TOGGLE ──────────────────────────────────────────
+  const html = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', () => {
+    html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  });
+
+  // ─── TICKER DATA ───────────────────────────────────────────
+  const stocks = [
+    { sym:'OGDC', val:'187.40', chg:'+2.30', pct:'+1.24%', pos:true },
+    { sym:'HBL',  val:'221.15', chg:'-3.20', pct:'-1.43%', pos:false },
+    { sym:'PSO',  val:'312.80', chg:'+5.60', pct:'+1.82%', pos:true },
+    { sym:'LUCK', val:'924.50', chg:'+12.70', pct:'+1.39%', pos:true },
+    { sym:'SYS',  val:'582.30', chg:'+8.90', pct:'+1.55%', pos:true },
+    { sym:'MCB',  val:'344.20', chg:'-1.80', pct:'-0.52%', pos:false },
+    { sym:'ENGRO',val:'326.40', chg:'+4.10', pct:'+1.27%', pos:true },
+    { sym:'PPL',  val:'142.60', chg:'-2.40', pct:'-1.66%', pos:false },
+    { sym:'FFBL', val:'56.80',  chg:'+0.90', pct:'+1.61%', pos:true },
+    { sym:'EFERT',val:'128.30', chg:'+2.10', pct:'+1.66%', pos:true },
+    { sym:'UBL',  val:'278.90', chg:'-4.20', pct:'-1.48%', pos:false },
+    { sym:'MARI', val:'2340.50',chg:'+34.70',pct:'+1.50%', pos:true },
+    { sym:'HUBC', val:'118.70', chg:'+1.40', pct:'+1.19%', pos:true },
+    { sym:'FCCL', val:'38.20',  chg:'-0.60', pct:'-1.55%', pos:false },
+    { sym:'BAHL', val:'103.40', chg:'+2.80', pct:'+2.78%', pos:true },
+  ];
+
+  const track = document.getElementById('ticker');
+  const mkItem = s => `
+    <div class="ticker-item">
+      <span class="ticker-sym">${s.sym}</span>
+      <span class="ticker-val">${s.val}</span>
+      <span class="ticker-chg ${s.pos?'pos':'neg'}">${s.chg} (${s.pct})</span>
+    </div>`;
+  const html2 = stocks.map(mkItem).join('') + stocks.map(mkItem).join('');
+  track.innerHTML = html2;
+
+  // ─── LEDGER TABLE ──────────────────────────────────────────
+  const trades = [
+    { date:'24 Mar 26', sym:'LUCK', sector:'Cement', type:'BUY',  qty:200,  rate:912.00, value:182400, charges:1640, pl:null },
+    { date:'21 Mar 26', sym:'SYS',  sector:'Tech',   type:'SELL', qty:100,  rate:578.40, value:57840,  charges:521,  pl:5240 },
+    { date:'19 Mar 26', sym:'OGDC', sector:'E&P',    type:'BUY',  qty:500,  rate:183.20, value:91600,  charges:824,  pl:null },
+    { date:'17 Mar 26', sym:'HBL',  sector:'Banking',type:'SELL', qty:150,  rate:228.50, value:34275,  charges:308,  pl:-1820 },
+    { date:'14 Mar 26', sym:'ENGRO',sector:'Fert.',  type:'BUY',  qty:75,   rate:320.10, value:24008,  charges:216,  pl:null },
+    { date:'12 Mar 26', sym:'PSO',  sector:'OMC',    type:'SELL', qty:200,  rate:308.40, value:61680,  charges:555,  pl:7200 },
+    { date:'10 Mar 26', sym:'MCB',  sector:'Banking',type:'BUY',  qty:300,  rate:341.80, value:102540, charges:923,  pl:null },
+    { date:'07 Mar 26', sym:'MARI', sector:'E&P',    type:'SELL', qty:10,   rate:2310.00,value:23100,  charges:208,  pl:3400 },
+    { date:'05 Mar 26', sym:'HUBC', sector:'Power',  type:'BUY',  qty:500,  rate:116.50, value:58250,  charges:524,  pl:null },
+    { date:'03 Mar 26', sym:'FCCL', sector:'Cement', type:'SELL', qty:800,  rate:39.10,  value:31280,  charges:281,  pl:-1120 },
+    { date:'28 Feb 26', sym:'UBL',  sector:'Banking',type:'BUY',  qty:200,  rate:272.30, value:54460,  charges:490,  pl:null },
+    { date:'25 Feb 26', sym:'SYS',  sector:'Tech',   type:'BUY',  qty:100,  rate:526.40, value:52640,  charges:474,  pl:null },
+    { date:'22 Feb 26', sym:'PPL',  sector:'E&P',    type:'SELL', qty:400,  rate:148.20, value:59280,  charges:534,  pl:4860 },
+    { date:'20 Feb 26', sym:'EFERT',sector:'Fert.',  type:'BUY',  qty:300,  rate:124.80, value:37440,  charges:337,  pl:null },
+    { date:'17 Feb 26', sym:'BAHL', sector:'Banking',type:'SELL', qty:250,  rate:101.20, value:25300,  charges:228,  pl:1750 },
+  ];
+
+  const tbody = document.getElementById('ledgerBody');
+  trades.forEach(t => {
+    const isBuy = t.type === 'BUY';
+    const plCell = t.pl === null
+      ? '<td class="—">—</td>'
+      : `<td class="${t.pl>=0?'pos':'neg'}">${t.pl>=0?'+':''}₨${Math.abs(t.pl).toLocaleString()}</td>`;
+    tbody.innerHTML += `
+      <tr>
+        <td style="color:var(--text3);font-size:11px">${t.date}</td>
+        <td class="sym">${t.sym}</td>
+        <td style="color:var(--text3);font-size:11px">${t.sector}</td>
+        <td style="color:${isBuy?'var(--green)':'var(--red)'};font-weight:500;font-size:11px">${t.type}</td>
+        <td>${t.qty.toLocaleString()}</td>
+        <td>₨${t.rate.toFixed(2)}</td>
+        <td>₨${t.value.toLocaleString()}</td>
+        <td style="color:var(--text3)">₨${t.charges.toLocaleString()}</td>
+        ${plCell}
+      </tr>`;
+  });
+
+  // ─── BAR CHART ─────────────────────────────────────────────
+  const months = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+  const vals   = [8.2, -2.1, 14.3, 6.7, 11.2, -4.8, 9.1, 7.4, 21.3, 5.9, -1.2, 13.6];
+  const maxVal = Math.max(...vals.map(Math.abs));
+  const barChart = document.getElementById('barChart');
+  months.forEach((m, i) => {
+    const pct = (Math.abs(vals[i]) / maxVal) * 100;
+    const isPos = vals[i] >= 0;
+    barChart.innerHTML += `
+      <div class="bar-col">
+        <div class="bar ${isPos?'':'loss'}" style="height:${pct}%;--w:${pct}%;transition-delay:${i*0.05}s"></div>
+        <span class="bar-label">${m}</span>
+      </div>`;
+  });
+
+  // ─── SCROLL REVEAL ─────────────────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, idx) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ─── FAQ ACCORDION ─────────────────────────────────────────
+  document.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!open) item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>
