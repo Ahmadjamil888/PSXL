@@ -55,9 +55,12 @@ const App = () => (
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
               <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+              <Route path="/" element={<Landing />} />
+              <Route path="/auth" element={<AuthRoute />} />
+              <Route path="/auth/callback" element={<AuthPage />} />
               <Route path="/companies" element={<ProtectedRoute><Companies /></ProtectedRoute>} />
+              <Route path="/~oauth/*" element={<AuthPage />} />
               <Route path="*" element={<NotFound />} />
-              <Route path="/~oauth/initiate" element={<AuthPage />} />
             </Routes>
           </AuthProvider>
         </BrowserRouter>
