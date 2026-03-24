@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useTheme } from "@/components/theme-provider";
 import Logo from "@/components/Logo";
-import "../pages/Landing.css";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
