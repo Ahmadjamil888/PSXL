@@ -34,6 +34,7 @@ export function ThemeProvider({
     const root = window.document.documentElement;
 
     root.removeAttribute("data-theme");
+    root.classList.remove("light", "dark");
 
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
@@ -42,10 +43,12 @@ export function ThemeProvider({
         : "light";
 
       root.setAttribute("data-theme", systemTheme);
+      root.classList.add(systemTheme);
       return;
     }
 
     root.setAttribute("data-theme", theme);
+    root.classList.add(theme);
   }, [theme]);
 
   const value = {
