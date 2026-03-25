@@ -126,8 +126,7 @@ const FAQS: FaqItem[] = [
   {q:"What happens if I cancel my plan?",a:"You retain access until the end of your billing period. After that, your account moves to Starter limits. Your data is never deleted — you can export everything before or after downgrading."},
 ];
 
-// ─── SCOPED CSS — uses .psxl-root as the root, touches NOTHING outside ───────
-// The only global additions are the @keyframes (harmless) and the Google Font import.
+// ─── SCOPED CSS ───────────────────────────────────────────────────────────────
 const SCOPED_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@100;300;400;500;700;900&display=swap');
 
@@ -143,7 +142,6 @@ const SCOPED_CSS = `
     to   { transform:translateX(-50%); }
   }
 
-  /* ── wrapper ── */
   .psxl-root {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     overflow-x: hidden;
@@ -157,7 +155,6 @@ const SCOPED_CSS = `
     padding: 0;
   }
 
-  /* ── dark token set ── */
   .psxl-root[data-theme="dark"] {
     --lbg:  #181818; --lbg2: #1a1a1a; --lbg3: #242424;
     --lsrf: #242424; --lbdr: rgba(255,255,255,0.06); --lbdr2:rgba(255,255,255,0.12);
@@ -166,7 +163,6 @@ const SCOPED_CSS = `
     color-scheme: dark;
   }
 
-  /* ── light token set ── */
   .psxl-root[data-theme="light"] {
     --lbg:  #f8f9fa; --lbg2: #f1f3f4; --lbg3: #e8eaed;
     --lsrf: #ffffff; --lbdr: rgba(0,0,0,0.08); --lbdr2:rgba(0,0,0,0.16);
@@ -175,12 +171,10 @@ const SCOPED_CSS = `
     color-scheme: light;
   }
 
-  /* ── scrollbar (scoped via ::-webkit, only fires inside the root in Chrome) ── */
   .psxl-root ::-webkit-scrollbar       { width: 2px; }
   .psxl-root ::-webkit-scrollbar-track { background: var(--lbg); }
   .psxl-root ::-webkit-scrollbar-thumb { background: var(--lgrn); }
 
-  /* ── nav hero animations ── */
   .psxl-nav          { animation: psxl-fadeIn 0.6s ease both; }
   .psxl-hero-eyebrow { animation: psxl-fadeUp 0.6s 0.2s ease both; }
   .psxl-hero-h1      { animation: psxl-fadeUp 0.6s 0.3s ease both; }
@@ -188,10 +182,8 @@ const SCOPED_CSS = `
   .psxl-hero-actions { animation: psxl-fadeUp 0.6s 0.5s ease both; }
   .psxl-hero-right   { animation: psxl-fadeIn 0.8s 0.4s ease both; }
 
-  /* ── ticker ── */
   .psxl-ticker-track { animation: psxl-ticker 60s linear infinite; }
 
-  /* ── reveal ── */
   .psxl-reveal         { opacity:0; transform:translateY(24px); transition: opacity .7s ease, transform .7s ease; }
   .psxl-reveal.visible { opacity:1; transform:translateY(0); }
 `;
@@ -275,18 +267,11 @@ function Nav({theme,onToggle}: {theme:Theme;onToggle:()=>void}) {
         PSX<LogoMark size={28}/>
       </a>
       <ul style={{display:"flex",alignItems:"center",gap:32,listStyle:"none"}}>
-        {["/about","About"], ["/contact","Contact"], ["#psxl-features","Features"], ["#psxl-faq","FAQ"]].map(([href,label])=>{
-          const isExternal = href.startsWith('/');
-          return (
-            <li key={href}>
-              {isExternal ? (
-                <a href={href} style={{fontSize:12,fontWeight:400,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--ltx2)",textDecoration:"none"}}>{label}</a>
-              ) : (
-                <a href={href} style={{fontSize:12,fontWeight:400,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--ltx2)",textDecoration:"none"}}>{label}</a>
-              )}
-            </li>
-          );
-        })}
+        {[["/about","About"],["/contact","Contact"],["#psxl-features","Features"],["#psxl-faq","FAQ"]].map(([href,label])=>(
+          <li key={href}>
+            <a href={href} style={{fontSize:12,fontWeight:400,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--ltx2)",textDecoration:"none"}}>{label}</a>
+          </li>
+        ))}
       </ul>
       <div style={{display:"flex",alignItems:"center",gap:20}}>
         <div onClick={onToggle} title="Toggle theme"
@@ -515,6 +500,7 @@ function HowItWorks() {
     </section>
   );
 }
+
 // ─── TESTIMONIALS ─────────────────────────────────────────────────────────────
 function TestiCard({t}: {t:Testimonial}) {
   const [hov,setHov]=useState(false);
@@ -641,6 +627,7 @@ function CTA() {
       </Reveal>
     </section>
   );
+}
 
 // ─── FOOTER ──────────────────────────────────────────────────────────────────
 function Footer() {
@@ -675,7 +662,7 @@ function Footer() {
         </div>
       </div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <p style={{fontSize:11,fontWeight:300,color:"var(--ltx3)"}}> 2026 PSXL. All rights reserved. Not affiliated with the Pakistan Stock Exchange.</p>
+        <p style={{fontSize:11,fontWeight:300,color:"var(--ltx3)"}}>&copy; 2026 PSXL. All rights reserved. Not affiliated with the Pakistan Stock Exchange.</p>
         <div style={{display:"flex",gap:24}}>
           {["Privacy","Terms","Disclaimer"].map(l=>(
             <a key={l} href="#" style={{fontSize:11,fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>{l}</a>
@@ -688,12 +675,10 @@ function Footer() {
 
 // ─── ROOT EXPORT ─────────────────────────────────────────────────────────────
 export default function Landing() {
-  // Own local theme state — never touches document.documentElement
   const [theme,setTheme]=useState<Theme>("dark");
   const toggle=useCallback(()=>setTheme(t=>t==="dark"?"light":"dark"),[]);
 
   return (
-    // All CSS is scoped under .psxl-root — zero bleed into the rest of the app
     <div className="psxl-root" data-theme={theme} style={{fontFamily:ff,overflowX:"hidden"}}>
       <style>{SCOPED_CSS}</style>
       <Nav theme={theme} onToggle={toggle}/>
