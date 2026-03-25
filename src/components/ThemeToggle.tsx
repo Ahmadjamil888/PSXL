@@ -1,42 +1,46 @@
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 
 const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
 
+  const isDark = theme === "dark" || 
+    (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(isDark ? "light" : "dark");
   };
 
   return (
-    <div 
-      className="toggle" 
+    <button
       onClick={toggleTheme}
-      title="Toggle theme"
+      className="relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none"
       style={{
-        width: '40px',
-        height: '22px',
-        background: 'var(--border2)',
-        borderRadius: '11px',
-        position: 'relative',
-        cursor: 'pointer',
-        border: '1px solid var(--border)',
-        transition: 'background 0.3s'
+        background: "var(--bg-input)",
+        border: "1px solid var(--border-subtle)",
       }}
+      aria-label="Toggle theme"
     >
-      <div
+      <span
+        className="absolute left-2 flex h-4 w-4 items-center justify-center transition-opacity"
+        style={{ opacity: isDark ? 0.3 : 1 }}
+      >
+        <Sun className="h-3.5 w-3.5" style={{ color: "var(--text-muted)" }} />
+      </span>
+      <span
+        className="absolute right-2 flex h-4 w-4 items-center justify-center transition-opacity"
+        style={{ opacity: isDark ? 1 : 0.3 }}
+      >
+        <Moon className="h-3.5 w-3.5" style={{ color: "var(--text-muted)" }} />
+      </span>
+      <span
+        className="inline-block h-6 w-6 transform rounded-full transition-transform"
         style={{
-          content: '',
-          position: 'absolute',
-          top: '2px',
-          left: theme === 'light' ? '2px' : '20px',
-          width: '16px',
-          height: '16px',
-          borderRadius: '50%',
-          background: 'var(--green)',
-          transition: 'transform 0.3s'
+          background: "var(--accent)",
+          transform: isDark ? "translateX(30px)" : "translateX(2px)",
         }}
       />
-    </div>
+    </button>
   );
 };
 

@@ -26,7 +26,7 @@ const IconInfoSec  = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18
 
 const LogoMark = ({ size = 28 }: { size?: number }) => (
   <svg viewBox="0 0 14 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:size*0.5,height:size}}>
-    <path d="M10 2 C10 2, 8 8, 7 14 C6 20, 7.5 24, 11 26" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+    <path d="M10 2 C10 2, 8 8, 7 14 C6 20, 7.5 24, 11 26" stroke="#a3c45a" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
   </svg>
 );
 
@@ -159,19 +159,19 @@ const SCOPED_CSS = `
 
   /* ── dark token set ── */
   .psxl-root[data-theme="dark"] {
-    --lbg:  #000000; --lbg2: #0a0a0a; --lbg3: #111111;
-    --lsrf: #161616; --lbdr: #222222; --lbdr2:#2a2a2a;
-    --ltx:  #ffffff; --ltx2: #999999; --ltx3: #555555;
-    --lgrn: #22c55e; --lgrnD:#16a34a; --lred: #ef4444;
+    --lbg:  #181818; --lbg2: #1a1a1a; --lbg3: #242424;
+    --lsrf: #242424; --lbdr: rgba(255,255,255,0.06); --lbdr2:rgba(255,255,255,0.12);
+    --ltx:  #ffffff; --ltx2: #888888; --ltx3: #555555;
+    --lgrn: #a3c45a; --lgrnD:#8db84a; --lred: #ef4444;
     color-scheme: dark;
   }
 
   /* ── light token set ── */
   .psxl-root[data-theme="light"] {
-    --lbg:  #ffffff; --lbg2: #f7f7f7; --lbg3: #f0f0f0;
-    --lsrf: #ebebeb; --lbdr: #e0e0e0; --lbdr2:#d0d0d0;
-    --ltx:  #000000; --ltx2: #555555; --ltx3: #999999;
-    --lgrn: #22c55e; --lgrnD:#16a34a; --lred: #ef4444;
+    --lbg:  #f8f9fa; --lbg2: #f1f3f4; --lbg3: #e8eaed;
+    --lsrf: #ffffff; --lbdr: rgba(0,0,0,0.08); --lbdr2:rgba(0,0,0,0.16);
+    --ltx:  #1a1a1a; --ltx2: #666666; --ltx3: #999999;
+    --lgrn: #a3c45a; --lgrnD:#8db84a; --lred: #dc2626;
     color-scheme: light;
   }
 

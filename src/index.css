@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Helvetica+World:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,21 +6,32 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    /* Light theme colors */
+    --bg-base: #f8f9fa;
+    --bg-card: #ffffff;
+    --bg-input: #f1f3f4;
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.16);
+    --text-primary: #1a1a1a;
+    --text-muted: #666666;
+    --text-dim: #999999;
+    --accent: #a3c45a;
+    --accent-hover: #8db84a;
     
-    /* Custom auth/landing page variables */
-    --bg: #ffffff;
-    --bg2: #f7f7f7;
-    --bg3: #f0f0f0;
-    --surface: #ebebeb;
-    --border: #e0e0e0;
-    --border2: #d0d0d0;
-    --text: #000000;
-    --text2: #555555;
+    /* Legacy compatibility - light */
+    --background: 0 0% 97%;
+    --foreground: 0 0% 10%;
+    --bg: #f8f9fa;
+    --bg2: #f1f3f4;
+    --bg3: #e8eaed;
+    --surface: #ffffff;
+    --border: rgba(0, 0, 0, 0.08);
+    --border2: rgba(0, 0, 0, 0.16);
+    --text: #1a1a1a;
+    --text2: #666666;
     --text3: #999999;
-    --green: #22c55e;
-    --red: #ef4444;
+    --green: #a3c45a;
+    --red: #dc2626;
 
     --card: 0 0% 98%;
     --card-foreground: 0 0% 0%;
@@ -74,20 +85,31 @@
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    /* Dark minimal aesthetic - Same as root for consistency */
+    --bg-base: #181818;
+    --bg-card: #242424;
+    --bg-input: #1a1a1a;
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-strong: rgba(255, 255, 255, 0.12);
+    --text-primary: #ffffff;
+    --text-muted: #888888;
+    --text-dim: #555555;
+    --accent: #a3c45a;
+    --accent-hover: #b8d470;
     
-    /* Custom auth/landing page variables */
-    --bg: #000000;
-    --bg2: #0a0a0a;
-    --bg3: #111111;
-    --surface: #161616;
-    --border: #222222;
-    --border2: #2a2a2a;
+    /* Legacy compatibility */
+    --background: 0 0% 9%;
+    --foreground: 0 0% 100%;
+    --bg: #181818;
+    --bg2: #1a1a1a;
+    --bg3: #242424;
+    --surface: #242424;
+    --border: rgba(255, 255, 255, 0.06);
+    --border2: rgba(255, 255, 255, 0.12);
     --text: #ffffff;
-    --text2: #999999;
+    --text2: #888888;
     --text3: #555555;
-    --green: #22c55e;
+    --green: #a3c45a;
     --red: #ef4444;
 
     --card: 0 0% 5%;
@@ -148,7 +170,7 @@
   body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Helvetica World', 'Helvetica', 'Arial', system-ui, sans-serif;
+    font-family: 'DM Sans', 'Helvetica Neue', system-ui, sans-serif;
     margin: 0;
     padding: 0;
   }

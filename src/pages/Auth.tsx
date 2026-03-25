@@ -118,7 +118,7 @@ export default function AuthPage() {
           <p style={{ 
             fontSize: '13px',
             fontWeight: '300',
-            color: 'var(--text2)',
+            color: 'var(--text-muted)',
             lineHeight: '1.6'
           }}>
             Your premium Pakistan Stock Exchange trading ledger
@@ -126,13 +126,18 @@ export default function AuthPage() {
         </div>
 
         {/* Card */}
-        <div className="table-container" style={{ padding: '40px' }}>
+        <div style={{ 
+          padding: '40px',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-card)'
+        }}>
           <div className="text-center" style={{ marginBottom: '32px' }}>
             <h2 style={{
               fontSize: '22px',
               fontWeight: '600',
               letterSpacing: '-0.5px',
-              color: 'var(--text)',
+              color: 'var(--text-primary)',
               marginBottom: '8px'
             }}>
               {isLogin ? "Welcome back" : "Create account"}
@@ -140,7 +145,7 @@ export default function AuthPage() {
             <p style={{
               fontSize: '13px',
               fontWeight: '300',
-              color: 'var(--text2)',
+              color: 'var(--text-muted)',
               lineHeight: '1.6'
             }}>
               {isLogin ? "Sign in to your trading ledger" : "Start tracking your PSX trades"}
@@ -313,7 +318,7 @@ export default function AuthPage() {
               style={{
                 background: 'none',
                 border: 'none',
-                color: 'var(--green)',
+                color: 'var(--accent)',
                 fontWeight: '500',
                 cursor: 'pointer',
                 textDecoration: 'underline'

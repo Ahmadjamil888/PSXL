@@ -17,7 +17,7 @@ const navItems = [
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { signOut, user } = useAuth();
+  const { signOut, user, profilePicture } = useAuth();
   const location = useLocation();
   const { theme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -132,26 +132,35 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="p-4" style={{ borderTop: "1px solid var(--border)" }}>
               <div
                 className="px-4 py-3 mb-3 flex items-center gap-3"
-                style={{ background: "var(--bg2)", border: "1px solid var(--border)" }}
+                style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)" }}
               >
-                <div
-                  className="w-8 h-8 flex items-center justify-center text-sm font-medium"
-                  style={{
-                    background: "var(--green)",
-                    color: "#000",
-                    borderRadius: "50%",
-                  }}
-                >
-                  {user?.email?.charAt(0).toUpperCase() || "U"}
-                </div>
+                {profilePicture ? (
+                  <img
+                    src={profilePicture}
+                    alt="Profile"
+                    className="w-10 h-10 object-cover"
+                    style={{ borderRadius: "50%", border: "2px solid var(--accent)" }}
+                  />
+                ) : (
+                  <div
+                    className="w-10 h-10 flex items-center justify-center text-sm font-medium"
+                    style={{
+                      background: "var(--accent)",
+                      color: "#000",
+                      borderRadius: "50%",
+                    }}
+                  >
+                    {user?.email?.charAt(0).toUpperCase() || "U"}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <p
                     className="truncate text-sm font-medium"
-                    style={{ color: "var(--text)" }}
+                    style={{ color: "var(--text-primary)", fontFamily: "var(--font-main)" }}
                   >
                     {user?.email?.split("@")[0] || "User"}
                   </p>
-                  <p className="truncate text-xs" style={{ color: "var(--text3)" }}>
+                  <p className="truncate text-xs" style={{ color: "var(--text-muted)" }}>
                     {user?.email || ""}
                   </p>
                 </div>
@@ -160,10 +169,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 onClick={signOut}
                 className="flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all w-full"
                 style={{
-                  color: "var(--text2)",
+                  color: "var(--text-muted)",
                   background: "transparent",
-                  border: "1px solid var(--border)",
+                  border: "1px solid var(--border-subtle)",
+                  borderRadius: "var(--radius-sm)",
                   cursor: "pointer",
+                  fontFamily: "var(--font-main)",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = "var(--red)";
@@ -171,9 +182,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   e.currentTarget.style.borderColor = "var(--red)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "var(--text2)";
+                  e.currentTarget.style.color = "var(--text-muted)";
                   e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.borderColor = "var(--border)";
+                  e.currentTarget.style.borderColor = "var(--border-subtle)";
                 }}
               >
                 <LogOut className="w-4 h-4" />
