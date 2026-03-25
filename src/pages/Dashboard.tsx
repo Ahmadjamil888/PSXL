@@ -2,16 +2,59 @@ import { useTrades, getTradeStats, calcPnL } from "@/hooks/useTrades";
 import { formatCurrency, formatPercent } from "@/lib/psx";
 import StatCard from "@/components/StatCard";
 import TradeForm from "@/components/TradeForm";
-import { TrendingUp, TrendingDown, Target, BarChart3, DollarSign, Activity } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, BarChart3, DollarSign, Activity, HelpCircle, Filter, X } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell,
+  BarChart, Bar, Cell, CartesianGrid,
 } from "recharts";
+import { useState, useMemo } from "react";
 
 export default function Dashboard() {
   const { data: trades = [], isLoading } = useTrades();
   const stats = getTradeStats(trades);
+  
+  // Filter states
+  const [symbolFilter, setSymbolFilter] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [pnlMin, setPnlMin] = useState("");
+  const [pnlMax, setPnlMax] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // Filtered trades
+  const filteredTrades = useMemo(() => {
+    return trades.filter((trade) => {
+      const pnl = calcPnL(trade);
+      
+      // Symbol filter
+      if (symbolFilter && !trade.symbol.toLowerCase().includes(symbolFilter.toLowerCase())) {
+        return false;
+      }
+      
+      // Date range filter
+      if (dateFrom && trade.date < dateFrom) return false;
+      if (dateTo && trade.date > dateTo) return false;
+      
+      // P&L range filter (only for closed trades)
+      if (pnl !== null) {
+        if (pnlMin && pnl < parseFloat(pnlMin)) return false;
+        if (pnlMax && pnl > parseFloat(pnlMax)) return false;
+      }
+      
+      return true;
+    });
+  }, [trades, symbolFilter, dateFrom, dateTo, pnlMin, pnlMax]);
+  
+  const displayedTrades = filteredTrades.slice(0, 10);
+  
+  // Win rate tooltip content
+  const getWinRateTip = (winRate: number) => {
+    if (winRate >= 60) return "Excellent! You're consistently profitable.";
+    if (winRate >= 50) return "Good progress. Focus on cutting losses quickly.";
+    if (winRate >= 40) return "Work on your entry timing and risk management.";
+    return "Review your strategy. Consider paper trading to refine entries.";
+  };
 
   if (isLoading) {
     return (
@@ -23,33 +66,35 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6" style={{ color: 'var(--text)' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header - Mobile responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 style={{ 
-            fontSize: 'clamp(36px, 4vw, 60px)',
+            fontSize: 'clamp(28px, 5vw, 48px)',
             fontWeight: '700',
-            letterSpacing: '-2px',
-            lineHeight: '1.0',
+            letterSpacing: '-1px',
+            lineHeight: '1.1',
             color: 'var(--text)',
             marginBottom: '8px'
           }}>
             Dashboard
           </h1>
           <p style={{ 
-            fontSize: '15px',
+            fontSize: '14px',
             fontWeight: '300',
-            lineHeight: '1.7',
+            lineHeight: '1.6',
             color: 'var(--text2)'
           }}>
             Your PSX trading overview
           </p>
         </div>
-        <TradeForm />
+        <div className="w-full sm:w-auto">
+          <TradeForm />
+        </div>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-1" style={{ background: 'var(--border)' }}>
+      {/* Stat Cards - Responsive grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px" style={{ background: 'var(--border)' }}>
         <div className="stat-card">
           <span className="stat-label">Total P&L</span>
           <span className={`stat-val ${stats.totalPnL >= 0 ? 'pos' : 'neg'}`}>
@@ -64,12 +109,34 @@ export default function Dashboard() {
           </span>
           <span className="stat-sub">Real-time tracking</span>
         </div>
-        <div className="stat-card">
-          <span className="stat-label">Win Rate</span>
-          <span className={`stat-val ${stats.winRate >= 50 ? 'pos' : ''}`}>
+        {/* Win Rate Stat Card with Tooltip */}
+        <div className="stat-card" style={{ position: 'relative' }}>
+          <span className="stat-label">
+            Win Rate
+            <HelpCircle 
+              className="w-3 h-3 ml-1 inline-block" 
+              style={{ color: 'var(--text3)', cursor: 'help' }}
+              title={getWinRateTip(stats.winRate)}
+            />
+          </span>
+          <span className={`stat-val ${stats.winRate >= 50 ? 'pos' : 'neg'}`}>
             {stats.winRate.toFixed(1)}%
           </span>
           <span className="stat-sub">{stats.wins}W / {stats.losses}L</span>
+          <div 
+            className="win-rate-tip" 
+            style={{
+              fontSize: '10px',
+              color: 'var(--text2)',
+              marginTop: '4px',
+              padding: '4px 8px',
+              background: 'var(--bg2)',
+              borderRadius: '4px',
+              border: '1px solid var(--border)'
+            }}
+          >
+            {getWinRateTip(stats.winRate)}
+          </div>
         </div>
         <div className="stat-card">
           <span className="stat-label">Total Trades</span>
@@ -78,8 +145,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Charts Row - Compact sizing */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Equity Curve */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -91,39 +158,60 @@ export default function Dashboard() {
             <span className="table-header-title">Equity Curve</span>
             <span className="table-badge">Live</span>
           </div>
-          <div style={{ padding: '32px' }}>
+          <div style={{ padding: '16px' }}>
             {stats.equityCurve.length > 0 ? (
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={180}>
                 <AreaChart data={stats.equityCurve}>
                   <defs>
                     <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#22c55e" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="0%" stopColor="var(--green)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--green)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={(v) => `₨${(v/1000).toFixed(0)}k`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                    tickLine={false} 
+                    axisLine={{ stroke: 'var(--border)' }}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis 
+                    tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                    tickLine={false} 
+                    axisLine={{ stroke: 'var(--border)' }}
+                    tickFormatter={(v) => `₨${(v/1000).toFixed(0)}k`}
+                    domain={['auto', 'auto']}
+                    tickCount={6}
+                  />
                   <Tooltip
                     contentStyle={{ 
                       backgroundColor: 'var(--surface)', 
                       border: '1px solid var(--border)', 
-                      borderRadius: '0px', 
-                      color: 'var(--text)' 
+                      borderRadius: '6px', 
+                      color: 'var(--text)',
+                      fontSize: '12px'
                     }}
                     formatter={(value: number) => [formatCurrency(value), "Equity"]}
                   />
-                  <Area type="monotone" dataKey="equity" stroke="#22c55e" fill="url(#equityGrad)" strokeWidth={2} />
+                  <Area 
+                    type="monotone" 
+                    dataKey="equity" 
+                    stroke="var(--green)" 
+                    fill="url(#equityGrad)" 
+                    strokeWidth={2} 
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[220px] flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '14px' }}>
+              <div className="h-[180px] flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
                 Log trades to see your equity curve
               </div>
             )}
           </div>
         </motion.div>
 
-        {/* Daily PnL */}
+        {/* Daily PnL - Compact */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -134,30 +222,46 @@ export default function Dashboard() {
             <span className="table-header-title">Daily P&L</span>
             <span className="table-badge">Live</span>
           </div>
-          <div style={{ padding: '32px' }}>
+          <div style={{ padding: '16px' }}>
             {stats.dailyPnL.length > 0 ? (
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={stats.dailyPnL}>
-                  <XAxis dataKey="date" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={(v) => `₨${(v/1000).toFixed(0)}k`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                    tickLine={false} 
+                    axisLine={{ stroke: 'var(--border)' }}
+                  />
+                  <YAxis 
+                    tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                    tickLine={false} 
+                    axisLine={{ stroke: 'var(--border)' }}
+                    tickFormatter={(v) => `₨${(v/1000).toFixed(0)}k`}
+                    tickCount={6}
+                  />
                   <Tooltip
                     contentStyle={{ 
                       backgroundColor: 'var(--surface)', 
                       border: '1px solid var(--border)', 
-                      borderRadius: '0px', 
-                      color: 'var(--text)' 
+                      borderRadius: '6px', 
+                      color: 'var(--text)',
+                      fontSize: '12px'
                     }}
                     formatter={(value: number) => [formatCurrency(value), "P&L"]}
                   />
-                  <Bar dataKey="pnl" radius={[0, 0, 0, 0]}>
+                  <Bar dataKey="pnl" radius={[2, 2, 0, 0]}>
                     {stats.dailyPnL.map((entry, index) => (
-                      <Cell key={index} fill={entry.pnl >= 0 ? "#22c55e" : "#ef4444"} />
+                      <Cell 
+                        key={index} 
+                        fill={entry.pnl >= 0 ? "var(--green)" : "var(--red)"} 
+                      />
                     ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[220px] flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '14px' }}>
+              <div className="h-[180px] flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
                 Log trades to see daily P&L
               </div>
             )}
@@ -165,52 +269,209 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      {/* Recent Trades */}
+      {/* Recent Trades - Compact with Filters */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
         className="table-container reveal"
       >
-        <div className="table-header">
-          <span className="table-header-title">Recent Trades</span>
-          <span className="table-badge">Latest</span>
+        <div className="table-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="table-header-title">Recent Trades</span>
+            <span className="table-badge">Latest</span>
+            {filteredTrades.length !== trades.length && (
+              <span style={{ fontSize: '11px', color: 'var(--text2)' }}>
+                ({filteredTrades.length} of {trades.length})
+              </span>
+            )}
+          </div>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '4px 8px',
+              fontSize: '11px',
+              background: showFilters ? 'var(--surface)' : 'transparent',
+              border: '1px solid var(--border)',
+              color: 'var(--text2)',
+              cursor: 'pointer',
+              borderRadius: '4px'
+            }}
+          >
+            <Filter className="w-3 h-3" />
+            Filters
+          </button>
         </div>
-        {trades.length > 0 ? (
-          <div className="table-scroll">
-            <table>
+        
+        {/* Filter Panel */}
+        {showFilters && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            style={{
+              padding: '12px 16px',
+              borderBottom: '1px solid var(--border)',
+              background: 'var(--bg2)'
+            }}
+          >
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
+              <input
+                type="text"
+                placeholder="Symbol..."
+                value={symbolFilter}
+                onChange={(e) => setSymbolFilter(e.target.value)}
+                style={{
+                  padding: '6px 10px',
+                  fontSize: '12px',
+                  background: 'var(--bg)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text)',
+                  borderRadius: '4px'
+                }}
+              />
+              <input
+                type="date"
+                placeholder="From"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                style={{
+                  padding: '6px 10px',
+                  fontSize: '12px',
+                  background: 'var(--bg)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text)',
+                  borderRadius: '4px'
+                }}
+              />
+              <input
+                type="date"
+                placeholder="To"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                style={{
+                  padding: '6px 10px',
+                  fontSize: '12px',
+                  background: 'var(--bg)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text)',
+                  borderRadius: '4px'
+                }}
+              />
+              <input
+                type="number"
+                placeholder="Min P&L"
+                value={pnlMin}
+                onChange={(e) => setPnlMin(e.target.value)}
+                style={{
+                  padding: '6px 10px',
+                  fontSize: '12px',
+                  background: 'var(--bg)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text)',
+                  borderRadius: '4px'
+                }}
+              />
+              <input
+                type="number"
+                placeholder="Max P&L"
+                value={pnlMax}
+                onChange={(e) => setPnlMax(e.target.value)}
+                style={{
+                  padding: '6px 10px',
+                  fontSize: '12px',
+                  background: 'var(--bg)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text)',
+                  borderRadius: '4px'
+                }}
+              />
+              <button
+                onClick={() => {
+                  setSymbolFilter("");
+                  setDateFrom("");
+                  setDateTo("");
+                  setPnlMin("");
+                  setPnlMax("");
+                }}
+                style={{
+                  padding: '6px 10px',
+                  fontSize: '12px',
+                  background: 'var(--bg)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text2)',
+                  cursor: 'pointer',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px'
+                }}
+              >
+                <X className="w-3 h-3" />
+                Clear
+              </button>
+            </div>
+          </motion.div>
+        )}
+        
+        {displayedTrades.length > 0 ? (
+          <div className="table-scroll" style={{ maxHeight: '320px', overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ fontSize: '12px', minWidth: '600px' }}>
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Symbol</th>
-                  <th>Side</th>
-                  <th>Qty</th>
-                  <th>Entry</th>
-                  <th>Exit</th>
-                  <th>P&L</th>
+                  <th style={{ padding: '10px 8px' }}>Date</th>
+                  <th style={{ padding: '10px 8px' }}>Symbol</th>
+                  <th style={{ padding: '10px 8px' }}>Side</th>
+                  <th style={{ padding: '10px 8px' }}>Qty</th>
+                  <th style={{ padding: '10px 8px' }}>Entry</th>
+                  <th style={{ padding: '10px 8px' }}>Exit</th>
+                  <th style={{ padding: '10px 8px', textAlign: 'right' }}>P&L</th>
                 </tr>
               </thead>
               <tbody>
-                {trades.slice(0, 10).map((trade) => {
+                {displayedTrades.map((trade) => {
                   const pnl = calcPnL(trade);
+                  const isPositive = pnl !== null && pnl > 0;
+                  const isNegative = pnl !== null && pnl < 0;
                   return (
-                    <tr key={trade.id}>
-                      <td style={{ color: 'var(--text3)', fontSize: '11px' }}>{trade.date}</td>
-                      <td className="sym">{trade.symbol}</td>
-                      <td>
+                    <tr key={trade.id} style={{ 
+                      background: isPositive ? 'rgba(163, 196, 90, 0.05)' : isNegative ? 'rgba(239, 68, 68, 0.05)' : undefined
+                    }}>
+                      <td style={{ color: 'var(--text3)', padding: '8px' }}>{trade.date}</td>
+                      <td className="sym" style={{ padding: '8px', fontWeight: 600 }}>{trade.symbol}</td>
+                      <td style={{ padding: '8px' }}>
                         <span style={{
-                          color: trade.side === "buy" ? 'var(--green)' : 'var(--red)',
-                          fontWeight: '500',
-                          fontSize: '11px'
+                          color: trade.side === "buy" ? '#22c55e' : '#ef4444',
+                          fontWeight: '600',
+                          fontSize: '10px',
+                          textTransform: 'uppercase',
+                          padding: '2px 6px',
+                          borderRadius: '3px',
+                          background: trade.side === "buy" ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)'
                         }}>
                           {trade.side.toUpperCase()}
                         </span>
                       </td>
-                      <td>{trade.quantity}</td>
-                      <td>₨{trade.entry_price}</td>
-                      <td>{trade.exit_price ? `₨${trade.exit_price}` : "—"}</td>
-                      <td className={pnl === null ? "" : pnl >= 0 ? "pos" : "neg"}>
-                        {pnl !== null ? formatCurrency(pnl) : "Open"}
+                      <td style={{ padding: '8px', fontFamily: 'monospace' }}>{trade.quantity}</td>
+                      <td style={{ padding: '8px', fontFamily: 'monospace' }}>₨{trade.entry_price}</td>
+                      <td style={{ padding: '8px', fontFamily: 'monospace' }}>{trade.exit_price ? `₨${trade.exit_price}` : "—"}</td>
+                      <td style={{ padding: '8px', textAlign: 'right' }}>
+                        {pnl !== null ? (
+                          <span style={{
+                            color: pnl >= 0 ? '#22c55e' : '#ef4444',
+                            fontWeight: '700',
+                            fontFamily: 'monospace',
+                            fontSize: '13px'
+                          }}>
+                            {pnl >= 0 ? '+' : ''}{formatCurrency(pnl)}
+                          </span>
+                        ) : (
+                          <span style={{ color: 'var(--text3)', fontSize: '11px' }}>Open</span>
+                        )}
                       </td>
                     </tr>
                   );
@@ -219,9 +480,9 @@ export default function Dashboard() {
             </table>
           </div>
         ) : (
-          <div className="text-center py-12" style={{ color: 'var(--text2)' }}>
-            <BarChart3 className="w-12 h-12 mx-auto mb-3" style={{ opacity: '0.3' }} />
-            <p>No trades yet. Start by logging your first trade!</p>
+          <div className="text-center py-8" style={{ color: 'var(--text2)' }}>
+            <BarChart3 className="w-10 h-10 mx-auto mb-2" style={{ opacity: '0.3' }} />
+            <p style={{ fontSize: '13px' }}>No trades match your filters</p>
           </div>
         )}
       </motion.div>

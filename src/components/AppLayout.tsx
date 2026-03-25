@@ -39,7 +39,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex" style={{ background: "var(--bg)", color: "var(--text)" }}>
-      {/* Animated Sidebar */}
+      {/* Animated Sidebar - Fixed Height */}
       <AnimatePresence initial={false}>
         {sidebarOpen && (
           <motion.aside
@@ -47,7 +47,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             animate={{ width: 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="flex flex-col shrink-0 overflow-hidden"
+            className="flex flex-col shrink-0 overflow-hidden sticky top-0 h-screen"
             style={{
               borderRight: "1px solid var(--border)",
               background: "var(--bg)",
@@ -244,38 +244,39 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* Mobile Nav */}
+      {/* Mobile Nav - Compact */}
       <div
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
         style={{
           borderTop: "1px solid var(--border)",
           background: "var(--bg)",
+          height: '64px',
         }}
       >
-        <nav className="flex items-center justify-around py-2">
+        <nav className="flex items-center justify-around h-full">
           {navItems.slice(0, 5).map((item) => {
             const isActive = location.pathname === item.to;
             return (
               <NavLink
                 key={item.to}
                 to={item.to}
-                className="flex flex-col items-center gap-1 px-3 py-2 text-xs"
+                className="flex flex-col items-center gap-0.5 px-2 py-1 text-[10px]"
                 style={{
                   color: isActive ? "var(--green)" : "var(--text2)",
                 }}
               >
-                <item.icon className="w-5 h-5" />
-                {item.label}
+                <item.icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{item.label}</span>
               </NavLink>
             );
           })}
           <button
             onClick={signOut}
-            className="flex flex-col items-center gap-1 px-3 py-2 text-xs"
+            className="flex flex-col items-center gap-0.5 px-2 py-1 text-[10px]"
             style={{ color: "var(--text2)" }}
           >
-            <LogOut className="w-5 h-5" />
-            Out
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">Out</span>
           </button>
         </nav>
       </div>

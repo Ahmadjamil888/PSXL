@@ -30,8 +30,8 @@
     --text: #1a1a1a;
     --text2: #666666;
     --text3: #999999;
-    --green: #a3c45a;
-    --red: #dc2626;
+    --green: #22c55e;
+    --red: #ef4444;
 
     --card: 0 0% 98%;
     --card-foreground: 0 0% 0%;
@@ -353,6 +353,53 @@
   select,
   textarea {
     font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  /* Dashboard specific - Mobile */
+  .stat-card {
+    padding: 12px !important;
+  }
+  
+  .stat-card .stat-label {
+    font-size: 10px !important;
+  }
+  
+  .stat-card .stat-val {
+    font-size: 18px !important;
+  }
+  
+  .stat-card .stat-sub {
+    font-size: 10px !important;
+  }
+  
+  /* Dashboard charts - Mobile */
+  .recharts-wrapper {
+    font-size: 10px !important;
+  }
+  
+  /* Filter panel on mobile */
+  .filter-panel input {
+    font-size: 14px !important;
+    padding: 6px 8px !important;
+  }
+  
+  /* Tables on mobile - better scrolling */
+  .table-scroll {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  
+  /* Modal/Sidebar overlay on mobile */
+  .modal-overlay,
+  .sidebar-overlay {
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Trade form modal on mobile */
+  [data-state="open"] > div[role="dialog"] {
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+    margin: 16px !important;
   }
 }
 

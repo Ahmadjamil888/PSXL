@@ -3,7 +3,7 @@ import { formatCurrency } from "@/lib/psx";
 import { motion } from "framer-motion";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell, PieChart, Pie,
+  BarChart, Bar, Cell, PieChart, Pie, CartesianGrid,
 } from "recharts";
 import { BarChart3 } from "lucide-react";
 
@@ -81,31 +81,46 @@ export default function Analytics() {
           <p className="text-sm mt-1">Log some closed trades to unlock analytics</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Equity Curve */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Equity Curve - Compact with gridlines */}
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="table-container reveal">
             <div className="table-header">
               <span className="table-header-title">Equity Curve</span>
               <span className="table-badge">Live</span>
             </div>
-            <div style={{ padding: '32px' }}>
-              <ResponsiveContainer width="100%" height={260}>
+            <div style={{ padding: '16px' }}>
+              <ResponsiveContainer width="100%" height={180}>
                 <AreaChart data={stats.equityCurve}>
                   <defs>
                     <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#22c55e" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="0%" stopColor="var(--green)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--green)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                    tickLine={false} 
+                    axisLine={{ stroke: 'var(--border)' }}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis 
+                    tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                    tickLine={false} 
+                    axisLine={{ stroke: 'var(--border)' }}
+                    tickFormatter={(v) => `₨${(v/1000).toFixed(0)}k`}
+                    domain={['auto', 'auto']}
+                    tickCount={6}
+                  />
                   <Tooltip contentStyle={{ 
                     backgroundColor: 'var(--surface)', 
                     border: '1px solid var(--border)', 
-                    borderRadius: '0px', 
-                    color: 'var(--text)' 
+                    borderRadius: '6px', 
+                    color: 'var(--text)',
+                    fontSize: '12px'
                   }} formatter={(v: number) => [formatCurrency(v), "Equity"]} />
-                  <Area type="monotone" dataKey="equity" stroke="#22c55e" fill="url(#eqGrad)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="equity" stroke="var(--green)" fill="url(#eqGrad)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -117,16 +132,16 @@ export default function Analytics() {
               <span className="table-header-title">Win vs Loss</span>
               <span className="table-badge">Stats</span>
             </div>
-            <div style={{ padding: '32px' }}>
+            <div style={{ padding: '20px' }}>
               <div className="flex items-center justify-center">
-                <ResponsiveContainer width="100%" height={260}>
+                <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie
                       data={winLossData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
+                      innerRadius={50}
+                      outerRadius={80}
                       paddingAngle={4}
                       dataKey="value"
                       stroke="none"
@@ -138,20 +153,21 @@ export default function Analytics() {
                     <Tooltip contentStyle={{ 
                       backgroundColor: 'var(--surface)', 
                       border: '1px solid var(--border)', 
-                      borderRadius: '0px', 
-                      color: 'var(--text)' 
+                      borderRadius: '6px', 
+                      color: 'var(--text)',
+                      fontSize: '12px'
                     }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex justify-center gap-6 mt-2">
+              <div className="flex justify-center gap-4 mt-2 flex-wrap">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ background: '#22c55e' }} />
-                  <span style={{ fontSize: '13px', color: 'var(--text2)' }}>Wins ({stats.wins})</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text2)' }}>Wins ({stats.wins})</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ background: '#ef4444' }} />
-                  <span style={{ fontSize: '13px', color: 'var(--text2)' }}>Losses ({stats.losses})</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text2)' }}>Losses ({stats.losses})</span>
                 </div>
               </div>
             </div>
@@ -163,18 +179,20 @@ export default function Analytics() {
               <span className="table-header-title">Monthly Performance</span>
               <span className="table-badge">P&L</span>
             </div>
-            <div style={{ padding: '32px' }}>
-              <ResponsiveContainer width="100%" height={260}>
+            <div style={{ padding: '16px' }}>
+              <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={monthlyData}>
-                  <XAxis dataKey="month" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
+                  <XAxis dataKey="month" tick={{ fill: 'var(--text3)', fontSize: 10 }} tickLine={false} axisLine={{ stroke: 'var(--border)' }} />
+                  <YAxis tick={{ fill: 'var(--text3)', fontSize: 10 }} tickLine={false} axisLine={{ stroke: 'var(--border)' }} />
                   <Tooltip contentStyle={{ 
                     backgroundColor: 'var(--surface)', 
                     border: '1px solid var(--border)', 
-                    borderRadius: '0px', 
-                    color: 'var(--text)' 
+                    borderRadius: '6px', 
+                    color: 'var(--text)',
+                    fontSize: '12px'
                   }} formatter={(v: number) => [formatCurrency(v), "P&L"]} />
-                  <Bar dataKey="pnl" radius={[0, 0, 0, 0]}>
+                  <Bar dataKey="pnl" radius={[2, 2, 0, 0]}>
                     {monthlyData.map((entry, index) => (
                       <Cell key={index} fill={entry.pnl >= 0 ? "#22c55e" : "#ef4444"} />
                     ))}
@@ -190,26 +208,26 @@ export default function Analytics() {
               <span className="table-header-title">Top Symbols</span>
               <span className="table-badge">Performance</span>
             </div>
-            <div style={{ padding: '32px' }}>
-              <div className="space-y-3">
+            <div style={{ padding: '16px', maxHeight: '240px', overflow: 'auto' }}>
+              <div className="space-y-2">
                 {symbolPerf.map((s) => (
                   <div key={s.symbol} className="flex items-center justify-between" style={{ 
-                    padding: '12px 0',
+                    padding: '8px 0',
                     borderBottom: '1px solid var(--border)'
                   }}>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <span style={{ 
                         fontFamily: 'monospace',
                         fontWeight: '500',
-                        fontSize: '13px',
+                        fontSize: '12px',
                         color: 'var(--text)'
                       }}>{s.symbol}</span>
-                      <span style={{ fontSize: '11px', color: 'var(--text3)' }}>{s.count} trades</span>
+                      <span style={{ fontSize: '10px', color: 'var(--text3)' }}>{s.count} trades</span>
                     </div>
                     <span style={{
                       fontFamily: 'monospace',
                       fontWeight: '600',
-                      fontSize: '13px',
+                      fontSize: '12px',
                       color: s.pnl >= 0 ? 'var(--green)' : 'var(--red)'
                     }}>
                       {formatCurrency(s.pnl)}
@@ -217,7 +235,7 @@ export default function Analytics() {
                   </div>
                 ))}
                 {symbolPerf.length === 0 && (
-                  <p style={{ fontSize: '13px', color: 'var(--text2)', textAlign: 'center', padding: '16px 0' }}>
+                  <p style={{ fontSize: '12px', color: 'var(--text2)', textAlign: 'center', padding: '16px 0' }}>
                     No symbol data yet
                   </p>
                 )}

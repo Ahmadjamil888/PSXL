@@ -125,13 +125,14 @@ export default function AuthPage() {
           </p>
         </div>
 
-        {/* Card */}
+        {/* Card - Mobile responsive padding */}
         <div style={{ 
-          padding: '40px',
+          padding: '24px 20px',
           background: 'var(--bg-card)',
           border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-card)'
-        }}>
+          borderRadius: 'var(--radius-card)',
+          margin: '0 8px'
+        }} className="sm:p-[40px] sm:m-0">
           <div className="text-center" style={{ marginBottom: '32px' }}>
             <h2 style={{
               fontSize: '22px',

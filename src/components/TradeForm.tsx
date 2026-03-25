@@ -249,8 +249,8 @@ export default function TradeForm() {
                   </div>
                 </div>
 
-                {/* Qty + Entry + Exit */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                {/* Qty + Entry + Exit - Mobile responsive */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label style={{
                       display: 'block',
@@ -324,8 +324,8 @@ export default function TradeForm() {
                   </div>
                 </div>
 
-                {/* Fees + Note */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                {/* Fees + Note - Mobile responsive */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label style={{
                       display: 'block',
