@@ -186,6 +186,51 @@ const SCOPED_CSS = `
 
   .psxl-reveal         { opacity:0; transform:translateY(24px); transition: opacity .7s ease, transform .7s ease; }
   .psxl-reveal.visible { opacity:1; transform:translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+
+@media (max-width: 1024px) {
+  .psxl-grid-2 { grid-template-columns: 1fr !important; }
+  .psxl-grid-3 { grid-template-columns: 1fr 1fr !important; }
+  .psxl-grid-4 { grid-template-columns: 1fr 1fr !important; }
+}
+
+@media (max-width: 768px) {
+  .psxl-grid-3,
+  .psxl-grid-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .psxl-section {
+    padding: 80px 20px 40px !important;
+  }
+
+  .psxl-nav-links {
+    display: none;
+  }
+
+  .psxl-mobile-menu {
+    display: flex !important;
+  }
+
+  .psxl-hero {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
+
+  .psxl-hero-left {
+    padding: 40px 20px !important;
+    border-right: none !important;
+  }
+
+  .psxl-hero-right {
+    order: -1;
+  }
+
+  .psxl-table {
+    font-size: 10px !important;
+  }
+}
 `;
 
 // ─── HOOK ────────────────────────────────────────────────────────────────────
@@ -260,28 +305,80 @@ function Ticker() {
 }
 
 // ─── NAV ─────────────────────────────────────────────────────────────────────
-function Nav({theme,onToggle}: {theme:Theme;onToggle:()=>void}) {
+function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <nav className="psxl-nav" style={{position:"fixed",top:0,left:0,right:0,zIndex:100,height:56,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 40px",borderBottom:"1px solid var(--lbdr)",background:"var(--lbg)",transition:"background .4s, border-color .4s"}}>
-      <a href="#psxl-top" style={{display:"flex",alignItems:"center",fontSize:20,fontWeight:700,letterSpacing:-0.5,color:"var(--ltx)",textDecoration:"none"}}>
-        PSX<LogoMark size={28}/>
+    <nav style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+      height: 56, display: "flex", alignItems: "center",
+      justifyContent: "space-between", padding: "0 20px",
+      borderBottom: "1px solid var(--lbdr)", background: "var(--lbg)"
+    }}>
+      
+      {/* Logo */}
+      <a href="#psxl-top" style={{ display: "flex", alignItems: "center", fontWeight: 700 }}>
+        PSX<LogoMark size={28} />
       </a>
-      <ul style={{display:"flex",alignItems:"center",gap:32,listStyle:"none"}}>
-        {[["/about","About"],["/contact","Contact"],["#psxl-features","Features"],["#psxl-faq","FAQ"]].map(([href,label])=>(
-          <li key={href}>
-            <a href={href} style={{fontSize:12,fontWeight:400,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--ltx2)",textDecoration:"none"}}>{label}</a>
+
+      {/* Desktop Links */}
+      <ul className="psxl-nav-links" style={{ display: "flex", gap: 24, listStyle: "none" }}>
+        {["Features", "FAQ"].map((label) => (
+          <li key={label}>
+            <a href={`#psxl-${label.toLowerCase()}`} style={{ fontSize: 12 }}>
+              {label}
+            </a>
           </li>
         ))}
       </ul>
-      <div style={{display:"flex",alignItems:"center",gap:20}}>
-        <div onClick={onToggle} title="Toggle theme"
-          style={{width:40,height:22,background:"var(--lbdr2)",borderRadius:11,position:"relative",cursor:"pointer",border:"1px solid var(--lbdr)",transition:"background .3s"}}>
-          <div style={{position:"absolute",top:2,left:2,width:16,height:16,borderRadius:"50%",background:"var(--lgrn)",transition:"transform .3s",transform:theme==="light"?"translateX(18px)":"translateX(0)"}}/>
+
+      {/* Right Side */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        
+        {/* Theme toggle */}
+        <div onClick={onToggle} style={{
+          width: 36, height: 20, background: "var(--lbdr2)",
+          borderRadius: 10, cursor: "pointer"
+        }} />
+
+        {/* Hamburger */}
+        <div
+          className="psxl-mobile-menu"
+          onClick={() => setOpen(!open)}
+          style={{
+            display: "none",
+            flexDirection: "column",
+            gap: 4,
+            cursor: "pointer"
+          }}
+        >
+          <span style={{ width: 20, height: 2, background: "var(--ltx)" }} />
+          <span style={{ width: 20, height: 2, background: "var(--ltx)" }} />
+          <span style={{ width: 20, height: 2, background: "var(--ltx)" }} />
         </div>
-        <a href="/auth" style={{fontFamily:ff,fontSize:11,fontWeight:500,letterSpacing:"0.1em",textTransform:"uppercase",color:"#000",background:"var(--lgrn)",border:"none",padding:"8px 18px",cursor:"pointer",textDecoration:"none",display:"inline-block"}}>
-          Start Now
-        </a>
       </div>
+
+      {/* Mobile Dropdown */}
+      {open && (
+        <div style={{
+          position: "absolute",
+          top: 56,
+          left: 0,
+          right: 0,
+          background: "var(--lbg)",
+          borderBottom: "1px solid var(--lbdr)",
+          display: "flex",
+          flexDirection: "column",
+          padding: 20,
+          gap: 16
+        }}>
+          {["Features", "FAQ"].map((label) => (
+            <a key={label} href={`#psxl-${label.toLowerCase()}`}>
+              {label}
+            </a>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
