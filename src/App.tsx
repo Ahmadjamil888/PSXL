@@ -8,6 +8,9 @@ import { DynamicFavicon } from "@/components/DynamicFavicon";
 import AppLayout from "@/components/AppLayout";
 import AuthPage from "@/pages/Auth";
 import Landing from "@/pages/home";
+import AboutPage from "@/pages/About";
+import PrivacyPage from "@/pages/Privacy";
+import ContactPage from "@/pages/Contact";
 import Dashboard from "@/pages/Dashboard";
 import Journal from "@/pages/Journal";
 import Analytics from "@/pages/Analytics";
@@ -54,6 +57,9 @@ const App = () => (
           <AuthProvider>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/contact" element={<ContactPage />} />
               <Route path="/auth" element={<AuthRoute />} />
               <Route path="/auth/callback" element={<AuthPage />} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

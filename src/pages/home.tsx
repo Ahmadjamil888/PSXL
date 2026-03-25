@@ -275,9 +275,18 @@ function Nav({theme,onToggle}: {theme:Theme;onToggle:()=>void}) {
         PSX<LogoMark size={28}/>
       </a>
       <ul style={{display:"flex",alignItems:"center",gap:32,listStyle:"none"}}>
-        {[["#psxl-features","Features"],["#psxl-ledger","Ledger"],["#psxl-analytics","Analytics"],["#psxl-faq","FAQ"]].map(([href,label])=>(
-          <li key={href}><a href={href} style={{fontSize:12,fontWeight:400,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--ltx2)",textDecoration:"none"}}>{label}</a></li>
-        ))}
+        {["/about","About"], ["/contact","Contact"], ["#psxl-features","Features"], ["#psxl-faq","FAQ"]].map(([href,label])=>{
+          const isExternal = href.startsWith('/');
+          return (
+            <li key={href}>
+              {isExternal ? (
+                <a href={href} style={{fontSize:12,fontWeight:400,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--ltx2)",textDecoration:"none"}}>{label}</a>
+              ) : (
+                <a href={href} style={{fontSize:12,fontWeight:400,letterSpacing:"0.08em",textTransform:"uppercase",color:"var(--ltx2)",textDecoration:"none"}}>{label}</a>
+              )}
+            </li>
+          );
+        })}
       </ul>
       <div style={{display:"flex",alignItems:"center",gap:20}}>
         <div onClick={onToggle} title="Toggle theme"
@@ -632,32 +641,33 @@ function CTA() {
       </Reveal>
     </section>
   );
-}
 
 // ─── FOOTER ──────────────────────────────────────────────────────────────────
 function Footer() {
   const cols=[
-    {title:"Product",   links:["Features","Changelog","Roadmap"]},
-    {title:"Resources", links:["Documentation","CSV Templates","Tax Guide","Blog"]},
-    {title:"Company",   links:["About","Contact","Press","Careers"]},
-    {title:"Legal",     links:["Privacy Policy","Terms of Use","Disclaimer","Cookie Policy"]},
+    {title:"Product",   links:[{label:"Features",href:"#psxl-features"},{label:"Changelog",href:"#"},{label:"Roadmap",href:"#"},{label:"Pricing",href:"#"}]},
+    {title:"Resources", links:[{label:"Documentation",href:"#"},{label:"CSV Templates",href:"#"},{label:"Tax Guide",href:"#"},{label:"Blog",href:"#"}]},
+    {title:"Company",   links:[{label:"About",href:"/about"},{label:"Contact",href:"/contact"},{label:"Press",href:"#"},{label:"Careers",href:"#"}]},
+    {title:"Legal",     links:[{label:"Privacy Policy",href:"/privacy"},{label:"Terms of Use",href:"#"},{label:"Disclaimer",href:"#"},{label:"Cookie Policy",href:"#"}]},
   ];
   return (
     <footer style={{background:"var(--lbg)",borderTop:"1px solid var(--lbdr)",padding:"60px 40px 40px",fontFamily:ff}}>
       <div style={{display:"grid",gridTemplateColumns:"240px 1fr",gap:80,paddingBottom:48,borderBottom:"1px solid var(--lbdr)",marginBottom:40}}>
         <div>
-          <div style={{fontSize:22,fontWeight:700,letterSpacing:-0.5,color:"var(--ltx)",marginBottom:16,display:"flex",alignItems:"center"}}>
+          <a href="/" style={{fontSize:22,fontWeight:700,letterSpacing:-0.5,color:"var(--ltx)",marginBottom:16,display:"flex",alignItems:"center",textDecoration:"none"}}>
             PSX<LogoMark size={32}/>
-          </div>
+          </a>
           <p style={{fontSize:12,fontWeight:300,color:"var(--ltx3)",lineHeight:1.6}}>The institutional-grade trading ledger for Pakistan Stock Exchange investors.</p>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:40}}>
-          {cols.map((col,i)=>(
+          {cols.map((c,i)=>(
             <div key={i}>
-              <div style={{fontSize:10,fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--ltx3)",marginBottom:20}}>{col.title}</div>
-              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:10}}>
-                {col.links.map((l,j)=>(
-                  <li key={j}><a href="#" style={{fontSize:13,fontWeight:300,color:"var(--ltx2)",textDecoration:"none"}}>{l}</a></li>
+              <h4 style={{fontSize:11,fontWeight:500,letterSpacing:"0.15em",textTransform:"uppercase",color:"var(--ltx)",marginBottom:20}}>{c.title}</h4>
+              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:12}}>
+                {c.links.map((l,j)=>(
+                  <li key={j}>
+                    <a href={l.href} style={{fontSize:13,fontWeight:300,color:"var(--ltx2)",textDecoration:"none"}}>{l.label}</a>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -665,7 +675,7 @@ function Footer() {
         </div>
       </div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <span style={{fontSize:11,fontWeight:300,color:"var(--ltx3)",letterSpacing:"0.05em"}}>© 2026 PSXL. All rights reserved. Not affiliated with the Pakistan Stock Exchange.</span>
+        <p style={{fontSize:11,fontWeight:300,color:"var(--ltx3)"}}> 2026 PSXL. All rights reserved. Not affiliated with the Pakistan Stock Exchange.</p>
         <div style={{display:"flex",gap:24}}>
           {["Privacy","Terms","Disclaimer"].map(l=>(
             <a key={l} href="#" style={{fontSize:11,fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>{l}</a>
