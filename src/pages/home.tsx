@@ -3,6 +3,50 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 type Theme = "dark" | "light";
 
+const ff = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+
+// ─── STYLE CONSTANTS ─────────────────────────────────────────────────────────
+const btnPrimary: React.CSSProperties = {
+  display: "inline-block",
+  fontFamily: ff,
+  fontSize: 11,
+  fontWeight: 500,
+  letterSpacing: "0.12em",
+  textTransform: "uppercase",
+  color: "#000",
+  background: "var(--lgrn)",
+  border: "none",
+  padding: "14px 28px",
+  textDecoration: "none",
+  cursor: "pointer",
+  whiteSpace: "nowrap",
+};
+
+const btnGhost: React.CSSProperties = {
+  display: "inline-block",
+  fontFamily: ff,
+  fontSize: 11,
+  fontWeight: 500,
+  letterSpacing: "0.12em",
+  textTransform: "uppercase",
+  color: "var(--ltx)",
+  background: "transparent",
+  border: "1px solid var(--lbdr2)",
+  padding: "14px 28px",
+  textDecoration: "none",
+  cursor: "pointer",
+  whiteSpace: "nowrap",
+};
+
+const sectionBase = (bg: string): React.CSSProperties => ({
+  background: bg,
+  padding: "120px 40px",
+  maxWidth: 1200,
+  margin: "0 auto",
+  display: "flex",
+  flexDirection: "column",
+});
+
 interface Stock       { sym: string; val: string; chg: string; pct: string; pos: boolean; }
 interface Trade       { date: string; sym: string; sector: string; type: "BUY" | "SELL"; qty: number; rate: number; value: number; charges: number; pl: number | null; }
 interface Feature     { num: string; title: string; body: string; tag: string; icon: React.ReactNode; }
@@ -189,115 +233,113 @@ const SCOPED_CSS = `
 
   /* ─── RESPONSIVE ─── */
 
-@media (max-width: 1024px) {
-  .psxl-grid-2 { grid-template-columns: 1fr !important; }
-  .psxl-grid-3 { grid-template-columns: 1fr 1fr !important; }
-  .psxl-grid-4 { grid-template-columns: 1fr 1fr !important; }
-}
-
-@media (max-width: 768px) {
-  .psxl-grid-3,
-  .psxl-grid-4 {
-    grid-template-columns: 1fr !important;
+  @media (max-width: 1024px) {
+    .psxl-grid-2 { grid-template-columns: 1fr !important; }
+    .psxl-grid-3 { grid-template-columns: 1fr 1fr !important; }
+    .psxl-grid-4 { grid-template-columns: 1fr 1fr !important; }
   }
 
-  .psxl-section {
-    padding: 80px 20px 40px !important;
-  }
+  @media (max-width: 768px) {
+    .psxl-grid-3,
+    .psxl-grid-4 {
+      grid-template-columns: 1fr !important;
+    }
 
-  .psxl-nav-links {
-    display: none;
-  }
+    .psxl-section {
+      padding: 80px 20px 40px !important;
+    }
 
-  .psxl-mobile-menu {
-    display: flex !important;
-  }
+    .psxl-nav-links {
+      display: none;
+    }
 
-  .psxl-hero {
-    grid-template-columns: 1fr !important;
-    height: auto !important;
-  }
+    .psxl-nav-cta {
+      display: none !important;
+    }
 
-  .psxl-hero-left {
-    padding: 40px 20px !important;
-    border-right: none !important;
-  }
+    .psxl-mobile-menu {
+      display: flex !important;
+    }
 
-  .psxl-hero-right {
-    order: -1;
-  }
+    .psxl-hero {
+      grid-template-columns: 1fr !important;
+      height: auto !important;
+    }
 
-  .psxl-table {
-    font-size: 10px !important;
+    .psxl-hero-left {
+      padding: 40px 20px !important;
+      border-right: none !important;
+      order: 2;
+    }
+
+    .psxl-hero-right {
+      order: 1;
+    }
+
+    .psxl-table {
+      font-size: 10px !important;
+    }
+    .psxl-hero-actions {
+      flex-direction: column !important;
+      gap: 12px !important;
+    }
+    .psxl-hero-actions a {
+      width: 100%;
+      text-align: center;
+    }
   }
-}
 `;
 
-// ─── HOOK ────────────────────────────────────────────────────────────────────
-function useReveal() {
+// ─── HELPER COMPONENTS ───────────────────────────────────────────────────────
+function Reveal({ children, style, delay = 0 }: { children: React.ReactNode; style?: React.CSSProperties; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+
   useEffect(() => {
-    const el = ref.current; if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, {threshold:0.1});
-    obs.observe(el);
-    return () => obs.disconnect();
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setVisible(true);
+        io.unobserve(el);
+      }
+    }, { threshold: 0.1 });
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
-  return {ref, visible};
-}
 
-// ─── SHARED STYLE HELPERS ────────────────────────────────────────────────────
-const ff = "'Helvetica Neue', Helvetica, Arial, sans-serif";
-
-const btnPrimary: React.CSSProperties = {
-  fontFamily:ff, fontSize:12, fontWeight:500, letterSpacing:"0.12em", textTransform:"uppercase",
-  color:"#000", background:"var(--lgrn)", border:"1px solid var(--lgrn)",
-  padding:"14px 28px", cursor:"pointer", textDecoration:"none", display:"inline-block", textAlign:"center",
-};
-const btnGhost: React.CSSProperties = {
-  fontFamily:ff, fontSize:12, fontWeight:400, letterSpacing:"0.12em", textTransform:"uppercase",
-  color:"var(--ltx)", background:"transparent", border:"1px solid var(--lbdr2)",
-  padding:"14px 28px", cursor:"pointer", textDecoration:"none", display:"inline-block", textAlign:"center",
-};
-const sectionBase = (bg: string): React.CSSProperties => ({
-  minHeight:"100vh", display:"flex", flexDirection:"column", justifyContent:"center",
-  padding:"100px 40px 60px", position:"relative", borderBottom:"1px solid var(--lbdr)", background:bg,
-});
-
-// ─── SMALL COMPONENTS ────────────────────────────────────────────────────────
-function Reveal({children, delay=0, style}: {children:React.ReactNode; delay?:number; style?:React.CSSProperties}) {
-  const {ref, visible} = useReveal();
   return (
-    <div ref={ref} className={`psxl-reveal${visible?" visible":""}`}
-      style={{transitionDelay:`${delay}ms`, ...style}}>
+    <div ref={ref} style={{ ...style, transitionDelay: `${delay}ms` }} className={visible ? "psxl-reveal visible" : "psxl-reveal"}>
       {children}
     </div>
   );
 }
 
-const SectionLabel = ({children}: {children:React.ReactNode}) => (
-  <p style={{fontSize:10,fontWeight:500,letterSpacing:"0.25em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:16}}>{children}</p>
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--lgrn)" }}>{children}</span>
 );
-const Divider = () => <div style={{width:40,height:2,background:"var(--lgrn)",marginBottom:40}}/>;
-const SectionH2 = ({children}: {children:React.ReactNode}) => (
-  <h2 style={{fontSize:"clamp(36px,4vw,60px)",fontWeight:700,letterSpacing:-2,lineHeight:1.0,color:"var(--ltx)",marginBottom:20}}>{children}</h2>
+
+const Divider = () => <div style={{ height: 1, background: "var(--lbdr)", margin: "24px 0" }} />;
+
+const SectionH2 = ({ children }: { children: React.ReactNode }) => (
+  <h2 style={{ fontSize: "clamp(36px,4vw,56px)", fontWeight: 700, letterSpacing: -2, lineHeight: 1.05, color: "var(--ltx)" }}>{children}</h2>
 );
-const SectionDesc = ({children,maxWidth=560}: {children:React.ReactNode;maxWidth?:number}) => (
-  <p style={{fontSize:15,fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",maxWidth}}>{children}</p>
+
+const SectionDesc = ({ children, maxWidth = 480 }: { children: React.ReactNode; maxWidth?: number }) => (
+  <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.7, color: "var(--ltx2)", maxWidth, marginTop: 24 }}>{children}</p>
 );
 
 // ─── TICKER ──────────────────────────────────────────────────────────────────
 function Ticker() {
-  const doubled = [...STOCKS,...STOCKS];
   return (
-    <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:99,height:32,background:"var(--lbg2)",borderTop:"1px solid var(--lbdr)",overflow:"hidden",display:"flex",alignItems:"center"}}>
-      <div className="psxl-ticker-track" style={{display:"flex",whiteSpace:"nowrap",willChange:"transform"}}>
-        {doubled.map((s,i)=>(
-          <div key={i} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"0 32px",fontSize:11,letterSpacing:"0.05em",borderRight:"1px solid var(--lbdr)"}}>
-            <span style={{fontWeight:700,color:"var(--ltx)"}}>{s.sym}</span>
-            <span style={{color:"var(--ltx2)"}}>{s.val}</span>
-            <span style={{color:s.pos?"var(--lgrn)":"var(--lred)"}}>{s.chg} ({s.pct})</span>
-          </div>
+    <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 32, background: "var(--lbg)", borderTop: "1px solid var(--lbdr)", display: "flex", alignItems: "center", overflow: "hidden", zIndex: 50 }}>
+      <div className="psxl-ticker-track" style={{ display: "flex", gap: 40, whiteSpace: "nowrap" }}>
+        {[...STOCKS, ...STOCKS].map((s, i) => (
+          <span key={i} style={{ fontSize: 11, fontWeight: 500, color: s.pos ? "var(--lgrn)" : "var(--lred)", display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ color: "var(--ltx)", fontWeight: 600 }}>{s.sym}</span>
+            <span>{s.val}</span>
+            <span>{s.chg} ({s.pct})</span>
+          </span>
         ))}
       </div>
     </div>
@@ -317,15 +359,15 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
     }}>
       
       {/* Logo */}
-      <a href="#psxl-top" style={{ display: "flex", alignItems: "center", fontWeight: 700 }}>
-        PSX<LogoMark size={28} />
+      <a href="#psxl-top" style={{ display: "flex", alignItems: "center", fontWeight: 700, color: "var(--ltx)", textDecoration: "none", fontSize: 18, letterSpacing: -0.5 }}>
+        PSXL<LogoMark size={28} />
       </a>
 
       {/* Desktop Links */}
-      <ul className="psxl-nav-links" style={{ display: "flex", gap: 24, listStyle: "none" }}>
+      <ul className="psxl-nav-links" style={{ display: "flex", gap: 24, listStyle: "none", margin: 0, padding: 0 }}>
         {["Features", "FAQ"].map((label) => (
           <li key={label}>
-            <a href={`#psxl-${label.toLowerCase()}`} style={{ fontSize: 12 }}>
+            <a href={`#psxl-${label.toLowerCase()}`} style={{ fontSize: 12, color: "var(--ltx2)", textDecoration: "none", fontWeight: 400, letterSpacing: "0.05em" }}>
               {label}
             </a>
           </li>
@@ -333,13 +375,24 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
       </ul>
 
       {/* Right Side */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         
         {/* Theme toggle */}
         <div onClick={onToggle} style={{
-          width: 36, height: 20, background: "var(--lbdr2)",
-          borderRadius: 10, cursor: "pointer"
-        }} />
+          width: 44, height: 24, background: "var(--lbg3)", border: "1px solid var(--lbdr2)",
+          borderRadius: 12, cursor: "pointer", position: "relative", display: "flex", alignItems: "center", padding: "0 4px"
+        }}>
+          <div style={{
+            width: 16, height: 16, borderRadius: "50%", background: "var(--lgrn)",
+            transform: theme === "dark" ? "translateX(0)" : "translateX(20px)",
+            transition: "transform 0.2s ease"
+          }}/>
+        </div>
+
+        {/* Get Started Button - Desktop */}
+        <a href="/auth" style={{...btnPrimary, padding: "10px 20px", fontSize: 11}} className="psxl-nav-cta">
+          Get Started
+        </a>
 
         {/* Hamburger */}
         <div
@@ -372,11 +425,16 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
           padding: 20,
           gap: 16
         }}>
-          {["Features", "FAQ"].map((label) => (
-            <a key={label} href={`#psxl-${label.toLowerCase()}`}>
-              {label}
+          <div style={{display:"flex",flexDirection:"column",gap:16}}>
+            {["Features", "FAQ"].map((label) => (
+              <a key={label} href={`#psxl-${label.toLowerCase()}`} style={{ color: "var(--ltx)", textDecoration: "none", fontSize: 14, padding: "8px 0" }}>
+                {label}
+              </a>
+            ))}
+            <a href="/auth" style={{...btnPrimary, padding: "12px 20px", fontSize: 12, marginTop: 8}}>
+              Get Started
             </a>
-          ))}
+          </div>
         </div>
       )}
     </nav>
@@ -393,8 +451,8 @@ function Hero() {
   ];
   return (
     <section id="psxl-top" style={{minHeight:"100vh",background:"var(--lbg)",paddingTop:56,display:"flex",flexDirection:"column",justifyContent:"center"}}>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",height:"calc(100vh - 56px - 32px)"}}>
-        <div style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"60px 60px 60px 40px",borderRight:"1px solid var(--lbdr)"}}>
+      <div className="psxl-hero" style={{display:"grid",gridTemplateColumns:"1fr 1fr",height:"calc(100vh - 56px - 32px)"}}>
+        <div className="psxl-hero-left" style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"60px 60px 60px 40px",borderRight:"1px solid var(--lbdr)"}}>
           <p className="psxl-hero-eyebrow" style={{fontSize:10,fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:24}}>Pakistan Stock Exchange Ledger</p>
           <h1 className="psxl-hero-h1" style={{fontSize:"clamp(52px,6vw,88px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)",marginBottom:32}}>
             Track every<br/>trade with<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>precision.</em>
