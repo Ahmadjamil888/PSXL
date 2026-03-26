@@ -47,10 +47,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             animate={{ width: 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="flex flex-col shrink-0 overflow-hidden sticky top-0 h-screen"
+            className="flex flex-col shrink-0 overflow-hidden fixed left-0 top-0 h-screen"
             style={{
               borderRight: "1px solid var(--border)",
               background: "var(--bg)",
+              zIndex: 100,
             }}
           >
             {/* Header */}
@@ -87,7 +88,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            <nav className="flex-1 p-4 space-y-1 overflow-hidden">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.to;
                 return (
@@ -285,7 +286,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main
         className="flex-1 overflow-auto"
         style={{
-          paddingLeft: !sidebarOpen ? "80px" : undefined,
+          paddingLeft: !sidebarOpen ? "80px" : "280px",
         }}
       >
         <div

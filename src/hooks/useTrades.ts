@@ -145,6 +145,39 @@ export function getTradeStats(trades: Trade[]) {
   const bestTrade = pnls.length > 0 ? Math.max(...pnls) : 0;
   const worstTrade = pnls.length > 0 ? Math.min(...pnls) : 0;
 
+  // Symbol performance (for Top Symbols chart)
+  const symbolMap = new Map<string, number>();
+  closed.forEach((t) => {
+    const pnl = calcPnL(t)!;
+    symbolMap.set(t.symbol, (symbolMap.get(t.symbol) ?? 0) + pnl);
+  });
+  const symbolPerformance = Array.from(symbolMap.entries())
+    .map(([symbol, pnl]) => ({ symbol, pnl }))
+    .sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl));
+
+  // Day of week data (for Trading Days chart)
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayOfWeekMap = new Map<string, number>();
+  trades.forEach((t) => {
+    const date = new Date(t.date);
+    const day = days[date.getDay()];
+    dayOfWeekMap.set(day, (dayOfWeekMap.get(day) ?? 0) + 1);
+  });
+  const dayOfWeekData = days
+    .filter(d => dayOfWeekMap.has(d))
+    .map(day => ({ day, count: dayOfWeekMap.get(day)! }));
+
+  // Monthly data (for Monthly Trend chart)
+  const monthlyMap = new Map<string, number>();
+  closed.forEach((t) => {
+    const pnl = calcPnL(t)!;
+    const month = t.date.slice(0, 7); // YYYY-MM
+    monthlyMap.set(month, (monthlyMap.get(month) ?? 0) + pnl);
+  });
+  const monthlyData = Array.from(monthlyMap.entries())
+    .map(([month, pnl]) => ({ month, pnl }))
+    .sort((a, b) => a.month.localeCompare(b.month));
+
   return {
     totalPnL,
     todayPnL,
@@ -158,5 +191,8 @@ export function getTradeStats(trades: Trade[]) {
     dailyPnL,
     bestTrade,
     worstTrade,
+    symbolPerformance,
+    dayOfWeekData,
+    monthlyData,
   };
 }
