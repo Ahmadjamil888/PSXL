@@ -7,44 +7,53 @@ const ff = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 // ─── STYLE CONSTANTS ─────────────────────────────────────────────────────────
 const btnPrimary: React.CSSProperties = {
-  display: "inline-block",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
   fontFamily: ff,
-  fontSize: 11,
+  fontSize: "clamp(10px, 2vw, 11px)",
   fontWeight: 500,
   letterSpacing: "0.12em",
   textTransform: "uppercase",
   color: "#000",
   background: "var(--lgrn)",
   border: "none",
-  padding: "14px 28px",
+  padding: "clamp(12px, 2vw, 14px) clamp(20px, 4vw, 28px)",
   textDecoration: "none",
   cursor: "pointer",
   whiteSpace: "nowrap",
+  borderRadius: "2px",
+  transition: "all 0.2s ease",
 };
 
 const btnGhost: React.CSSProperties = {
-  display: "inline-block",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
   fontFamily: ff,
-  fontSize: 11,
+  fontSize: "clamp(10px, 2vw, 11px)",
   fontWeight: 500,
   letterSpacing: "0.12em",
   textTransform: "uppercase",
   color: "var(--ltx)",
   background: "transparent",
   border: "1px solid var(--lbdr2)",
-  padding: "14px 28px",
+  padding: "clamp(12px, 2vw, 14px) clamp(20px, 4vw, 28px)",
   textDecoration: "none",
   cursor: "pointer",
   whiteSpace: "nowrap",
+  borderRadius: "2px",
+  transition: "all 0.2s ease",
 };
 
 const sectionBase = (bg: string): React.CSSProperties => ({
   background: bg,
-  padding: "120px 40px",
-  maxWidth: 1200,
-  margin: "0 auto",
+  padding: "clamp(60px, 10vw, 120px) clamp(16px, 5vw, 40px)",
+  width: "100%",
+  boxSizing: "border-box",
   display: "flex",
   flexDirection: "column",
+  margin: 0,
 });
 
 interface Stock       { sym: string; val: string; chg: string; pct: string; pos: boolean; }
@@ -172,6 +181,19 @@ const FAQS: FaqItem[] = [
 
 // ─── SCOPED CSS ───────────────────────────────────────────────────────────────
 const SCOPED_CSS = `
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+
   @import url('https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@100;300;400;500;700;900&display=swap');
 
   @keyframes psxl-fadeUp {
@@ -192,9 +214,7 @@ const SCOPED_CSS = `
     scroll-behavior: smooth;
     line-height: 1;
     box-sizing: border-box;
-  }
-  .psxl-root *, .psxl-root *::before, .psxl-root *::after {
-    box-sizing: border-box;
+    width: 100%;
     margin: 0;
     padding: 0;
   }
@@ -219,6 +239,12 @@ const SCOPED_CSS = `
   .psxl-root ::-webkit-scrollbar-track { background: var(--lbg); }
   .psxl-root ::-webkit-scrollbar-thumb { background: var(--lgrn); }
 
+  main {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
   .psxl-nav          { animation: psxl-fadeIn 0.6s ease both; }
   .psxl-hero-eyebrow { animation: psxl-fadeUp 0.6s 0.2s ease both; }
   .psxl-hero-h1      { animation: psxl-fadeUp 0.6s 0.3s ease both; }
@@ -233,10 +259,10 @@ const SCOPED_CSS = `
 
   /* ─── RESPONSIVE ─── */
 
-  @media (max-width: 1024px) {
+  @media (max-width: 1200px) {
     .psxl-grid-2 { grid-template-columns: 1fr !important; }
-    .psxl-grid-3 { grid-template-columns: 1fr 1fr !important; }
-    .psxl-grid-4 { grid-template-columns: 1fr 1fr !important; }
+    .psxl-grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
+    .psxl-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
   }
 
   @media (max-width: 768px) {
@@ -245,12 +271,8 @@ const SCOPED_CSS = `
       grid-template-columns: 1fr !important;
     }
 
-    .psxl-section {
-      padding: 80px 20px 40px !important;
-    }
-
     .psxl-nav-links {
-      display: none;
+      display: none !important;
     }
 
     .psxl-nav-cta {
@@ -264,28 +286,98 @@ const SCOPED_CSS = `
     .psxl-hero {
       grid-template-columns: 1fr !important;
       height: auto !important;
+      min-height: auto !important;
     }
 
     .psxl-hero-left {
-      padding: 40px 20px !important;
+      padding: clamp(20px, 5vw, 40px) !important;
       border-right: none !important;
-      order: 2;
+      border-bottom: 1px solid var(--lbdr) !important;
+      order: 1 !important;
     }
 
     .psxl-hero-right {
-      order: 1;
+      order: 2 !important;
+      padding: 0 !important;
+    }
+
+    .psxl-hero-right > div {
+      padding: clamp(16px, 4vw, 28px) !important;
     }
 
     .psxl-table {
-      font-size: 10px !important;
+      font-size: 9px !important;
     }
+    
+    .psxl-table th,
+    .psxl-table td {
+      padding: 8px 8px !important;
+    }
+
     .psxl-hero-actions {
       flex-direction: column !important;
       gap: 12px !important;
+      width: 100% !important;
     }
-    .psxl-hero-actions a {
-      width: 100%;
-      text-align: center;
+    
+    .psxl-hero-actions a,
+    .psxl-hero-actions button {
+      width: 100% !important;
+      padding: 14px 16px !important;
+      text-align: center !important;
+    }
+
+    .psxl-two-col {
+      grid-template-columns: 1fr !important;
+      gap: 40px !important;
+    }
+
+    .psxl-footer-grid {
+      grid-template-columns: 1fr !important;
+      gap: 40px !important;
+    }
+
+    .psxl-footer-cols {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 24px !important;
+    }
+
+    .psxl-footer-bottom {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 16px !important;
+    }
+
+    .psxl-faq-grid {
+      grid-template-columns: 1fr !important;
+      gap: 40px !important;
+    }
+
+    .psxl-ledger-grid {
+      grid-template-columns: 1fr !important;
+      gap: 40px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .psxl-section {
+      padding: clamp(30px, 6vw, 60px) clamp(12px, 3vw, 20px) !important;
+    }
+
+    .psxl-footer-cols {
+      grid-template-columns: 1fr !important;
+    }
+
+    .psxl-cta-form {
+      flex-direction: column !important;
+    }
+
+    .psxl-cta-input {
+      width: 100% !important;
+    }
+
+    .psxl-cta-button {
+      width: 100% !important;
     }
   }
 `;
@@ -316,26 +408,26 @@ function Reveal({ children, style, delay = 0 }: { children: React.ReactNode; sty
 }
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <span style={{ fontSize: 10, fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--lgrn)" }}>{children}</span>
+  <span style={{ fontSize: "clamp(9px, 2vw, 10px)", fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--lgrn)" }}>{children}</span>
 );
 
-const Divider = () => <div style={{ height: 1, background: "var(--lbdr)", margin: "24px 0" }} />;
+const Divider = () => <div style={{ height: 1, background: "var(--lbdr)", margin: "clamp(16px, 3vw, 24px) 0" }} />;
 
 const SectionH2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 style={{ fontSize: "clamp(36px,4vw,56px)", fontWeight: 700, letterSpacing: -2, lineHeight: 1.05, color: "var(--ltx)" }}>{children}</h2>
+  <h2 style={{ fontSize: "clamp(28px, 6vw, 56px)", fontWeight: 700, letterSpacing: -2, lineHeight: 1.05, color: "var(--ltx)" }}>{children}</h2>
 );
 
 const SectionDesc = ({ children, maxWidth = 480 }: { children: React.ReactNode; maxWidth?: number }) => (
-  <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.7, color: "var(--ltx2)", maxWidth, marginTop: 24 }}>{children}</p>
+  <p style={{ fontSize: "clamp(13px, 2vw, 15px)", fontWeight: 300, lineHeight: 1.7, color: "var(--ltx2)", maxWidth, marginTop: "clamp(12px, 2vw, 24px)" }}>{children}</p>
 );
 
 // ─── TICKER ──────────────────────────────────────────────────────────────────
 function Ticker() {
   return (
-    <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 32, background: "var(--lbg)", borderTop: "1px solid var(--lbdr)", display: "flex", alignItems: "center", overflow: "hidden", zIndex: 50 }}>
-      <div className="psxl-ticker-track" style={{ display: "flex", gap: 40, whiteSpace: "nowrap" }}>
+    <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: "clamp(24px, 5vw, 32px)", background: "var(--lbg)", borderTop: "1px solid var(--lbdr)", display: "flex", alignItems: "center", overflow: "hidden", zIndex: 50 }}>
+      <div className="psxl-ticker-track" style={{ display: "flex", gap: "clamp(20px, 4vw, 40px)", whiteSpace: "nowrap" }}>
         {[...STOCKS, ...STOCKS].map((s, i) => (
-          <span key={i} style={{ fontSize: 11, fontWeight: 500, color: s.pos ? "var(--lgrn)" : "var(--lred)", display: "flex", alignItems: "center", gap: 6 }}>
+          <span key={i} style={{ fontSize: "clamp(9px, 1.5vw, 11px)", fontWeight: 500, color: s.pos ? "var(--lgrn)" : "var(--lred)", display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ color: "var(--ltx)", fontWeight: 600 }}>{s.sym}</span>
             <span>{s.val}</span>
             <span>{s.chg} ({s.pct})</span>
@@ -351,23 +443,23 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav style={{
+    <nav className="psxl-nav" style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      height: 56, display: "flex", alignItems: "center",
-      justifyContent: "space-between", padding: "0 20px",
+      height: "clamp(50px, 8vw, 56px)", display: "flex", alignItems: "center",
+      justifyContent: "space-between", padding: "0 clamp(12px, 3vw, 20px)",
       borderBottom: "1px solid var(--lbdr)", background: "var(--lbg)"
     }}>
       
       {/* Logo */}
-      <a href="#psxl-top" style={{ display: "flex", alignItems: "center", fontWeight: 700, color: "var(--ltx)", textDecoration: "none", fontSize: 18, letterSpacing: -0.5 }}>
+      <a href="#psxl-top" style={{ display: "flex", alignItems: "center", fontWeight: 700, color: "var(--ltx)", textDecoration: "none", fontSize: "clamp(14px, 3vw, 18px)", letterSpacing: -0.5 }}>
         PSXL<LogoMark size={28} />
       </a>
 
       {/* Desktop Links */}
-      <ul className="psxl-nav-links" style={{ display: "flex", gap: 24, listStyle: "none", margin: 0, padding: 0 }}>
+      <ul className="psxl-nav-links" style={{ display: "flex", gap: "clamp(16px, 3vw, 24px)", listStyle: "none" }}>
         {["Features", "FAQ"].map((label) => (
           <li key={label}>
-            <a href={`#psxl-${label.toLowerCase()}`} style={{ fontSize: 12, color: "var(--ltx2)", textDecoration: "none", fontWeight: 400, letterSpacing: "0.05em" }}>
+            <a href={`#psxl-${label.toLowerCase()}`} style={{ fontSize: "clamp(11px, 1.5vw, 12px)", color: "var(--ltx2)", textDecoration: "none", fontWeight: 400, letterSpacing: "0.05em" }}>
               {label}
             </a>
           </li>
@@ -375,7 +467,7 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
       </ul>
 
       {/* Right Side */}
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 2vw, 16px)" }}>
         
         {/* Theme toggle */}
         <div onClick={onToggle} style={{
@@ -390,7 +482,7 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
         </div>
 
         {/* Get Started Button - Desktop */}
-        <a href="/auth" style={{...btnPrimary, padding: "10px 20px", fontSize: 11}} className="psxl-nav-cta">
+        <a href="/auth" style={{...btnPrimary, padding: "clamp(10px, 1.5vw, 14px) clamp(16px, 2vw, 24px)", fontSize: "clamp(9px, 1.5vw, 11px)"}} className="psxl-nav-cta">
           Get Started
         </a>
 
@@ -415,23 +507,24 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
       {open && (
         <div style={{
           position: "absolute",
-          top: 56,
+          top: "100%",
           left: 0,
           right: 0,
           background: "var(--lbg)",
           borderBottom: "1px solid var(--lbdr)",
           display: "flex",
           flexDirection: "column",
-          padding: 20,
-          gap: 16
+          padding: "clamp(12px, 3vw, 20px)",
+          gap: 16,
+          zIndex: 50
         }}>
           <div style={{display:"flex",flexDirection:"column",gap:16}}>
             {["Features", "FAQ"].map((label) => (
-              <a key={label} href={`#psxl-${label.toLowerCase()}`} style={{ color: "var(--ltx)", textDecoration: "none", fontSize: 14, padding: "8px 0" }}>
+              <a key={label} href={`#psxl-${label.toLowerCase()}`} style={{ color: "var(--ltx)", textDecoration: "none", fontSize: "clamp(12px, 2vw, 14px)", padding: "8px 0" }}>
                 {label}
               </a>
             ))}
-            <a href="/auth" style={{...btnPrimary, padding: "12px 20px", fontSize: 12, marginTop: 8}}>
+            <a href="/auth" style={{...btnPrimary, padding: "clamp(11px, 2vw, 12px) 20px", fontSize: "clamp(10px, 1.5vw, 12px)", marginTop: 8, width: "100%", textAlign: "center"}}>
               Get Started
             </a>
           </div>
@@ -450,27 +543,27 @@ function Hero() {
     {label:"Transactions Logged",val:"348",         sub:"Since Jan 2024 — zero missing entries",cls:""},
   ];
   return (
-    <section id="psxl-top" style={{minHeight:"100vh",background:"var(--lbg)",paddingTop:56,display:"flex",flexDirection:"column",justifyContent:"center"}}>
-      <div className="psxl-hero" style={{display:"grid",gridTemplateColumns:"1fr 1fr",height:"calc(100vh - 56px - 32px)"}}>
-        <div className="psxl-hero-left" style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"60px 60px 60px 40px",borderRight:"1px solid var(--lbdr)"}}>
-          <p className="psxl-hero-eyebrow" style={{fontSize:10,fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:24}}>Pakistan Stock Exchange Ledger</p>
-          <h1 className="psxl-hero-h1" style={{fontSize:"clamp(52px,6vw,88px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)",marginBottom:32}}>
+    <section id="psxl-top" style={{minHeight:"100vh",background:"var(--lbg)",paddingTop:"clamp(50px, 8vw, 56px)",display:"flex",flexDirection:"column",justifyContent:"center",width:"100%",marginBottom:"clamp(24px, 5vw, 32px)",margin:0,padding:0}}>
+      <div className="psxl-hero" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"calc(100vh - clamp(50px, 8vw, 56px) - clamp(24px, 5vw, 32px))"}}>
+        <div className="psxl-hero-left" style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"clamp(30px, 5vw, 60px)"}}>
+          <p className="psxl-hero-eyebrow" style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:"clamp(16px, 3vw, 24px)"}}>Pakistan Stock Exchange Ledger</p>
+          <h1 className="psxl-hero-h1" style={{fontSize:"clamp(36px, 8vw, 88px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)",marginBottom:"clamp(20px, 3vw, 32px)"}}>
             Track every<br/>trade with<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>precision.</em>
           </h1>
-          <p className="psxl-hero-desc" style={{fontSize:15,fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",maxWidth:420,marginBottom:48}}>
+          <p className="psxl-hero-desc" style={{fontSize:"clamp(13px, 2vw, 15px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",maxWidth:420,marginBottom:"clamp(30px, 5vw, 48px)"}}>
             PSXL is the institutional-grade trading ledger built exclusively for PSX investors. Record, analyse, and report your equity positions with the clarity of a professional desk.
           </p>
-          <div className="psxl-hero-actions" style={{display:"flex",gap:16}}>
+          <div className="psxl-hero-actions" style={{display:"flex",gap:"clamp(8px, 2vw, 16px)",flexWrap:"wrap",alignItems:"center"}}>
             <a href="/auth" style={btnPrimary}>Get Started</a>
             <a href="#psxl-ledger" style={btnGhost}>View Demo</a>
           </div>
         </div>
-        <div className="psxl-hero-right" style={{display:"flex",flexDirection:"column",justifyContent:"center",gap:1,background:"var(--lbdr)"}}>
+        <div className="psxl-hero-right" style={{display:"flex",flexDirection:"column",justifyContent:"center",gap:1,background:"var(--lbdr)",minHeight:"auto"}}>
           {stats.map((s,i)=>(
-            <div key={i} style={{background:"var(--lbg)",padding:"28px 32px",display:"flex",flexDirection:"column",gap:6,borderBottom:i<stats.length-1?"1px solid var(--lbdr)":"none"}}>
-              <span style={{fontSize:10,fontWeight:400,letterSpacing:"0.15em",textTransform:"uppercase",color:"var(--ltx3)"}}>{s.label}</span>
-              <span style={{fontSize:36,fontWeight:700,letterSpacing:-1,color:s.cls==="pos"?"var(--lgrn)":"var(--ltx)"}}>{s.val}</span>
-              <span style={{fontSize:11,color:"var(--ltx3)",fontWeight:300}}>{s.sub}</span>
+            <div key={i} style={{background:"var(--lbg)",padding:"clamp(16px, 2.5vw, 28px) clamp(16px, 2.5vw, 32px)",display:"flex",flexDirection:"column",gap:6,borderBottom:i<stats.length-1?"1px solid var(--lbdr)":"none"}}>
+              <span style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:400,letterSpacing:"0.15em",textTransform:"uppercase",color:"var(--ltx3)"}}>{s.label}</span>
+              <span style={{fontSize:"clamp(24px, 4vw, 36px)",fontWeight:700,letterSpacing:-1,color:s.cls==="pos"?"var(--lgrn)":"var(--ltx)"}}>{s.val}</span>
+              <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)",fontWeight:300}}>{s.sub}</span>
             </div>
           ))}
         </div>
@@ -484,25 +577,25 @@ function FeatureCard({f}: {f:Feature}) {
   const [hov,setHov]=useState(false);
   return (
     <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:hov?"var(--lbg3)":"var(--lbg2)",padding:"40px 36px",display:"flex",flexDirection:"column",gap:16,transition:"background .2s",height:"100%"}}>
-      <span style={{fontSize:11,fontWeight:500,letterSpacing:"0.15em",color:"var(--ltx3)"}}>{f.num}</span>
+      style={{background:hov?"var(--lbg3)":"var(--lbg2)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:16,transition:"background .2s",height:"100%"}}>
+      <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:500,letterSpacing:"0.15em",color:"var(--ltx3)"}}>{f.num}</span>
       <div style={{color:"var(--lgrn)"}}>{f.icon}</div>
-      <h3 style={{fontSize:18,fontWeight:600,letterSpacing:-0.5,color:"var(--ltx)",lineHeight:1.2}}>{f.title}</h3>
-      <p style={{fontSize:13,fontWeight:300,lineHeight:1.7,color:"var(--ltx2)"}}>{f.body}</p>
-      <span style={{display:"inline-block",fontSize:10,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--lgrn)",border:"1px solid var(--lgrnD)",padding:"3px 10px",marginTop:"auto",width:"fit-content"}}>{f.tag}</span>
+      <h3 style={{fontSize:"clamp(16px, 2.5vw, 18px)",fontWeight:600,letterSpacing:-0.5,color:"var(--ltx)",lineHeight:1.2}}>{f.title}</h3>
+      <p style={{fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)"}}>{f.body}</p>
+      <span style={{display:"inline-block",fontSize:"clamp(9px, 1.5vw, 10px)",letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--lgrn)",border:"1px solid var(--lgrnD)",padding:"3px 10px",marginTop:"auto",width:"fit-content"}}>{f.tag}</span>
     </div>
   );
 }
 
 function Features() {
   return (
-    <section id="psxl-features" style={sectionBase("var(--lbg2)")}>
-      <Reveal style={{maxWidth:600,marginBottom:80}}>
+    <section id="psxl-features" style={{...sectionBase("var(--lbg2)")}}>
+      <Reveal style={{maxWidth:600,marginBottom:"clamp(40px, 8vw, 80px)"}}>
         <SectionLabel>Core Capabilities</SectionLabel><Divider/>
         <SectionH2>Every tool a PSX trader needs.</SectionH2>
         <SectionDesc>Built ground-up for the Pakistan Stock Exchange settlement cycle, tax regime, and broker ecosystem. No generic solutions.</SectionDesc>
       </Reveal>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:"var(--lbdr)"}}>
+      <div className="psxl-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:"var(--lbdr)",width:"100%"}}>
         {FEATURES.map((f,i)=><Reveal key={i} delay={i*60}><FeatureCard f={f}/></Reveal>)}
       </div>
     </section>
@@ -513,52 +606,52 @@ function Features() {
 function TradeRow({t}: {t:Trade}) {
   const [hov,setHov]=useState(false);
   const td=(content:React.ReactNode, extra?:React.CSSProperties)=>(
-    <td style={{padding:"12px 14px",fontWeight:300,...extra}}>{content}</td>
+    <td style={{padding:"clamp(8px, 1.5vw, 12px) clamp(8px, 1.5vw, 14px)",fontWeight:300,...extra}}>{content}</td>
   );
   return (
     <tr onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
       style={{borderBottom:"1px solid var(--lbdr)",background:hov?"var(--lbg3)":"transparent",transition:"background .15s"}}>
-      {td(t.date,{fontSize:11,color:"var(--ltx3)"})}
-      {td(t.sym,{fontWeight:600,fontSize:13})}
-      {td(t.sector,{fontSize:11,color:"var(--ltx3)"})}
-      {td(t.type,{color:t.type==="BUY"?"var(--lgrn)":"var(--lred)",fontWeight:500,fontSize:11})}
-      {td(t.qty.toLocaleString())}
-      {td(`₨${t.rate.toFixed(2)}`)}
-      {td(`₨${t.value.toLocaleString()}`)}
-      {td(`₨${t.charges.toLocaleString()}`,{color:"var(--ltx3)"})}
+      {td(t.date,{fontSize:"clamp(9px, 1.5vw, 11px)",color:"var(--ltx3)"})}
+      {td(t.sym,{fontWeight:600,fontSize:"clamp(11px, 1.8vw, 13px)"})}
+      {td(t.sector,{fontSize:"clamp(9px, 1.5vw, 11px)",color:"var(--ltx3)"})}
+      {td(t.type,{color:t.type==="BUY"?"var(--lgrn)":"var(--lred)",fontWeight:500,fontSize:"clamp(9px, 1.5vw, 11px)"})}
+      {td(t.qty.toLocaleString(),{fontSize:"clamp(10px, 1.5vw, 12px)"})}
+      {td(`₨${t.rate.toFixed(2)}`,{fontSize:"clamp(10px, 1.5vw, 12px)"})}
+      {td(`₨${t.value.toLocaleString()}`,{fontSize:"clamp(10px, 1.5vw, 12px)"})}
+      {td(`₨${t.charges.toLocaleString()}`,{color:"var(--ltx3)",fontSize:"clamp(9px, 1.5vw, 11px)"})}
       {td(t.pl===null?"—":`${t.pl>=0?"+":""}₨${Math.abs(t.pl).toLocaleString()}`,
-        {color:t.pl===null?"var(--ltx3)":t.pl>=0?"var(--lgrn)":"var(--lred)"})}
+        {color:t.pl===null?"var(--ltx3)":t.pl>=0?"var(--lgrn)":"var(--lred)",fontSize:"clamp(9px, 1.5vw, 11px)"})}
     </tr>
   );
 }
 
 function LedgerDemo() {
   return (
-    <section id="psxl-ledger" style={sectionBase("var(--lbg)")}>
-      <div style={{display:"grid",gridTemplateColumns:"380px 1fr",gap:60,alignItems:"center",minHeight:"calc(100vh - 160px)"}}>
+    <section id="psxl-ledger" style={{...sectionBase("var(--lbg)")}}>
+      <div className="psxl-ledger-grid" style={{display:"grid",gridTemplateColumns:"clamp(280px, 35%, 380px) 1fr",gap:"clamp(30px, 5vw, 60px)",alignItems:"start",width:"100%"}}>
         <Reveal>
           <SectionLabel>The Ledger</SectionLabel><Divider/>
           <SectionH2>Clean entries.<br/>Zero ambiguity.</SectionH2>
           <SectionDesc maxWidth={380}>Every row tells the complete story of a trade. Built like a double-entry accounting ledger — the standard institutions rely on.</SectionDesc>
-          <ul style={{listStyle:"none",display:"flex",flexDirection:"column",marginTop:40,borderTop:"1px solid var(--lbdr)"}}>
+          <ul style={{listStyle:"none",display:"flex",flexDirection:"column",marginTop:"clamp(24px, 4vw, 40px)",borderTop:"1px solid var(--lbdr)"}}>
             {["Automatic brokerage & levy calculation","Weighted average cost per symbol","Running portfolio balance after each trade","Broker statement reconciliation","Date-wise gain/loss summary","Unrealised position marking to market"].map((item,i)=>(
-              <li key={i} style={{padding:"16px 0",borderBottom:"1px solid var(--lbdr)",fontSize:13,fontWeight:300,color:"var(--ltx2)",display:"flex",alignItems:"center",gap:12}}>
+              <li key={i} style={{padding:"clamp(12px, 2vw, 16px) 0",borderBottom:"1px solid var(--lbdr)",fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,color:"var(--ltx2)",display:"flex",alignItems:"center",gap:12}}>
                 <span style={{width:6,height:6,borderRadius:"50%",background:"var(--lgrn)",flexShrink:0,display:"inline-block"}}/>{item}
               </li>
             ))}
           </ul>
         </Reveal>
         <Reveal>
-          <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",overflow:"hidden",display:"flex",flexDirection:"column",maxHeight:620}}>
-            <div style={{padding:"16px 24px",borderBottom:"1px solid var(--lbdr)",display:"flex",alignItems:"center",justifyContent:"space-between",background:"var(--lbg3)"}}>
-              <span style={{fontSize:11,fontWeight:500,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--ltx2)"}}>Trade Ledger — Q1 2026</span>
-              <span style={{fontSize:10,padding:"3px 10px",background:"var(--lgrn)",color:"#000",fontWeight:600,letterSpacing:"0.08em"}}>Live</span>
+          <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",overflow:"hidden",display:"flex",flexDirection:"column",maxHeight:"clamp(400px, 60vh, 620px)",width:"100%"}}>
+            <div style={{padding:"clamp(12px, 2vw, 16px) clamp(16px, 2vw, 24px)",borderBottom:"1px solid var(--lbdr)",display:"flex",alignItems:"center",justifyContent:"space-between",background:"var(--lbg3)"}}>
+              <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:500,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--ltx2)"}}>Trade Ledger — Q1 2026</span>
+              <span style={{fontSize:"clamp(9px, 1.5vw, 10px)",padding:"3px 10px",background:"var(--lgrn)",color:"#000",fontWeight:600,letterSpacing:"0.08em"}}>Live</span>
             </div>
             <div style={{overflowY:"auto",flex:1}}>
-              <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+              <table className="psxl-table" style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead>
                   <tr>{["Date","Symbol","Sector","Type","Qty","Rate","Value","Charges","P&L"].map(h=>(
-                    <th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:10,fontWeight:500,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--ltx3)",borderBottom:"1px solid var(--lbdr)",background:"var(--lbg3)",position:"sticky",top:0}}>{h}</th>
+                    <th key={h} style={{padding:"clamp(8px, 1.5vw, 10px) clamp(8px, 1.5vw, 14px)",textAlign:"left",fontSize:"clamp(8px, 1.2vw, 10px)",fontWeight:500,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--ltx3)",borderBottom:"1px solid var(--lbdr)",background:"var(--lbg3)",position:"sticky",top:0}}>{h}</th>
                   ))}</tr>
                 </thead>
                 <tbody>{TRADES.map((t,i)=><TradeRow key={i} t={t}/>)}</tbody>
@@ -580,43 +673,43 @@ function Analytics() {
     {label:"Best Month",   val:"+21.3%",cls:"pos"},{label:"Profit Factor", val:"2.31",  cls:"pos"},
   ];
   return (
-    <section id="psxl-analytics" style={sectionBase("var(--lbg2)")}>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center"}}>
+    <section id="psxl-analytics" style={{...sectionBase("var(--lbg2)")}}>
+      <div className="psxl-two-col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"clamp(40px, 8vw, 80px)",alignItems:"center",width:"100%"}}>
         <Reveal>
           <SectionLabel>Analytics</SectionLabel><Divider/>
           <SectionH2>Numbers that drive decisions.</SectionH2>
           <SectionDesc>Institutional reporting metrics presented cleanly. Understand your edge, your drawdowns, and your consistency over time.</SectionDesc>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:1,background:"var(--lbdr)",marginTop:48}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:1,background:"var(--lbdr)",marginTop:"clamp(30px, 5vw, 48px)",width:"100%"}}>
             {metrics.map((m,i)=>(
-              <div key={i} style={{background:"var(--lsrf)",padding:"20px 24px"}}>
-                <div style={{fontSize:10,textTransform:"uppercase",letterSpacing:"0.15em",color:"var(--ltx3)",marginBottom:6}}>{m.label}</div>
-                <div style={{fontSize:24,fontWeight:700,letterSpacing:-0.5,color:m.cls==="pos"?"var(--lgrn)":m.cls==="neg"?"var(--lred)":"var(--ltx)"}}>{m.val}</div>
+              <div key={i} style={{background:"var(--lsrf)",padding:"clamp(16px, 2.5vw, 20px) clamp(16px, 2.5vw, 24px)"}}>
+                <div style={{fontSize:"clamp(9px, 1.5vw, 10px)",textTransform:"uppercase",letterSpacing:"0.15em",color:"var(--ltx3)",marginBottom:6}}>{m.label}</div>
+                <div style={{fontSize:"clamp(18px, 3vw, 24px)",fontWeight:700,letterSpacing:-0.5,color:m.cls==="pos"?"var(--lgrn)":m.cls==="neg"?"var(--lred)":"var(--ltx)"}}>{m.val}</div>
               </div>
             ))}
           </div>
         </Reveal>
         <Reveal>
-          <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",padding:32}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:32}}>
-              <span style={{fontSize:13,fontWeight:500,color:"var(--ltx)"}}>Monthly P&L</span>
-              <span style={{fontSize:11,color:"var(--ltx3)",letterSpacing:"0.1em"}}>Jan — Dec 2025</span>
+          <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",padding:"clamp(20px, 3vw, 32px)",width:"100%"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:"clamp(20px, 3vw, 32px)"}}>
+              <span style={{fontSize:"clamp(12px, 2vw, 13px)",fontWeight:500,color:"var(--ltx)"}}>Monthly P&L</span>
+              <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)",letterSpacing:"0.1em"}}>Jan — Dec 2025</span>
             </div>
-            <div style={{display:"flex",alignItems:"flex-end",gap:10,height:160}}>
+            <div style={{display:"flex",alignItems:"flex-end",gap:"clamp(6px, 1.5vw, 10px)",height:"clamp(120px, 20vh, 160px)"}}>
               {BAR_VALS.map((v,i)=>{
                 const pct=(Math.abs(v)/maxVal)*100;
                 return (
                   <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
                     <div style={{width:"100%",background:v>=0?"var(--lgrn)":"var(--lred)",opacity:0.75,height:`${pct}%`}}/>
-                    <span style={{fontSize:9,color:"var(--ltx3)"}}>{MONTHS[i]}</span>
+                    <span style={{fontSize:"clamp(8px, 1.2vw, 9px)",color:"var(--ltx3)"}}>{MONTHS[i]}</span>
                   </div>
                 );
               })}
             </div>
-            <div style={{marginTop:24,borderTop:"1px solid var(--lbdr)",paddingTop:20,display:"flex",gap:24}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,fontSize:11,color:"var(--ltx2)"}}>
+            <div style={{marginTop:"clamp(16px, 2vw, 24px)",borderTop:"1px solid var(--lbdr)",paddingTop:"clamp(12px, 2vw, 20px)",display:"flex",gap:"clamp(12px, 2vw, 24px)",flexWrap:"wrap"}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx2)"}}>
                 <span style={{width:10,height:10,background:"var(--lgrn)",opacity:0.75,display:"inline-block"}}/> Gain
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:8,fontSize:11,color:"var(--ltx2)"}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx2)"}}>
                 <span style={{width:10,height:10,background:"var(--lred)",opacity:0.75,display:"inline-block"}}/> Loss
               </div>
             </div>
@@ -632,24 +725,24 @@ function StepCard({s}: {s:Step}) {
   const [hov,setHov]=useState(false);
   return (
     <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"40px 32px",position:"relative",transition:"background .2s",height:"100%"}}>
+      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 32px)",position:"relative",transition:"background .2s",height:"100%"}}>
       <div style={{position:"absolute",top:0,left:0,width:2,height:s.lineH,background:"var(--lgrn)"}}/>
-      <div style={{fontSize:48,fontWeight:700,letterSpacing:-2,color:"var(--lbdr2)",lineHeight:1,marginBottom:24}}>{s.num}</div>
-      <h3 style={{fontSize:16,fontWeight:600,letterSpacing:-0.3,color:"var(--ltx)",marginBottom:12}}>{s.title}</h3>
-      <p style={{fontSize:13,fontWeight:300,lineHeight:1.7,color:"var(--ltx2)"}}>{s.body}</p>
+      <div style={{fontSize:"clamp(32px, 5vw, 48px)",fontWeight:700,letterSpacing:-2,color:"var(--lbdr2)",lineHeight:1,marginBottom:"clamp(16px, 3vw, 24px)"}}>{s.num}</div>
+      <h3 style={{fontSize:"clamp(14px, 2vw, 16px)",fontWeight:600,letterSpacing:-0.3,color:"var(--ltx)",marginBottom:"clamp(8px, 1.5vw, 12px)"}}>{s.title}</h3>
+      <p style={{fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)"}}>{s.body}</p>
     </div>
   );
 }
 
 function HowItWorks() {
   return (
-    <section id="psxl-how" style={sectionBase("var(--lbg)")}>
-      <Reveal style={{maxWidth:480}}>
+    <section id="psxl-how" style={{...sectionBase("var(--lbg)")}}>
+      <Reveal style={{maxWidth:480,marginBottom:"clamp(40px, 8vw, 80px)"}}>
         <SectionLabel>Getting Started</SectionLabel><Divider/>
         <SectionH2>Up and running in minutes.</SectionH2>
         <SectionDesc>No complex setup. No data migration headaches. Just log your first trade and PSXL takes over from there.</SectionDesc>
       </Reveal>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,background:"var(--lbdr)",marginTop:80}}>
+      <div className="psxl-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,background:"var(--lbdr)",marginTop:"clamp(40px, 8vw, 80px)",width:"100%"}}>
         {STEPS.map((s,i)=><Reveal key={i} delay={i*80}><StepCard s={s}/></Reveal>)}
       </div>
     </section>
@@ -661,15 +754,15 @@ function TestiCard({t}: {t:Testimonial}) {
   const [hov,setHov]=useState(false);
   return (
     <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"40px 36px",display:"flex",flexDirection:"column",gap:20,transition:"background .2s",height:"100%"}}>
-      <p style={{fontSize:14,fontWeight:300,lineHeight:1.75,color:"var(--ltx2)",flex:1}}>
-        <span style={{color:"var(--lgrn)",fontSize:28,lineHeight:0,verticalAlign:-12,marginRight:4}}>"</span>
+      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:20,transition:"background .2s",height:"100%"}}>
+      <p style={{fontSize:"clamp(12px, 1.8vw, 14px)",fontWeight:300,lineHeight:1.75,color:"var(--ltx2)",flex:1}}>
+        <span style={{color:"var(--lgrn)",fontSize:"clamp(20px, 3vw, 28px)",lineHeight:0,verticalAlign:-12,marginRight:4}}>"</span>
         {t.quote}
       </p>
       <div style={{height:1,background:"var(--lbdr)"}}/>
       <div style={{display:"flex",flexDirection:"column",gap:3}}>
-        <span style={{fontSize:13,fontWeight:600,color:"var(--ltx)"}}>{t.name}</span>
-        <span style={{fontSize:11,fontWeight:300,color:"var(--ltx3)",letterSpacing:"0.05em"}}>{t.role}</span>
+        <span style={{fontSize:"clamp(12px, 2vw, 13px)",fontWeight:600,color:"var(--ltx)"}}>{t.name}</span>
+        <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",letterSpacing:"0.05em"}}>{t.role}</span>
       </div>
     </div>
   );
@@ -677,12 +770,12 @@ function TestiCard({t}: {t:Testimonial}) {
 
 function Testimonials() {
   return (
-    <section id="psxl-testimonials" style={sectionBase("var(--lbg)")}>
-      <Reveal style={{maxWidth:480,marginBottom:80}}>
+    <section id="psxl-testimonials" style={{...sectionBase("var(--lbg)")}}>
+      <Reveal style={{maxWidth:480,marginBottom:"clamp(40px, 8vw, 80px)"}}>
         <SectionLabel>From Investors</SectionLabel><Divider/>
         <SectionH2>What traders say.</SectionH2>
       </Reveal>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:"var(--lbdr)"}}>
+      <div className="psxl-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:"var(--lbdr)",width:"100%"}}>
         {TESTIMONIALS.map((t,i)=><Reveal key={i} delay={i*80}><TestiCard t={t}/></Reveal>)}
       </div>
     </section>
@@ -692,31 +785,31 @@ function Testimonials() {
 // ─── SECURITY ────────────────────────────────────────────────────────────────
 function Security() {
   return (
-    <section id="psxl-security" style={sectionBase("var(--lbg2)")}>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:120,alignItems:"center"}}>
+    <section id="psxl-security" style={{...sectionBase("var(--lbg2)")}}>
+      <div className="psxl-two-col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"clamp(60px, 10vw, 120px)",alignItems:"start",width:"100%"}}>
         <Reveal>
           <SectionLabel>Security & Privacy</SectionLabel><Divider/>
           <SectionH2>Your data.<br/>Your ledger.</SectionH2>
           <SectionDesc>We hold financial records to the highest standard of privacy. PSXL never sells data, never connects to your broker, and never executes trades.</SectionDesc>
-          <div style={{display:"flex",flexDirection:"column",borderTop:"1px solid var(--lbdr)",marginTop:40}}>
+          <div style={{display:"flex",flexDirection:"column",borderTop:"1px solid var(--lbdr)",marginTop:"clamp(24px, 4vw, 40px)"}}>
             {SEC_ITEMS.map((s,i)=>(
-              <div key={i} style={{padding:"24px 0",borderBottom:"1px solid var(--lbdr)",display:"flex",gap:20,alignItems:"flex-start"}}>
+              <div key={i} style={{padding:"clamp(16px, 2.5vw, 24px) 0",borderBottom:"1px solid var(--lbdr)",display:"flex",gap:"clamp(12px, 2vw, 20px)",alignItems:"flex-start"}}>
                 <div style={{color:"var(--lgrn)",flexShrink:0,marginTop:2}}>{s.icon}</div>
                 <div>
-                  <div style={{fontSize:14,fontWeight:600,color:"var(--ltx)",marginBottom:4}}>{s.title}</div>
-                  <div style={{fontSize:13,fontWeight:300,color:"var(--ltx2)",lineHeight:1.6}}>{s.body}</div>
+                  <div style={{fontSize:"clamp(12px, 2vw, 14px)",fontWeight:600,color:"var(--ltx)",marginBottom:4}}>{s.title}</div>
+                  <div style={{fontSize:"clamp(11px, 1.7vw, 13px)",fontWeight:300,color:"var(--ltx2)",lineHeight:1.6}}>{s.body}</div>
                 </div>
               </div>
             ))}
           </div>
         </Reveal>
         <Reveal>
-          <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",padding:40}}>
-            <div style={{fontSize:10,textTransform:"uppercase",letterSpacing:"0.15em",color:"var(--ltx3)",paddingBottom:20,borderBottom:"1px solid var(--lbdr)",marginBottom:20}}>System Security Status</div>
+          <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",padding:"clamp(24px, 4vw, 40px)",width:"100%"}}>
+            <div style={{fontSize:"clamp(9px, 1.5vw, 10px)",textTransform:"uppercase",letterSpacing:"0.15em",color:"var(--ltx3)",paddingBottom:"clamp(12px, 2vw, 20px)",borderBottom:"1px solid var(--lbdr)",marginBottom:"clamp(12px, 2vw, 20px)"}}>System Security Status</div>
             {SEC_STATUS.map((s,i)=>(
-              <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:i<SEC_STATUS.length-1?"1px solid var(--lbdr)":"none"}}>
-                <span style={{fontSize:12,fontWeight:300,color:"var(--ltx2)"}}>{s.key}</span>
-                <span style={{fontSize:12,fontWeight:500,color:s.danger?"var(--lred)":"var(--lgrn)",fontFamily:"monospace"}}>{s.val}</span>
+              <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"clamp(6px, 1.5vw, 10px) 0",borderBottom:i<SEC_STATUS.length-1?"1px solid var(--lbdr)":"none"}}>
+                <span style={{fontSize:"clamp(11px, 1.7vw, 12px)",fontWeight:300,color:"var(--ltx2)"}}>{s.key}</span>
+                <span style={{fontSize:"clamp(10px, 1.5vw, 12px)",fontWeight:500,color:s.danger?"var(--lred)":"var(--lgrn)",fontFamily:"monospace"}}>{s.val}</span>
               </div>
             ))}
           </div>
@@ -731,23 +824,23 @@ function FAQ() {
   const [open,setOpen]=useState<number|null>(null);
   const toggle=useCallback((i:number)=>setOpen(p=>p===i?null:i),[]);
   return (
-    <section id="psxl-faq" style={sectionBase("var(--lbg)")}>
-      <div style={{display:"grid",gridTemplateColumns:"320px 1fr",gap:120,alignItems:"start"}}>
+    <section id="psxl-faq" style={{...sectionBase("var(--lbg)")}}>
+      <div className="psxl-faq-grid" style={{display:"grid",gridTemplateColumns:"clamp(280px, 30%, 320px) 1fr",gap:"clamp(40px, 8vw, 120px)",alignItems:"start",width:"100%"}}>
         <Reveal>
           <SectionLabel>FAQ</SectionLabel><Divider/>
           <SectionH2>Common questions.</SectionH2>
           <SectionDesc maxWidth={300}>Everything you need to know before you start.</SectionDesc>
         </Reveal>
         <Reveal>
-          <div style={{display:"flex",flexDirection:"column",borderTop:"1px solid var(--lbdr)"}}>
+          <div style={{display:"flex",flexDirection:"column",borderTop:"1px solid var(--lbdr)",width:"100%"}}>
             {FAQS.map((f,i)=>(
               <div key={i} style={{borderBottom:"1px solid var(--lbdr)",overflow:"hidden"}}>
-                <button onClick={()=>toggle(i)} style={{width:"100%",background:"none",border:"none",fontFamily:ff,fontSize:14,fontWeight:400,color:open===i?"var(--lgrn)":"var(--ltx)",textAlign:"left",padding:"20px 0",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16,transition:"color .2s"}}>
+                <button onClick={()=>toggle(i)} style={{width:"100%",background:"none",border:"none",fontFamily:ff,fontSize:"clamp(12px, 1.8vw, 14px)",fontWeight:400,color:open===i?"var(--lgrn)":"var(--ltx)",textAlign:"left",padding:"clamp(14px, 2vw, 20px) 0",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16,transition:"color .2s"}}>
                   {f.q}
                   <span style={{width:12,height:12,borderRight:"1.5px solid currentColor",borderBottom:"1.5px solid currentColor",transform:open===i?"rotate(225deg)":"rotate(45deg)",transition:"transform .3s",flexShrink:0,display:"inline-block"}}/>
                 </button>
                 <div style={{maxHeight:open===i?200:0,overflow:"hidden",transition:"max-height .4s ease"}}>
-                  <p style={{fontSize:13,fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",paddingBottom:20}}>{f.a}</p>
+                  <p style={{fontSize:"clamp(11px, 1.7vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",paddingBottom:"clamp(12px, 2vw, 20px)"}}>{f.a}</p>
                 </div>
               </div>
             ))}
@@ -762,23 +855,23 @@ function FAQ() {
 function CTA() {
   const [email,setEmail]=useState("");
   return (
-    <section id="psxl-cta" style={{...sectionBase("var(--lbg2)"),alignItems:"center"}}>
-      <Reveal style={{maxWidth:680,textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",gap:24,width:"100%"}}>
+    <section id="psxl-cta" style={{...sectionBase("var(--lbg2)"),alignItems:"center",justifyContent:"center",width:"100%"}}>
+      <Reveal style={{maxWidth:680,textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",gap:"clamp(16px, 3vw, 24px)",width:"100%"}}>
         <SectionLabel>Start Today</SectionLabel>
-        <h2 style={{fontSize:"clamp(48px,5vw,80px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)"}}>
+        <h2 style={{fontSize:"clamp(32px, 6vw, 80px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)"}}>
           Your PSX ledger,<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>done right.</em>
         </h2>
-        <p style={{fontSize:15,fontWeight:300,color:"var(--ltx2)",lineHeight:1.6}}>
+        <p style={{fontSize:"clamp(12px, 1.8vw, 15px)",fontWeight:300,color:"var(--ltx2)",lineHeight:1.6}}>
           Join investors across Pakistan who track their trades the professional way. Free to start. No credit card required.
         </p>
-        <div style={{display:"flex",width:"100%",maxWidth:420,border:"1px solid var(--lbdr2)",overflow:"hidden"}}>
-          <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com"
-            style={{flex:1,fontFamily:ff,fontSize:13,fontWeight:300,color:"var(--ltx)",background:"var(--lbg)",border:"none",padding:"14px 20px",outline:"none"}}/>
-          <button style={{fontFamily:ff,fontSize:11,fontWeight:500,letterSpacing:"0.12em",textTransform:"uppercase",color:"#000",background:"var(--lgrn)",border:"none",padding:"14px 24px",cursor:"pointer",whiteSpace:"nowrap"}}>
+        <div className="psxl-cta-form" style={{display:"flex",width:"100%",maxWidth:420,border:"1px solid var(--lbdr2)",overflow:"hidden",borderRadius:"2px"}}>
+          <input className="psxl-cta-input" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com"
+            style={{flex:1,fontFamily:ff,fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,color:"var(--ltx)",background:"var(--lbg)",border:"none",padding:"clamp(12px, 2vw, 14px) clamp(14px, 2vw, 20px)",outline:"none"}}/>
+          <button className="psxl-cta-button" style={{fontFamily:ff,fontSize:"clamp(9px, 1.5vw, 11px)",fontWeight:500,letterSpacing:"0.12em",textTransform:"uppercase",color:"#000",background:"var(--lgrn)",border:"none",padding:"clamp(12px, 2vw, 14px) clamp(16px, 2vw, 24px)",cursor:"pointer",whiteSpace:"nowrap",transition:"background 0.2s ease"}}>
             Get Access
           </button>
         </div>
-        <span style={{fontSize:11,fontWeight:300,color:"var(--ltx3)",letterSpacing:"0.05em"}}>Free plan · No credit card · Cancel any time</span>
+        <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",letterSpacing:"0.05em"}}>Free plan · No credit card · Cancel any time</span>
       </Reveal>
     </section>
   );
@@ -793,22 +886,22 @@ function Footer() {
     {title:"Legal",     links:[{label:"Privacy Policy",href:"/privacy"},{label:"Terms of Use",href:"#"},{label:"Disclaimer",href:"#"},{label:"Cookie Policy",href:"#"}]},
   ];
   return (
-    <footer style={{background:"var(--lbg)",borderTop:"1px solid var(--lbdr)",padding:"60px 40px 40px",fontFamily:ff}}>
-      <div style={{display:"grid",gridTemplateColumns:"240px 1fr",gap:80,paddingBottom:48,borderBottom:"1px solid var(--lbdr)",marginBottom:40}}>
+    <footer style={{background:"var(--lbg)",borderTop:"1px solid var(--lbdr)",padding:"clamp(40px, 8vw, 60px) clamp(16px, 4vw, 40px)",fontFamily:ff,width:"100%",boxSizing:"border-box",margin:0}}>
+      <div className="psxl-footer-grid" style={{display:"grid",gridTemplateColumns:"clamp(200px, 25%, 240px) 1fr",gap:"clamp(40px, 6vw, 80px)",paddingBottom:"clamp(30px, 5vw, 48px)",borderBottom:"1px solid var(--lbdr)",marginBottom:"clamp(24px, 4vw, 40px)",width:"100%"}}>
         <div>
-          <a href="/" style={{fontSize:22,fontWeight:700,letterSpacing:-0.5,color:"var(--ltx)",marginBottom:16,display:"flex",alignItems:"center",textDecoration:"none"}}>
+          <a href="/" style={{fontSize:"clamp(18px, 3vw, 22px)",fontWeight:700,letterSpacing:-0.5,color:"var(--ltx)",marginBottom:16,display:"flex",alignItems:"center",textDecoration:"none"}}>
             PSX<LogoMark size={32}/>
           </a>
-          <p style={{fontSize:12,fontWeight:300,color:"var(--ltx3)",lineHeight:1.6}}>The institutional-grade trading ledger for Pakistan Stock Exchange investors.</p>
+          <p style={{fontSize:"clamp(11px, 1.6vw, 12px)",fontWeight:300,color:"var(--ltx3)",lineHeight:1.6}}>The institutional-grade trading ledger for Pakistan Stock Exchange investors.</p>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:40}}>
+        <div className="psxl-footer-cols" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"clamp(20px, 3vw, 40px)",width:"100%"}}>
           {cols.map((c,i)=>(
             <div key={i}>
-              <h4 style={{fontSize:11,fontWeight:500,letterSpacing:"0.15em",textTransform:"uppercase",color:"var(--ltx)",marginBottom:20}}>{c.title}</h4>
-              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:12}}>
+              <h4 style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:500,letterSpacing:"0.15em",textTransform:"uppercase",color:"var(--ltx)",marginBottom:"clamp(12px, 2vw, 20px)"}}>{c.title}</h4>
+              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:"clamp(8px, 1.5vw, 12px)"}}>
                 {c.links.map((l,j)=>(
                   <li key={j}>
-                    <a href={l.href} style={{fontSize:13,fontWeight:300,color:"var(--ltx2)",textDecoration:"none"}}>{l.label}</a>
+                    <a href={l.href} style={{fontSize:"clamp(11px, 1.6vw, 13px)",fontWeight:300,color:"var(--ltx2)",textDecoration:"none"}}>{l.label}</a>
                   </li>
                 ))}
               </ul>
@@ -816,11 +909,11 @@ function Footer() {
           ))}
         </div>
       </div>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <p style={{fontSize:11,fontWeight:300,color:"var(--ltx3)"}}>&copy; 2026 PSXL. All rights reserved. Not affiliated with the Pakistan Stock Exchange.</p>
-        <div style={{display:"flex",gap:24}}>
+      <div className="psxl-footer-bottom" style={{display:"flex",justifyContent:"space-between",alignItems:"center",width:"100%",gap:"clamp(16px, 2vw, 24px)"}}>
+        <p style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)"}}>&copy; 2026 PSXL. All rights reserved. Not affiliated with the Pakistan Stock Exchange.</p>
+        <div style={{display:"flex",gap:"clamp(12px, 2vw, 24px)",flexWrap:"wrap"}}>
           {["Privacy","Terms","Disclaimer"].map(l=>(
-            <a key={l} href="#" style={{fontSize:11,fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>{l}</a>
+            <a key={l} href="#" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>{l}</a>
           ))}
         </div>
       </div>
@@ -834,10 +927,10 @@ export default function Landing() {
   const toggle=useCallback(()=>setTheme(t=>t==="dark"?"light":"dark"),[]);
 
   return (
-    <div className="psxl-root" data-theme={theme} style={{fontFamily:ff,overflowX:"hidden"}}>
+    <div className="psxl-root" data-theme={theme} style={{fontFamily:ff,overflowX:"hidden",width:"100%",margin:0,padding:0}}>
       <style>{SCOPED_CSS}</style>
       <Nav theme={theme} onToggle={toggle}/>
-      <main>
+      <main style={{width:"100%",margin:0,padding:0}}>
         <Hero/>
         <Features/>
         <LedgerDemo/>
