@@ -176,7 +176,7 @@ export default function Analytics() {
                     borderRadius: '6px', 
                     color: 'var(--text)',
                     fontSize: '12px'
-                  }} formatter={(v: number) => [formatCurrency(v), "Equity"]} />
+                  }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} formatter={(v: number) => [formatCurrency(v), "Equity"]} />
                   <Area type="monotone" dataKey="equity" stroke="var(--green)" fill="url(#eqGrad)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -213,7 +213,7 @@ export default function Analytics() {
                       borderRadius: '6px', 
                       color: 'var(--text)',
                       fontSize: '12px'
-                    }} />
+                    }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -248,7 +248,7 @@ export default function Analytics() {
                     borderRadius: '6px', 
                     color: 'var(--text)',
                     fontSize: '12px'
-                  }} formatter={(v: number) => [formatCurrency(v), "P&L"]} />
+                  }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} formatter={(v: number) => [formatCurrency(v), "P&L"]} />
                   <Bar dataKey="pnl" radius={[2, 2, 0, 0]}>
                     {monthlyData.map((entry, index) => (
                       <Cell key={index} fill={entry.pnl >= 0 ? "#22c55e" : "#ef4444"} />
@@ -350,7 +350,7 @@ export default function Analytics() {
                       borderRadius: '6px', 
                       color: 'var(--text)',
                       fontSize: '12px'
-                    }} />
+                    }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} />
                     <Bar yAxisId="left" dataKey="trades" fill="var(--green)" radius={[4, 4, 0, 0]} opacity={0.8} name="Trades" />
                     <Line yAxisId="right" type="monotone" dataKey="pnl" stroke="#a3c45a" strokeWidth={2} dot={{ r: 3 }} name="P&L" />
                   </BarChart>
@@ -380,7 +380,7 @@ export default function Analytics() {
                     borderRadius: '6px', 
                     color: 'var(--text)',
                     fontSize: '12px'
-                  }} />
+                  }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} />
                   <Bar dataKey="wins" fill="#22c55e" radius={[4, 4, 0, 0]} opacity={0.8} name="Win Streaks" />
                   <Bar dataKey="losses" fill="#ef4444" radius={[4, 4, 0, 0]} opacity={0.8} name="Loss Streaks" />
                   <Legend iconType="circle" formatter={(value) => <span style={{ color: 'var(--text2)', fontSize: '10px' }}>{value}</span>} />
@@ -426,6 +426,8 @@ export default function Analytics() {
                         color: 'var(--text)',
                         fontSize: '12px'
                       }}
+                      itemStyle={{ color: 'var(--text)' }}
+                      labelStyle={{ color: 'var(--text)' }}
                       formatter={(value: any, name: string, props: any) => {
                         if (name === 'Risk') return [`₨${Number(value).toFixed(2)}`, 'Risk'];
                         if (name === 'Reward') return [`₨${Number(value).toFixed(2)}`, 'Reward'];
@@ -487,7 +489,7 @@ export default function Analytics() {
                       borderRadius: '6px', 
                       color: 'var(--text)',
                       fontSize: '12px'
-                    }} formatter={(v: number) => [formatCurrency(v), "Cumulative P&L"]} />
+                    }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} formatter={(v: number) => [formatCurrency(v), "Cumulative P&L"]} />
                     <Area type="monotone" dataKey="equity" stroke="var(--green)" fill="url(#cumulGrad)" strokeWidth={2} />
                     <Line type="monotone" dataKey="equity" stroke="var(--green)" strokeWidth={2} dot={false} />
                   </LineChart>

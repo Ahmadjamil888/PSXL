@@ -192,7 +192,8 @@ export default function Dashboard() {
                       color: 'var(--text)',
                       fontSize: '12px'
                     }}
-                    formatter={(value: number) => [formatCurrency(value), "Equity"]}
+                    itemStyle={{ color: 'var(--text)' }}
+                    labelStyle={{ color: 'var(--text)' }}
                   />
                   <Area 
                     type="monotone" 
@@ -248,6 +249,8 @@ export default function Dashboard() {
                       color: 'var(--text)',
                       fontSize: '12px'
                     }}
+                    itemStyle={{ color: 'var(--text)' }}
+                    labelStyle={{ color: 'var(--text)' }}
                     formatter={(value: number) => [formatCurrency(value), "P&L"]}
                   />
                   <Bar dataKey="pnl" radius={[2, 2, 0, 0]}>
@@ -304,6 +307,8 @@ export default function Dashboard() {
                       color: 'var(--text)',
                       fontSize: '12px'
                     }}
+                    itemStyle={{ color: 'var(--text)' }}
+                    labelStyle={{ color: 'var(--text)' }}
                     formatter={(value: number) => [formatCurrency(value), "P&L"]}
                   />
                   <Bar dataKey="pnl" radius={[0, 4, 4, 0]}>
@@ -369,6 +374,8 @@ export default function Dashboard() {
                       color: 'var(--text)',
                       fontSize: '12px'
                     }}
+                    itemStyle={{ color: 'var(--text)' }}
+                    labelStyle={{ color: 'var(--text)' }}
                   />
                   <Legend 
                     verticalAlign="bottom" 
@@ -417,6 +424,8 @@ export default function Dashboard() {
                       color: 'var(--text)',
                       fontSize: '12px'
                     }}
+                    itemStyle={{ color: 'var(--text)' }}
+                    labelStyle={{ color: 'var(--text)' }}
                     formatter={(value: number) => [`${value} trades`, "Count"]}
                   />
                   <Bar dataKey="count" fill="var(--green)" radius={[4, 4, 0, 0]} opacity={0.8} />
@@ -467,6 +476,8 @@ export default function Dashboard() {
                       color: 'var(--text)',
                       fontSize: '12px'
                     }}
+                    itemStyle={{ color: 'var(--text)' }}
+                    labelStyle={{ color: 'var(--text)' }}
                     formatter={(value: number) => [formatCurrency(value), "P&L"]}
                   />
                   <Area 
