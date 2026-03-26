@@ -3,7 +3,8 @@ import { formatCurrency } from "@/lib/psx";
 import { motion } from "framer-motion";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell, PieChart, Pie, CartesianGrid,
+  BarChart, Bar, Cell, PieChart, Pie, CartesianGrid, LineChart, Line, Legend,
+  ComposedChart, Scatter, ScatterChart, ZAxis, ReferenceLine
 } from "recharts";
 import { BarChart3 } from "lucide-react";
 
@@ -48,6 +49,62 @@ export default function Analytics() {
   const monthlyData = Array.from(monthlyMap.entries())
     .map(([month, pnl]) => ({ month, pnl }))
     .sort((a, b) => a.month.localeCompare(b.month));
+
+  // Day of week analysis
+  const dayOfWeekMap = new Map<string, { trades: number; pnl: number }>();
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  trades.forEach((t) => {
+    const pnl = calcPnL(t);
+    if (pnl === null) return;
+    const date = new Date(t.date);
+    const day = days[date.getDay()];
+    const existing = dayOfWeekMap.get(day) ?? { trades: 0, pnl: 0 };
+    dayOfWeekMap.set(day, { trades: existing.trades + 1, pnl: existing.pnl + pnl });
+  });
+  const dayOfWeekData = days
+    .filter(d => dayOfWeekMap.has(d))
+    .map(day => ({ day, ...dayOfWeekMap.get(day)! }));
+
+  // Risk/Reward scatter data
+  const tradeScatterData = trades
+    .filter(t => calcPnL(t) !== null)
+    .map((t, i) => {
+      const pnl = calcPnL(t)!;
+      const entry = t.entry_price;
+      const exit = t.exit_price || entry;
+      const risk = Math.abs(entry - (entry * 0.98));
+      const reward = Math.abs(exit - entry);
+      return {
+        id: i,
+        risk: risk > 0 ? risk : Math.abs(pnl) * 0.5,
+        reward: reward > 0 ? reward : Math.abs(pnl),
+        pnl,
+        symbol: t.symbol
+      };
+    })
+    .slice(0, 50);
+
+  // Consecutive wins/losses analysis
+  let streakData: { type: string; length: number }[] = [];
+  let currentStreak = { type: '', length: 0 };
+  trades
+    .filter(t => calcPnL(t) !== null)
+    .forEach((t) => {
+      const pnl = calcPnL(t)!;
+      const type = pnl >= 0 ? 'Win' : 'Loss';
+      if (currentStreak.type === type) {
+        currentStreak.length++;
+      } else {
+        if (currentStreak.type) streakData.push({ ...currentStreak });
+        currentStreak = { type, length: 1 };
+      }
+    });
+  if (currentStreak.type) streakData.push({ ...currentStreak });
+  const streakCounts = [
+    { streak: '1', wins: streakData.filter(s => s.type === 'Win' && s.length === 1).length, losses: streakData.filter(s => s.type === 'Loss' && s.length === 1).length },
+    { streak: '2-3', wins: streakData.filter(s => s.type === 'Win' && s.length >= 2 && s.length <= 3).length, losses: streakData.filter(s => s.type === 'Loss' && s.length >= 2 && s.length <= 3).length },
+    { streak: '4+', wins: streakData.filter(s => s.type === 'Win' && s.length >= 4).length, losses: streakData.filter(s => s.type === 'Loss' && s.length >= 4).length },
+  ];
 
   const hasData = trades.length > 0 && stats.closedTrades > 0;
 
@@ -270,6 +327,176 @@ export default function Analytics() {
                   </div>
                 </div>
               </div>
+            </div>
+          </motion.div>
+
+          {/* Day of Week Analysis */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="table-container reveal">
+            <div className="table-header">
+              <span className="table-header-title">Trading Days</span>
+              <span className="table-badge">Activity</span>
+            </div>
+            <div style={{ padding: '16px' }}>
+              {dayOfWeekData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={dayOfWeekData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} vertical={false} />
+                    <XAxis dataKey="day" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} />
+                    <YAxis yAxisId="left" tick={{ fill: 'var(--text3)', fontSize: 10 }} tickLine={false} axisLine={false} />
+                    <YAxis yAxisId="right" orientation="right" tick={{ fill: 'var(--text3)', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={(v) => `₨${(v/1000).toFixed(0)}k`} />
+                    <Tooltip contentStyle={{ 
+                      backgroundColor: 'var(--surface)', 
+                      border: '1px solid var(--border)', 
+                      borderRadius: '6px', 
+                      color: 'var(--text)',
+                      fontSize: '12px'
+                    }} />
+                    <Bar yAxisId="left" dataKey="trades" fill="var(--green)" radius={[4, 4, 0, 0]} opacity={0.8} name="Trades" />
+                    <Line yAxisId="right" type="monotone" dataKey="pnl" stroke="#a3c45a" strokeWidth={2} dot={{ r: 3 }} name="P&L" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[180px] flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
+                  No day-of-week data
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Win/Loss Streak Analysis */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }} className="table-container reveal">
+            <div className="table-header">
+              <span className="table-header-title">Streak Analysis</span>
+              <span className="table-badge">Consecutive</span>
+            </div>
+            <div style={{ padding: '16px' }}>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={streakCounts}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} vertical={false} />
+                  <XAxis dataKey="streak" tick={{ fill: 'var(--text3)', fontSize: 11 }} tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={{ 
+                    backgroundColor: 'var(--surface)', 
+                    border: '1px solid var(--border)', 
+                    borderRadius: '6px', 
+                    color: 'var(--text)',
+                    fontSize: '12px'
+                  }} />
+                  <Bar dataKey="wins" fill="#22c55e" radius={[4, 4, 0, 0]} opacity={0.8} name="Win Streaks" />
+                  <Bar dataKey="losses" fill="#ef4444" radius={[4, 4, 0, 0]} opacity={0.8} name="Loss Streaks" />
+                  <Legend iconType="circle" formatter={(value) => <span style={{ color: 'var(--text2)', fontSize: '10px' }}>{value}</span>} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
+
+          {/* Risk/Reward Scatter Plot */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="table-container reveal lg:col-span-2">
+            <div className="table-header">
+              <span className="table-header-title">Risk vs Reward</span>
+              <span className="table-badge">Analysis</span>
+            </div>
+            <div style={{ padding: '16px' }}>
+              {tradeScatterData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={200}>
+                  <ScatterChart>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
+                    <XAxis 
+                      type="number" 
+                      dataKey="risk" 
+                      name="Risk" 
+                      tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                      tickFormatter={(v) => `₨${v.toFixed(0)}`}
+                      label={{ value: 'Risk (₨)', position: 'bottom', fill: 'var(--text3)', fontSize: 10 }}
+                    />
+                    <YAxis 
+                      type="number" 
+                      dataKey="reward" 
+                      name="Reward" 
+                      tick={{ fill: 'var(--text3)', fontSize: 10 }}
+                      tickFormatter={(v) => `₨${v.toFixed(0)}`}
+                      label={{ value: 'Reward (₨)', angle: -90, position: 'left', fill: 'var(--text3)', fontSize: 10 }}
+                    />
+                    <ZAxis type="number" dataKey="pnl" range={[50, 400]} />
+                    <Tooltip 
+                      cursor={{ strokeDasharray: '3 3' }}
+                      contentStyle={{ 
+                        backgroundColor: 'var(--surface)', 
+                        border: '1px solid var(--border)', 
+                        borderRadius: '6px', 
+                        color: 'var(--text)',
+                        fontSize: '12px'
+                      }}
+                      formatter={(value: any, name: string, props: any) => {
+                        if (name === 'Risk') return [`₨${Number(value).toFixed(2)}`, 'Risk'];
+                        if (name === 'Reward') return [`₨${Number(value).toFixed(2)}`, 'Reward'];
+                        return [value, name];
+                      }}
+                      labelFormatter={(props: any) => `${props?.payload?.symbol || 'Trade'}`}
+                    />
+                    <ReferenceLine y={0} stroke="var(--border)" strokeDasharray="3 3" />
+                    <ReferenceLine x={0} stroke="var(--border)" strokeDasharray="3 3" />
+                    <Scatter 
+                      name="Trades" 
+                      data={tradeScatterData} 
+                      fill="var(--green)"
+                      fillOpacity={0.6}
+                    />
+                  </ScatterChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[200px] flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
+                  Log trades with stop losses to see risk/reward analysis
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* Cumulative P&L Line Chart */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }} className="table-container reveal lg:col-span-2">
+            <div className="table-header">
+              <span className="table-header-title">Cumulative Returns</span>
+              <span className="table-badge">All Time</span>
+            </div>
+            <div style={{ padding: '16px' }}>
+              {stats.equityCurve.length > 1 ? (
+                <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={stats.equityCurve}>
+                    <defs>
+                      <linearGradient id="cumulGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--green)" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="var(--green)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
+                    <XAxis 
+                      dataKey="date" 
+                      tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                      tickLine={false} 
+                      axisLine={{ stroke: 'var(--border)' }}
+                      interval="preserveStartEnd"
+                    />
+                    <YAxis 
+                      tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                      tickLine={false} 
+                      axisLine={{ stroke: 'var(--border)' }}
+                      tickFormatter={(v) => `₨${(v/1000).toFixed(0)}k`}
+                    />
+                    <Tooltip contentStyle={{ 
+                      backgroundColor: 'var(--surface)', 
+                      border: '1px solid var(--border)', 
+                      borderRadius: '6px', 
+                      color: 'var(--text)',
+                      fontSize: '12px'
+                    }} formatter={(v: number) => [formatCurrency(v), "Cumulative P&L"]} />
+                    <Area type="monotone" dataKey="equity" stroke="var(--green)" fill="url(#cumulGrad)" strokeWidth={2} />
+                    <Line type="monotone" dataKey="equity" stroke="var(--green)" strokeWidth={2} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[200px] flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
+                  Log more trades to see cumulative returns
+                </div>
+              )}
             </div>
           </motion.div>
         </div>

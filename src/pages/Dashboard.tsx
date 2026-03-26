@@ -6,7 +6,7 @@ import { TrendingUp, TrendingDown, Target, BarChart3, DollarSign, Activity, Help
 import { motion } from "framer-motion";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell, CartesianGrid,
+  BarChart, Bar, Cell, CartesianGrid, PieChart, Pie, LineChart, Line, Legend
 } from "recharts";
 import { useState, useMemo } from "react";
 
@@ -263,6 +263,232 @@ export default function Dashboard() {
             ) : (
               <div className="h-[180px] flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
                 Log trades to see daily P&L
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Additional Analytics Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Symbol Performance */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="table-container reveal"
+        >
+          <div className="table-header">
+            <span className="table-header-title">Top Symbols</span>
+            <span className="table-badge">P&L</span>
+          </div>
+          <div style={{ padding: '16px', height: '200px' }}>
+            {stats.symbolPerformance && stats.symbolPerformance.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats.symbolPerformance.slice(0, 5)} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} horizontal={false} />
+                  <XAxis type="number" hide />
+                  <YAxis 
+                    dataKey="symbol" 
+                    type="category" 
+                    tick={{ fill: 'var(--text)', fontSize: 11 }} 
+                    tickLine={false} 
+                    axisLine={false}
+                    width={50}
+                  />
+                  <Tooltip
+                    contentStyle={{ 
+                      backgroundColor: 'var(--surface)', 
+                      border: '1px solid var(--border)', 
+                      borderRadius: '6px', 
+                      color: 'var(--text)',
+                      fontSize: '12px'
+                    }}
+                    formatter={(value: number) => [formatCurrency(value), "P&L"]}
+                  />
+                  <Bar dataKey="pnl" radius={[0, 4, 4, 0]}>
+                    {stats.symbolPerformance.slice(0, 5).map((entry, index) => (
+                      <Cell key={index} fill={entry.pnl >= 0 ? "var(--green)" : "var(--red)"} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
+                No symbol data
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Win/Loss Distribution */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="table-container reveal"
+        >
+          <div className="table-header">
+            <span className="table-header-title">Win/Loss</span>
+            <span className="table-badge">Ratio</span>
+          </div>
+          <div style={{ padding: '16px', height: '200px' }}>
+            {stats.totalTrades > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <defs>
+                    <linearGradient id="winGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="var(--green)" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="var(--green)" stopOpacity={0.6} />
+                    </linearGradient>
+                    <linearGradient id="lossGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="var(--red)" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="var(--red)" stopOpacity={0.6} />
+                    </linearGradient>
+                  </defs>
+                  <Pie
+                    data={[
+                      { name: 'Wins', value: stats.wins, fill: 'url(#winGrad)' },
+                      { name: 'Losses', value: stats.losses, fill: 'url(#lossGrad)' }
+                    ]}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={30}
+                    outerRadius={60}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    <Cell fill="url(#winGrad)" />
+                    <Cell fill="url(#lossGrad)" />
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ 
+                      backgroundColor: 'var(--surface)', 
+                      border: '1px solid var(--border)', 
+                      borderRadius: '6px', 
+                      color: 'var(--text)',
+                      fontSize: '12px'
+                    }}
+                  />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={20}
+                    iconType="circle"
+                    formatter={(value) => <span style={{ color: 'var(--text2)', fontSize: '11px' }}>{value}</span>}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
+                No trades yet
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Trade Volume by Day */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+          className="table-container reveal"
+        >
+          <div className="table-header">
+            <span className="table-header-title">Trading Days</span>
+            <span className="table-badge">Volume</span>
+          </div>
+          <div style={{ padding: '16px', height: '200px' }}>
+            {stats.dayOfWeekData && stats.dayOfWeekData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats.dayOfWeekData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} vertical={false} />
+                  <XAxis 
+                    dataKey="day" 
+                    tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                    tickLine={false} 
+                    axisLine={false}
+                  />
+                  <YAxis hide />
+                  <Tooltip
+                    contentStyle={{ 
+                      backgroundColor: 'var(--surface)', 
+                      border: '1px solid var(--border)', 
+                      borderRadius: '6px', 
+                      color: 'var(--text)',
+                      fontSize: '12px'
+                    }}
+                    formatter={(value: number) => [`${value} trades`, "Count"]}
+                  />
+                  <Bar dataKey="count" fill="var(--green)" radius={[4, 4, 0, 0]} opacity={0.8} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
+                No activity data
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Monthly Trend */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="table-container reveal"
+        >
+          <div className="table-header">
+            <span className="table-header-title">Monthly Trend</span>
+            <span className="table-badge">2025</span>
+          </div>
+          <div style={{ padding: '16px', height: '200px' }}>
+            {stats.monthlyData && stats.monthlyData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={stats.monthlyData}>
+                  <defs>
+                    <linearGradient id="monthlyGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--green)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--green)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} vertical={false} />
+                  <XAxis 
+                    dataKey="month" 
+                    tick={{ fill: 'var(--text3)', fontSize: 10 }} 
+                    tickLine={false} 
+                    axisLine={false}
+                  />
+                  <YAxis hide />
+                  <Tooltip
+                    contentStyle={{ 
+                      backgroundColor: 'var(--surface)', 
+                      border: '1px solid var(--border)', 
+                      borderRadius: '6px', 
+                      color: 'var(--text)',
+                      fontSize: '12px'
+                    }}
+                    formatter={(value: number) => [formatCurrency(value), "P&L"]}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="pnl" 
+                    stroke="var(--green)" 
+                    fill="url(#monthlyGrad)" 
+                    strokeWidth={2}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="pnl" 
+                    stroke="var(--green)" 
+                    strokeWidth={2}
+                    dot={{ fill: 'var(--green)', strokeWidth: 0, r: 3 }}
+                    activeDot={{ r: 5, fill: 'var(--green)' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
+                Monthly data pending
               </div>
             )}
           </div>
