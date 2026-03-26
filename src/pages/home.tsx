@@ -61,7 +61,7 @@ interface Trade       { date: string; sym: string; sector: string; type: "BUY" |
 interface Feature     { num: string; title: string; body: string; tag: string; icon: React.ReactNode; }
 interface Step        { num: string; title: string; body: string; lineH: number; }
 interface Plan        { name: string; price: string; priceNote: string; desc: string; features: string[]; inactive: string[]; badge?: string; featured?: boolean; cta: string; }
-interface Testimonial { quote: string; name: string; role: string; }
+interface Testimonial { quote: string; name: string; role: string; avatar: string; }
 interface SecItem     { title: string; body: string; icon: React.ReactNode; }
 interface FaqItem     { q: string; a: string; }
 
@@ -146,9 +146,9 @@ const PLANS: Plan[] = [
 ];
 
 const TESTIMONIALS: Testimonial[] = [
-  {quote:"I used to maintain everything in a messy spreadsheet. PSXL replaced it entirely. The tax report alone saves me hours every year when filing with FBR.",name:"Farrukh Malik",role:"Retail Investor — Lahore"},
-  {quote:"The ledger is exactly how a professional desk would want it. Clean rows, correct charges, automatic WAC. Nothing like this existed for PSX before.",name:"Sana Qureshi",role:"Portfolio Manager — Karachi"},
-  {quote:"We use the Firm plan for our advisory clients. The multi-account view and branded PDF reports have genuinely improved how we present to investors.",name:"Ahmed Raza",role:"Director — Raza Capital Islamabad"},
+  {quote:"I used to maintain everything in a messy spreadsheet. PSXL replaced it entirely. The tax report alone saves me hours every year when filing with FBR.",name:"Farrukh Malik",role:"Retail Investor — Lahore",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=Farrukh&backgroundColor=b6e3f4"},
+  {quote:"The ledger is exactly how a professional desk would want it. Clean rows, correct charges, automatic WAC. Nothing like this existed for PSX before.",name:"Sana Qureshi",role:"Portfolio Manager — Karachi",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=Sana&backgroundColor=c0aede"},
+  {quote:"We use PSXL for our advisory clients. The multi-account view and detailed reports have genuinely improved how we present to investors.",name:"Ahmed Raza",role:"Director — Raza Capital Islamabad",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed&backgroundColor=ffdfbf"},
 ];
 
 const SEC_ITEMS: SecItem[] = [
@@ -172,11 +172,10 @@ const SEC_STATUS = [
 const FAQS: FaqItem[] = [
   {q:"Is PSXL connected to my broker?",a:"No. PSXL is a completely manual ledger. You enter trades yourself. It never connects to your brokerage account, cannot place orders, and has no access to your broker login credentials."},
   {q:"Which brokers are supported for CSV import?",a:"PSXL supports direct CSV import from AKD Securities, JS Global, Topline Securities, Arif Habib, and most other PSX brokers. For unsupported formats, you can use the standard PSXL CSV template."},
-  {q:"How is weighted average cost calculated?",a:"PSXL uses the Weighted Average Cost (WAC) method as the default, which is the standard adopted for PSX equities. FIFO is also available in Pro and Firm plans for comparison purposes."},
+  {q:"How is weighted average cost calculated?",a:"PSXL uses the Weighted Average Cost (WAC) method as the standard for PSX equities. This ensures accurate P&L calculations for all your trades."},
   {q:"Is the tax calculation legally accurate?",a:"PSXL computes capital gains tax and withholding tax based on FBR rates as currently published. Always confirm figures with a qualified tax consultant before filing. PSXL is a ledger tool, not a tax advisory service."},
-  {q:"Can I use PSXL for multiple portfolios?",a:"Multi-portfolio and multi-account support is available on the Firm plan. Pro plan users have a single ledger per account. You can export and maintain separate files if needed on lower plans."},
   {q:"Is my data backed up?",a:"Yes. All data is automatically backed up daily with 30 days of retention. You can also manually export your entire ledger to Excel or CSV at any time from the dashboard."},
-  {q:"What happens if I cancel my plan?",a:"You retain access until the end of your billing period. After that, your account moves to Starter limits. Your data is never deleted — you can export everything before or after downgrading."},
+  {q:"Is PSXL really free?",a:"Yes, PSXL is completely free to use. All features are available without any charges. We believe in providing professional-grade tools accessible to all PSX investors."},
 ];
 
 // ─── SCOPED CSS ───────────────────────────────────────────────────────────────
@@ -222,7 +221,7 @@ const SCOPED_CSS = `
   .psxl-root[data-theme="dark"] {
     --lbg:  #181818; --lbg2: #1a1a1a; --lbg3: #242424;
     --lsrf: #242424; --lbdr: rgba(255,255,255,0.06); --lbdr2:rgba(255,255,255,0.12);
-    --ltx:  #ffffff; --ltx2: #888888; --ltx3: #555555;
+    --ltx:  #ffffff; --ltx2: #ffffff; --ltx3: #555555;
     --lgrn: #a3c45a; --lgrnD:#8db84a; --lred: #ef4444;
     color-scheme: dark;
   }
@@ -230,7 +229,7 @@ const SCOPED_CSS = `
   .psxl-root[data-theme="light"] {
     --lbg:  #f8f9fa; --lbg2: #f1f3f4; --lbg3: #e8eaed;
     --lsrf: #ffffff; --lbdr: rgba(0,0,0,0.08); --lbdr2:rgba(0,0,0,0.16);
-    --ltx:  #1a1a1a; --ltx2: #666666; --ltx3: #999999;
+    --ltx:  #1a1a1a; --ltx2: #666666; --ltx3: #b3b3b3;
     --lgrn: #a3c45a; --lgrnD:#8db84a; --lred: #dc2626;
     color-scheme: light;
   }
@@ -970,9 +969,12 @@ function TestiCard({t}: {t:Testimonial}) {
         {t.quote}
       </p>
       <div style={{height:1,background:"var(--lbdr)"}}/>
-      <div style={{display:"flex",flexDirection:"column",gap:3}}>
-        <span style={{fontSize:"clamp(12px, 2vw, 13px)",fontWeight:600,color:"var(--ltx)"}}>{t.name}</span>
-        <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",letterSpacing:"0.05em"}}>{t.role}</span>
+      <div style={{display:"flex",alignItems:"center",gap:12}}>
+        <img src={t.avatar} alt={t.name} style={{width:44,height:44,borderRadius:"50%",background:"var(--lbg3)"}}/>
+        <div style={{display:"flex",flexDirection:"column",gap:3}}>
+          <span style={{fontSize:"clamp(12px, 2vw, 13px)",fontWeight:600,color:"var(--ltx)"}}>{t.name}</span>
+          <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",letterSpacing:"0.05em"}}>{t.role}</span>
+        </div>
       </div>
     </div>
   );
@@ -1016,7 +1018,7 @@ function Security() {
         <Reveal>
           <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",padding:"clamp(24px, 4vw, 40px)",width:"100%"}}>
             <div style={{fontSize:"clamp(9px, 1.5vw, 10px)",textTransform:"uppercase",letterSpacing:"0.15em",color:"var(--ltx3)",paddingBottom:"clamp(12px, 2vw, 20px)",borderBottom:"1px solid var(--lbdr)",marginBottom:"clamp(12px, 2vw, 20px)"}}>System Security Status</div>
-            {SEC_STATUS.map((s,i)=>(
+            {SEC_STATUS.map((s,i)=> (
               <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"clamp(6px, 1.5vw, 10px) 0",borderBottom:i<SEC_STATUS.length-1?"1px solid var(--lbdr)":"none"}}>
                 <span style={{fontSize:"clamp(11px, 1.7vw, 12px)",fontWeight:300,color:"var(--ltx2)"}}>{s.key}</span>
                 <span style={{fontSize:"clamp(10px, 1.5vw, 12px)",fontWeight:500,color:s.danger?"var(--lred)":"var(--lgrn)",fontFamily:"monospace"}}>{s.val}</span>
@@ -1090,10 +1092,10 @@ function CTA() {
 // ─── FOOTER ──────────────────────────────────────────────────────────────────
 function Footer() {
   const cols=[
-    {title:"Product",   links:[{label:"Features",href:"#psxl-features"},{label:"Changelog",href:"#"},{label:"Roadmap",href:"#"},{label:"Pricing",href:"#"}]},
-    {title:"Resources", links:[{label:"Documentation",href:"#"},{label:"CSV Templates",href:"#"},{label:"Tax Guide",href:"#"},{label:"Blog",href:"#"}]},
-    {title:"Company",   links:[{label:"About",href:"/about"},{label:"Contact",href:"/contact"},{label:"Press",href:"#"},{label:"Careers",href:"#"}]},
-    {title:"Legal",     links:[{label:"Privacy Policy",href:"/privacy"},{label:"Terms of Use",href:"#"},{label:"Disclaimer",href:"#"},{label:"Cookie Policy",href:"#"}]},
+    {title:"Product",   links:[{label:"Features",href:"#psxl-features"},{label:"How It Works",href:"#psxl-how"},{label:"Security",href:"#psxl-security"}]},
+    {title:"Resources", links:[{label:"Documentation",href:"/docs"},{label:"CSV Templates",href:"/templates"},{label:"Tax Guide",href:"/tax-guide"},{label:"FAQ",href:"#psxl-faq"}]},
+    {title:"Company",   links:[{label:"About",href:"/about"},{label:"Contact",href:"/contact"},{label:"Blog",href:"/blog"}]},
+    {title:"Legal",     links:[{label:"Privacy Policy",href:"/privacy"},{label:"Terms of Use",href:"/terms"},{label:"Disclaimer",href:"/disclaimer"}]},
   ];
   return (
     <footer style={{background:"var(--lbg)",borderTop:"1px solid var(--lbdr)",padding:"clamp(40px, 8vw, 60px) clamp(16px, 4vw, 40px)",fontFamily:ff,width:"100%",boxSizing:"border-box",margin:0}}>
@@ -1122,16 +1124,16 @@ function Footer() {
       <div className="psxl-footer-bottom" style={{display:"flex",justifyContent:"space-between",alignItems:"center",width:"100%",gap:"clamp(16px, 2vw, 24px)"}}>
         <p style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)"}}>&copy; 2026 PSXL. All rights reserved. Not affiliated with the Pakistan Stock Exchange.</p>
         <div style={{display:"flex",gap:"clamp(12px, 2vw, 24px)",flexWrap:"wrap"}}>
-          {["Privacy","Terms","Disclaimer"].map(l=>(
-            <a key={l} href="#" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>{l}</a>
-          ))}
+          <a href="/privacy" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Privacy</a>
+          <a href="/terms" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Terms</a>
+          <a href="/disclaimer" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Disclaimer</a>
         </div>
       </div>
     </footer>
   );
 }
 
-// ─── ROOT EXPORT ─────────────────────────────────────────────────────────────
+// ... (rest of the code remains the same)
 export default function Landing() {
   const [theme,setTheme]=useState<Theme>("dark");
   const toggle=useCallback(()=>setTheme(t=>t==="dark"?"light":"dark"),[]);
