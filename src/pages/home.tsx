@@ -543,8 +543,8 @@ function Hero() {
     {label:"Transactions Logged",val:"348",         sub:"Since Jan 2024 — zero missing entries",cls:""},
   ];
   return (
-    <section id="psxl-top" style={{minHeight:"100vh",background:"var(--lbg)",paddingTop:"clamp(50px, 8vw, 56px)",display:"flex",flexDirection:"column",justifyContent:"center",width:"100%",marginBottom:"clamp(24px, 5vw, 32px)",margin:0,padding:0}}>
-      <div className="psxl-hero" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"calc(100vh - clamp(50px, 8vw, 56px) - clamp(24px, 5vw, 32px))"}}>
+    <section id="psxl-top" style={{minHeight:"100vh",background:"var(--lbg)",paddingTop:"clamp(50px, 8vw, 56px)",display:"flex",flexDirection:"column",justifyContent:"center",width:"100%"}}>
+      <div className="psxl-hero" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"calc(100vh - clamp(50px, 8vw, 56px))",height:"auto"}}>
         <div className="psxl-hero-left" style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"clamp(30px, 5vw, 60px)"}}>
           <p className="psxl-hero-eyebrow" style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:"clamp(16px, 3vw, 24px)"}}>Pakistan Stock Exchange Ledger</p>
           <h1 className="psxl-hero-h1" style={{fontSize:"clamp(36px, 8vw, 88px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)",marginBottom:"clamp(20px, 3vw, 32px)"}}>
@@ -665,53 +665,263 @@ function LedgerDemo() {
 }
 
 // ─── ANALYTICS ───────────────────────────────────────────────────────────────
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine, AreaChart, Area, PieChart, Pie } from 'recharts';
+
+const monthlyData = [
+  { month: 'Jan', value: 8.2, label: '+8.2%' },
+  { month: 'Feb', value: -2.1, label: '-2.1%' },
+  { month: 'Mar', value: 14.3, label: '+14.3%' },
+  { month: 'Apr', value: 6.7, label: '+6.7%' },
+  { month: 'May', value: 11.2, label: '+11.2%' },
+  { month: 'Jun', value: -4.8, label: '-4.8%' },
+  { month: 'Jul', value: 9.1, label: '+9.1%' },
+  { month: 'Aug', value: 7.4, label: '+7.4%' },
+  { month: 'Sep', value: 21.3, label: '+21.3%' },
+  { month: 'Oct', value: 5.9, label: '+5.9%' },
+  { month: 'Nov', value: -1.2, label: '-1.2%' },
+  { month: 'Dec', value: 13.6, label: '+13.6%' },
+];
+
+const sectorData = [
+  { name: 'Banking', value: 35, color: '#a3c45a' },
+  { name: 'Cement', value: 25, color: '#8db84a' },
+  { name: 'E&P', value: 20, color: '#6fa33a' },
+  { name: 'Tech', value: 12, color: '#4a8a2a' },
+  { name: 'Fertilizer', value: 8, color: '#2d6a1a' },
+];
+
 function Analytics() {
-  const maxVal=Math.max(...BAR_VALS.map(Math.abs));
-  const metrics=[
-    {label:"Win Rate",     val:"68.4%", cls:"pos"},{label:"Avg Hold",      val:"18.2d", cls:""},
-    {label:"Max Drawdown", val:"−8.1%", cls:"neg"},{label:"Sharpe Ratio",  val:"1.74",  cls:"pos"},
-    {label:"Best Month",   val:"+21.3%",cls:"pos"},{label:"Profit Factor", val:"2.31",  cls:"pos"},
+  const metrics = [
+    { label: "Win Rate", val: "68.4%", cls: "pos" },
+    { label: "Avg Hold", val: "18.2d", cls: "" },
+    { label: "Max Drawdown", val: "−8.1%", cls: "neg" },
+    { label: "Sharpe Ratio", val: "1.74", cls: "pos" },
+    { label: "Best Month", val: "+21.3%", cls: "pos" },
+    { label: "Profit Factor", val: "2.31", cls: "pos" },
   ];
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const val = payload[0].value;
+      return (
+        <div style={{
+          background: 'var(--lbg2)',
+          border: '1px solid var(--lbdr)',
+          borderRadius: '4px',
+          padding: '8px 12px',
+          fontSize: '12px',
+          color: 'var(--ltx)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+        }}>
+          <strong>{label}</strong>
+          <div style={{ color: val >= 0 ? 'var(--lgrn)' : 'var(--lred)', fontWeight: 600 }}>
+            {val > 0 ? '+' : ''}{val}%
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
-    <section id="psxl-analytics" style={{...sectionBase("var(--lbg2)")}}>
-      <div className="psxl-two-col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"clamp(40px, 8vw, 80px)",alignItems:"center",width:"100%"}}>
+    <section id="psxl-analytics" style={{ ...sectionBase("var(--lbg2)") }}>
+      <div className="psxl-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(40px, 8vw, 80px)", alignItems: "start", width: "100%" }}>
         <Reveal>
-          <SectionLabel>Analytics</SectionLabel><Divider/>
+          <SectionLabel>Analytics</SectionLabel>
+          <Divider />
           <SectionH2>Numbers that drive decisions.</SectionH2>
           <SectionDesc>Institutional reporting metrics presented cleanly. Understand your edge, your drawdowns, and your consistency over time.</SectionDesc>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:1,background:"var(--lbdr)",marginTop:"clamp(30px, 5vw, 48px)",width:"100%"}}>
-            {metrics.map((m,i)=>(
-              <div key={i} style={{background:"var(--lsrf)",padding:"clamp(16px, 2.5vw, 20px) clamp(16px, 2.5vw, 24px)"}}>
-                <div style={{fontSize:"clamp(9px, 1.5vw, 10px)",textTransform:"uppercase",letterSpacing:"0.15em",color:"var(--ltx3)",marginBottom:6}}>{m.label}</div>
-                <div style={{fontSize:"clamp(18px, 3vw, 24px)",fontWeight:700,letterSpacing:-0.5,color:m.cls==="pos"?"var(--lgrn)":m.cls==="neg"?"var(--lred)":"var(--ltx)"}}>{m.val}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, background: "var(--lbdr)", marginTop: "clamp(30px, 5vw, 48px)", width: "100%" }}>
+            {metrics.map((m, i) => (
+              <div key={i} style={{ background: "var(--lsrf)", padding: "clamp(16px, 2.5vw, 20px) clamp(16px, 2.5vw, 24px)" }}>
+                <div style={{ fontSize: "clamp(9px, 1.5vw, 10px)", textTransform: "uppercase", letterSpacing: "0.15em", color: "var(--ltx3)", marginBottom: 6 }}>{m.label}</div>
+                <div style={{ fontSize: "clamp(18px, 3vw, 24px)", fontWeight: 700, letterSpacing: -0.5, color: m.cls === "pos" ? "var(--lgrn)" : m.cls === "neg" ? "var(--lred)" : "var(--ltx)" }}>{m.val}</div>
               </div>
             ))}
           </div>
         </Reveal>
         <Reveal>
-          <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",padding:"clamp(20px, 3vw, 32px)",width:"100%"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:"clamp(20px, 3vw, 32px)"}}>
-              <span style={{fontSize:"clamp(12px, 2vw, 13px)",fontWeight:500,color:"var(--ltx)"}}>Monthly P&L</span>
-              <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)",letterSpacing:"0.1em"}}>Jan — Dec 2025</span>
+          <div style={{ background: "var(--lsrf)", border: "1px solid var(--lbdr)", borderRadius: "4px", padding: "clamp(20px, 3vw, 32px)", width: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "clamp(20px, 3vw, 32px)" }}>
+              <span style={{ fontSize: "clamp(12px, 2vw, 13px)", fontWeight: 500, color: "var(--ltx)" }}>Monthly P&L Performance</span>
+              <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx3)", letterSpacing: "0.1em" }}>2025</span>
             </div>
-            <div style={{display:"flex",alignItems:"flex-end",gap:"clamp(6px, 1.5vw, 10px)",height:"clamp(120px, 20vh, 160px)"}}>
-              {BAR_VALS.map((v,i)=>{
-                const pct=(Math.abs(v)/maxVal)*100;
-                return (
-                  <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
-                    <div style={{width:"100%",background:v>=0?"var(--lgrn)":"var(--lred)",opacity:0.75,height:`${pct}%`}}/>
-                    <span style={{fontSize:"clamp(8px, 1.2vw, 9px)",color:"var(--ltx3)"}}>{MONTHS[i]}</span>
-                  </div>
-                );
-              })}
+            <div style={{ height: "clamp(180px, 30vh, 220px)", width: "100%" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="gainGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#a3c45a" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#8db84a" stopOpacity={0.8} />
+                    </linearGradient>
+                    <linearGradient id="lossGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#ef4444" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="#dc2626" stopOpacity={0.7} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="month"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: 'var(--ltx3)', fontSize: 10, fontWeight: 300 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: 'var(--ltx3)', fontSize: 10, fontWeight: 300 }}
+                    tickFormatter={(val) => `${val}%`}
+                  />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--lbg)', opacity: 0.5 }} />
+                  <ReferenceLine y={0} stroke="var(--lbdr2)" strokeDasharray="3 3" />
+                  <Bar dataKey="value" radius={[3, 3, 3, 3]} maxBarSize={32}>
+                    {monthlyData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.value >= 0 ? 'url(#gainGradient)' : 'url(#lossGradient)'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-            <div style={{marginTop:"clamp(16px, 2vw, 24px)",borderTop:"1px solid var(--lbdr)",paddingTop:"clamp(12px, 2vw, 20px)",display:"flex",gap:"clamp(12px, 2vw, 24px)",flexWrap:"wrap"}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx2)"}}>
-                <span style={{width:10,height:10,background:"var(--lgrn)",opacity:0.75,display:"inline-block"}}/> Gain
+            <div style={{ marginTop: "clamp(16px, 2vw, 24px)", borderTop: "1px solid var(--lbdr)", paddingTop: "clamp(12px, 2vw, 20px)", display: "flex", gap: "clamp(12px, 2vw, 24px)", flexWrap: "wrap", justifyContent: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx2)" }}>
+                <span style={{ width: 12, height: 12, background: "linear-gradient(135deg, #a3c45a, #8db84a)", borderRadius: "2px", display: "inline-block" }} /> Gain
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:8,fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx2)"}}>
-                <span style={{width:10,height:10,background:"var(--lred)",opacity:0.75,display:"inline-block"}}/> Loss
+              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx2)" }}>
+                <span style={{ width: 12, height: 12, background: "linear-gradient(135deg, #ef4444, #dc2626)", borderRadius: "2px", display: "inline-block" }} /> Loss
               </div>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+
+      {/* Second Row - Portfolio Allocation & Performance Trend */}
+      <div className="psxl-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(40px, 8vw, 80px)", marginTop: "clamp(40px, 6vw, 60px)", width: "100%" }}>
+        <Reveal>
+          <div style={{ background: "var(--lsrf)", border: "1px solid var(--lbdr)", borderRadius: "4px", padding: "clamp(20px, 3vw, 32px)", width: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "clamp(16px, 2vw, 24px)" }}>
+              <span style={{ fontSize: "clamp(12px, 2vw, 13px)", fontWeight: 500, color: "var(--ltx)" }}>Portfolio Allocation</span>
+              <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx3)", letterSpacing: "0.1em" }}>By Sector</span>
+            </div>
+            <div style={{ height: "clamp(180px, 30vh, 220px)", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <defs>
+                    {sectorData.map((entry, index) => (
+                      <linearGradient key={`grad-${index}`} id={`sectorGrad-${index}`} x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor={entry.color} stopOpacity={1} />
+                        <stop offset="100%" stopColor={entry.color} stopOpacity={0.7} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <Pie
+                    data={sectorData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={3}
+                    dataKey="value"
+                    animationBegin={0}
+                    animationDuration={1000}
+                  >
+                    {sectorData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={`url(#sectorGrad-${index})`} stroke="var(--lsrf)" strokeWidth={2} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    content={({ active, payload }: any) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div style={{
+                            background: 'var(--lbg2)',
+                            border: '1px solid var(--lbdr)',
+                            borderRadius: '4px',
+                            padding: '8px 12px',
+                            fontSize: '12px',
+                            color: 'var(--ltx)'
+                          }}>
+                            <strong>{payload[0].name}</strong>
+                            <div style={{ color: 'var(--lgrn)', fontWeight: 600 }}>{payload[0].value}%</div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "clamp(8px, 1.5vw, 12px)", justifyContent: "center", marginTop: "clamp(12px, 2vw, 16px)" }}>
+              {sectorData.map((s, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "clamp(9px, 1.3vw, 11px)", color: "var(--ltx2)" }}>
+                  <span style={{ width: 8, height: 8, background: s.color, borderRadius: "50%", display: "inline-block" }} />
+                  {s.name}
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+        <Reveal>
+          <div style={{ background: "var(--lsrf)", border: "1px solid var(--lbdr)", borderRadius: "4px", padding: "clamp(20px, 3vw, 32px)", width: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "clamp(16px, 2vw, 24px)" }}>
+              <span style={{ fontSize: "clamp(12px, 2vw, 13px)", fontWeight: 500, color: "var(--ltx)" }}>Cumulative Returns</span>
+              <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--lgrn)", fontWeight: 600 }}>+94.3% YTD</span>
+            </div>
+            <div style={{ height: "clamp(180px, 30vh, 220px)", width: "100%" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={monthlyData.map((d, i) => ({ ...d, cumulative: monthlyData.slice(0, i + 1).reduce((acc, curr) => acc + curr.value, 100) }))} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#a3c45a" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#a3c45a" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="month"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: 'var(--ltx3)', fontSize: 10, fontWeight: 300 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: 'var(--ltx3)', fontSize: 10, fontWeight: 300 }}
+                    tickFormatter={(val) => `${val}%`}
+                    domain={['dataMin - 10', 'dataMax + 10']}
+                  />
+                  <Tooltip
+                    content={({ active, payload, label }: any) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div style={{
+                            background: 'var(--lbg2)',
+                            border: '1px solid var(--lbdr)',
+                            borderRadius: '4px',
+                            padding: '8px 12px',
+                            fontSize: '12px',
+                            color: 'var(--ltx)'
+                          }}>
+                            <strong>{label}</strong>
+                            <div style={{ color: 'var(--lgrn)', fontWeight: 600 }}>
+                              Portfolio: {payload[0].value.toFixed(1)}%
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="cumulative"
+                    stroke="#a3c45a"
+                    strokeWidth={2}
+                    fill="url(#areaGradient)"
+                    animationDuration={1500}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </Reveal>
