@@ -117,17 +117,32 @@ export function PublicNav() {
             }} />
           </div>
 
-          {/* Get Started — desktop only */}
+          {/* Get Started + Try as Guest — desktop only */}
           {!isMobile && (
-            <Link to="/auth" style={{
-              padding: "9px 18px", fontSize: "11px", fontWeight: 600,
-              letterSpacing: "0.1em", textTransform: "uppercase",
-              background: "var(--green)", color: "#000",
-              borderRadius: "4px", textDecoration: "none",
-              whiteSpace: "nowrap",
-            }}>
-              Get Started
-            </Link>
+            <>
+              <Link to="/dashboard?mode=guest" style={{
+                padding: "9px 18px", fontSize: "11px", fontWeight: 600,
+                letterSpacing: "0.1em", textTransform: "uppercase",
+                background: "transparent", color: textColor,
+                border: `1px solid ${borderColor}`,
+                borderRadius: "4px", textDecoration: "none",
+                whiteSpace: "nowrap", transition: "border-color 0.2s",
+              }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--green)")}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = borderColor)}
+              >
+                Try as Guest
+              </Link>
+              <Link to="/auth" style={{
+                padding: "9px 18px", fontSize: "11px", fontWeight: 600,
+                letterSpacing: "0.1em", textTransform: "uppercase",
+                background: "var(--green)", color: "#000",
+                borderRadius: "4px", textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}>
+                Get Started
+              </Link>
+            </>
           )}
 
           {/* Hamburger — mobile only */}
@@ -174,6 +189,15 @@ export function PublicNav() {
             fontSize: "12px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
           }}>
             Get Started — Free
+          </Link>
+          <Link to="/dashboard?mode=guest" style={{
+            marginTop: "8px", textAlign: "center", textDecoration: "none",
+            display: "block", padding: "13px", borderRadius: "4px",
+            background: "transparent", color: textColor,
+            border: `1px solid ${borderColor}`,
+            fontSize: "12px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
+          }}>
+            Try as Guest
           </Link>
         </div>
       )}

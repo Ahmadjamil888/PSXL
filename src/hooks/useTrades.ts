@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGuest } from "@/contexts/GuestContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export interface Trade {
@@ -31,7 +32,17 @@ export interface TradeInput {
 
 export function useTrades() {
   const { user } = useAuth();
-  return useQuery({
+  const { isGuest, guestTrades } = useGuest();
+
+  // Guest mode: wrap local trades in a query-like shape
+  const guestQuery = useQuery({
+    queryKey: ["trades", "guest", guestTrades.length],
+    queryFn: () => Promise.resolve(guestTrades),
+    enabled: isGuest,
+    staleTime: Infinity,
+  });
+
+  const dbQuery = useQuery({
     queryKey: ["trades", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -42,19 +53,27 @@ export function useTrades() {
       if (error) throw error;
       return data as Trade[];
     },
-    enabled: !!user,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    enabled: !!user && !isGuest,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
+
+  if (isGuest) return { ...guestQuery, data: guestTrades };
+  return dbQuery;
 }
 
 export function useAddTrade() {
   const { user } = useAuth();
+  const { isGuest, addGuestTrade } = useGuest();
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (trade: TradeInput) => {
+      if (isGuest) {
+        return addGuestTrade(trade);
+      }
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("trades")
@@ -81,9 +100,15 @@ export function useAddTrade() {
 }
 
 export function useDeleteTrade() {
+  const { isGuest, deleteGuestTrade } = useGuest();
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (tradeId: string) => {
+      if (isGuest) {
+        deleteGuestTrade(tradeId);
+        return;
+      }
       const { error } = await supabase.from("trades").delete().eq("id", tradeId);
       if (error) throw error;
     },

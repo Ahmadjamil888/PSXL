@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGuest, getGuestTradesForMigration } from "@/contexts/GuestContext";
+import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Mail } from "lucide-react";
+import { Eye, EyeOff, Mail, Zap } from "lucide-react";
 import { toast } from "sonner";
 import ThemeToggle from "@/components/ThemeToggle";
 import Logo from "@/components/Logo";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function AuthPage() {
   const { signIn, signUp, signInWithGoogle, user } = useAuth();
+  const { clearGuestData, exitGuestMode } = useGuest();
   const navigate = useNavigate();
-  const location = useLocation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,24 +21,48 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [callbackLoading, setCallbackLoading] = useState(true);
 
+  // After auth: migrate guest trades → DB, then redirect
+  const migrateAndRedirect = async (userId: string) => {
+    const guestTrades = getGuestTradesForMigration();
+    if (guestTrades.length > 0) {
+      try {
+        const rows = guestTrades.map(t => ({
+          user_id: userId,
+          symbol: t.symbol,
+          side: t.side,
+          quantity: t.quantity,
+          entry_price: t.entry_price,
+          exit_price: t.exit_price ?? null,
+          fees: t.fees ?? 0,
+          note: t.note ?? null,
+          date: t.date ?? new Date().toISOString().split("T")[0],
+        }));
+        await supabase.from("trades").insert(rows);
+        clearGuestData();
+        exitGuestMode();
+        toast.success(`✅ ${guestTrades.length} trade${guestTrades.length > 1 ? "s" : ""} saved to your account!`);
+      } catch {
+        toast.error("Couldn't migrate guest trades — please re-enter them.");
+      }
+    } else {
+      exitGuestMode();
+    }
+    navigate("/dashboard", { replace: true });
+  };
+
   // Handle OAuth callback
   useEffect(() => {
-    // Check if user is already logged in (from OAuth callback)
     if (user) {
-      navigate('/dashboard', { replace: true });
+      migrateAndRedirect(user.id);
       return;
     }
-    
-    // Check for hash fragment (OAuth callback)
     const hash = window.location.hash;
-    if (hash && (hash.includes('access_token') || hash.includes('refresh_token'))) {
-      // Supabase handles the hash automatically, we just need to wait for auth state change
-      // The user will be set by AuthContext, which will trigger the redirect above
+    if (hash && (hash.includes("access_token") || hash.includes("refresh_token"))) {
       setTimeout(() => setCallbackLoading(false), 2000);
     } else {
       setCallbackLoading(false);
     }
-  }, [user, navigate]);
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -328,6 +354,34 @@ export default function AuthPage() {
             >
               {isLogin ? "Sign up" : "Sign in"}
             </button>
+          </p>
+
+          {/* Divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0 0' }}>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+            <span style={{ fontSize: '11px', color: 'var(--text3)', whiteSpace: 'nowrap' }}>or</span>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+          </div>
+
+          {/* Try as Guest */}
+          <Link
+            to="/dashboard?mode=guest"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              marginTop: '14px', padding: '13px',
+              background: 'transparent', border: '1px solid var(--border)',
+              borderRadius: '4px', textDecoration: 'none',
+              fontSize: '13px', fontWeight: '500', color: 'var(--text)',
+              transition: 'border-color 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--green)')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+          >
+            <Zap size={14} style={{ color: 'var(--green)' }} />
+            Try as Guest — no signup required
+          </Link>
+          <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text3)', marginTop: '8px' }}>
+            Start tracking in seconds. Your data stays local.
           </p>
         </div>
       </motion.div>
