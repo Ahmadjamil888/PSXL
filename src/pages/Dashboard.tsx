@@ -110,24 +110,30 @@ export default function Dashboard() {
 
       {/* Stat cards */}
       <div className="stat-grid">
-        <div className="stat-card" style={{ padding: "20px 22px" }}>
+        <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
           <span className="stat-label" style={{ color: "var(--text2)" }}>Portfolio P&L</span>
-          <span className={`stat-val ${stats.totalPnL >= 0 ? "pos" : "neg"}`} style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}>{formatCurrency(stats.totalPnL)}</span>
+          <span className={`stat-val ${stats.totalPnL >= 0 ? "pos" : "neg"}`}
+            style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", wordBreak: "break-all", lineHeight: 1.2 }}>
+            {formatCurrency(stats.totalPnL)}
+          </span>
           <span className="stat-sub">{stats.closedTrades} closed trades</span>
         </div>
-        <div className="stat-card" style={{ padding: "20px 22px" }}>
+        <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
           <span className="stat-label" style={{ color: "var(--text2)" }}>Today's Profit</span>
-          <span className={`stat-val ${stats.todayPnL >= 0 ? "pos" : stats.todayPnL < 0 ? "neg" : ""}`}>{formatCurrency(stats.todayPnL)}</span>
+          <span className={`stat-val ${stats.todayPnL >= 0 ? "pos" : stats.todayPnL < 0 ? "neg" : ""}`}
+            style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", wordBreak: "break-all", lineHeight: 1.2 }}>
+            {formatCurrency(stats.todayPnL)}
+          </span>
           <span className="stat-sub">Real-time tracking</span>
         </div>
-        <div className="stat-card" style={{ padding: "20px 22px" }}>
+        <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
           <span className="stat-label" style={{ color: "var(--text2)" }}>Win Rate <HelpCircle className="w-3 h-3 ml-1 inline-block" style={{ color: "var(--text3)" }} /></span>
-          <span className="stat-val">{stats.winRate.toFixed(1)}%</span>
+          <span className="stat-val" style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", lineHeight: 1.2 }}>{stats.winRate.toFixed(1)}%</span>
           <span className="stat-sub">{stats.wins}W / {stats.losses}L</span>
         </div>
-        <div className="stat-card" style={{ padding: "20px 22px" }}>
+        <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
           <span className="stat-label" style={{ color: "var(--text2)" }}>Total Trades</span>
-          <span className="stat-val">{stats.totalTrades}</span>
+          <span className="stat-val" style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", lineHeight: 1.2 }}>{stats.totalTrades}</span>
           <span className="stat-sub">{formatCurrency(stats.totalVolume)} volume</span>
         </div>
       </div>

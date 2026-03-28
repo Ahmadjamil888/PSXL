@@ -536,12 +536,14 @@ img {
 
 .dashboard-app .stat-val {
   font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-size: clamp(1.1rem, 3.5vw, 1.75rem);
   font-weight: 600;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
   color: var(--text);
-  line-height: 1.15;
+  line-height: 1.2;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .dashboard-app .stat-val.pos {
@@ -579,6 +581,8 @@ img {
   padding: 16px 18px;
   gap: 4px;
   min-height: 0;
+  overflow: hidden;
+  min-width: 0;
   border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;

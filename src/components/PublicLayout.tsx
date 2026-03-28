@@ -15,9 +15,11 @@ const FOOTER_LINKS = {
   Product: [
     { label: "Features", href: "/features" },
     { label: "Analytics", href: "/analytics-info" },
+    { label: "Pricing", href: "/pricing" },
   ],
   Company: [
     { label: "About", href: "/about" },
+    { label: "Blog", href: "/blog" },
     { label: "Careers", href: "/careers" },
     { label: "Contact", href: "/contact" },
   ],
@@ -29,7 +31,6 @@ const FOOTER_LINKS = {
   ],
 };
 
-// Resolve "system" to actual dark/light
 function useResolvedTheme(): "dark" | "light" {
   const { theme } = useTheme();
   if (theme === "system") {
@@ -40,23 +41,27 @@ function useResolvedTheme(): "dark" | "light" {
 
 export function PublicNav() {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
   const { theme, setTheme } = useTheme();
   const resolved = useResolvedTheme();
 
+  // Track viewport width to switch between mobile/desktop nav
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
+  // Close menu on route change
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
-  const navBg = resolved === "dark" ? "#000000" : "#ffffff";
+  const navBg = "var(--chrome-bg)";
   const borderColor = resolved === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   const textColor = resolved === "dark" ? "#ffffff" : "#000000";
   const textMuted = resolved === "dark" ? "#888888" : "#666666";
+
   return (
     <>
       <nav style={{
@@ -64,107 +69,112 @@ export function PublicNav() {
         height: "56px", display: "flex", alignItems: "center",
         justifyContent: "space-between",
         padding: "0 clamp(16px, 4vw, 40px)",
-        borderBottom: `1px solid ${scrolled ? borderColor : "transparent"}`,
-        background: "var(--chrome-bg)",
-        transition: "border-color 0.3s ease",
+        borderBottom: `1px solid ${borderColor}`,
+        background: navBg,
       }}>
         {/* Logo */}
-        <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0 }}>
           <Logo height={30} />
         </Link>
 
         {/* Desktop links */}
-        <ul style={{ display: "flex", gap: "clamp(16px, 3vw, 32px)", listStyle: "none", margin: 0, padding: 0 }}
-          className="hidden md:flex">
-          {NAV_LINKS.map((l) => (
-            <li key={l.href}>
-              <Link to={l.href} style={{
-                fontSize: "12px", fontWeight: 500, letterSpacing: "0.08em",
-                textTransform: "uppercase", textDecoration: "none",
-                color: location.pathname === l.href ? textColor : textMuted,
-                transition: "color 0.2s",
-              }}
-                onMouseEnter={e => (e.currentTarget.style.color = textColor)}
-                onMouseLeave={e => (e.currentTarget.style.color = location.pathname === l.href ? textColor : textMuted)}
-              >{l.label}</Link>
-            </li>
-          ))}
-        </ul>
+        {!isMobile && (
+          <ul style={{ display: "flex", gap: "clamp(16px, 3vw, 32px)", listStyle: "none", margin: 0, padding: 0 }}>
+            {NAV_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link to={l.href} style={{
+                  fontSize: "12px", fontWeight: 500, letterSpacing: "0.08em",
+                  textTransform: "uppercase", textDecoration: "none",
+                  color: location.pathname === l.href ? textColor : textMuted,
+                  transition: "color 0.2s",
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.color = textColor)}
+                  onMouseLeave={e => (e.currentTarget.style.color = location.pathname === l.href ? textColor : textMuted)}
+                >{l.label}</Link>
+              </li>
+            ))}
+          </ul>
+        )}
 
         {/* Right side */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {/* Theme toggle pill */}
           <div
             onClick={() => setTheme(resolved === "dark" ? "light" : "dark")}
             style={{
-              width: 44, height: 24,
-              background: resolved === "dark" ? "#1a1a1a" : "#e8e8e8",
+              width: 40, height: 22,
+              background: resolved === "dark" ? "#1a1a1a" : "#e0e0e0",
               border: `1px solid ${borderColor}`,
-              borderRadius: 12, cursor: "pointer", position: "relative",
-              display: "flex", alignItems: "center", padding: "0 4px", flexShrink: 0,
+              borderRadius: 11, cursor: "pointer",
+              display: "flex", alignItems: "center", padding: "0 3px", flexShrink: 0,
             }}
             aria-label="Toggle theme"
           >
             <div style={{
-              width: 16, height: 16, borderRadius: "50%", background: "var(--green)",
-              transform: resolved === "dark" ? "translateX(0)" : "translateX(20px)",
+              width: 14, height: 14, borderRadius: "50%", background: "var(--green)",
+              transform: resolved === "dark" ? "translateX(0)" : "translateX(18px)",
               transition: "transform 0.2s ease",
             }} />
           </div>
 
-          <Link to="/auth"
-            className="hidden md:inline-flex"
-            style={{
-              padding: "10px 20px", fontSize: "11px", fontWeight: 500,
+          {/* Get Started — desktop only */}
+          {!isMobile && (
+            <Link to="/auth" style={{
+              padding: "9px 18px", fontSize: "11px", fontWeight: 600,
               letterSpacing: "0.1em", textTransform: "uppercase",
               background: "var(--green)", color: "#000",
-              border: "none", borderRadius: "4px", textDecoration: "none",
-              cursor: "pointer", whiteSpace: "nowrap",
+              borderRadius: "4px", textDecoration: "none",
+              whiteSpace: "nowrap",
             }}>
-            Get Started
-          </Link>
+              Get Started
+            </Link>
+          )}
 
-          {/* Hamburger */}
-          <button
-            className="md:hidden"
-            onClick={() => setOpen(!open)}
-            style={{ background: "none", border: `1px solid ${borderColor}`, padding: "8px", cursor: "pointer", color: textColor, borderRadius: "4px" }}
-            aria-label="Toggle menu"
-          >
-            {open ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          {/* Hamburger — mobile only */}
+          {isMobile && (
+            <button
+              onClick={() => setOpen(v => !v)}
+              style={{
+                background: "none", border: `1px solid ${borderColor}`,
+                padding: "7px", cursor: "pointer", color: textColor,
+                borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+              aria-label="Toggle menu"
+            >
+              {open ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          )}
         </div>
       </nav>
 
-      {/* Mobile menu */}
-      {open && (
+      {/* Mobile slide-down menu */}
+      {isMobile && open && (
         <div style={{
           position: "fixed", top: "56px", left: 0, right: 0, zIndex: 99,
-          background: "var(--chrome-bg)", borderBottom: `1px solid ${borderColor}`,
-          padding: "16px clamp(16px, 4vw, 40px) 24px",
+          background: navBg, borderBottom: `1px solid ${borderColor}`,
+          padding: "8px clamp(16px, 4vw, 40px) 20px",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
         }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            {NAV_LINKS.map((l) => (
-              <Link key={l.href} to={l.href} style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "14px 0", fontSize: "14px", fontWeight: 500,
-                color: textColor, textDecoration: "none",
-                borderBottom: `1px solid ${borderColor}`,
-              }}>
-                {l.label}
-                <ChevronRight size={14} style={{ color: textMuted }} />
-              </Link>
-            ))}
-            <Link to="/auth"
-              style={{
-                marginTop: "16px", textAlign: "center", textDecoration: "none",
-                display: "block", padding: "14px", borderRadius: "4px",
-                background: "var(--green)", color: "#000",
-                fontSize: "12px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase",
-              }}>
-              Get Started — Free
+          {NAV_LINKS.map((l) => (
+            <Link key={l.href} to={l.href} style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "14px 0", fontSize: "15px", fontWeight: 500,
+              color: location.pathname === l.href ? "var(--green)" : textColor,
+              textDecoration: "none",
+              borderBottom: `1px solid ${borderColor}`,
+            }}>
+              {l.label}
+              <ChevronRight size={14} style={{ color: textMuted }} />
             </Link>
-          </div>
+          ))}
+          <Link to="/auth" style={{
+            marginTop: "16px", textAlign: "center", textDecoration: "none",
+            display: "block", padding: "14px", borderRadius: "4px",
+            background: "var(--green)", color: "#000",
+            fontSize: "12px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
+          }}>
+            Get Started — Free
+          </Link>
         </div>
       )}
     </>
@@ -173,22 +183,20 @@ export function PublicNav() {
 
 export function PublicFooter() {
   const resolved = useResolvedTheme();
-  const footerBg = "var(--chrome-bg)";
   const borderColor = resolved === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   const textMuted = resolved === "dark" ? "#555555" : "#999999";
   const textSub = resolved === "dark" ? "#888888" : "#666666";
   const textMain = resolved === "dark" ? "#ffffff" : "#000000";
 
   return (
-    <footer style={{ background: footerBg, borderTop: `1px solid ${borderColor}`, padding: "clamp(40px, 8vw, 64px) clamp(16px, 4vw, 40px) 0", marginTop: 0 }}>
+    <footer style={{ background: "var(--chrome-bg)", borderTop: `1px solid ${borderColor}`, padding: "clamp(40px, 8vw, 64px) clamp(16px, 4vw, 40px) 0", marginTop: 0 }}>
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gap: "clamp(32px, 6vw, 80px)", paddingBottom: "clamp(32px, 5vw, 48px)", borderBottom: `1px solid ${borderColor}` }}
-          className="footer-top-grid">
+        <div style={{ display: "grid", gridTemplateColumns: "clamp(160px, 20%, 200px) 1fr", gap: "clamp(32px, 6vw, 80px)", paddingBottom: "clamp(32px, 5vw, 48px)", borderBottom: `1px solid ${borderColor}` }}>
           {/* Brand */}
           <div>
-            <div style={{ marginBottom: "16px" }}><Logo height={30} /></div>
-            <p style={{ fontSize: "13px", fontWeight: 300, color: textSub, lineHeight: 1.7, maxWidth: "220px" }}>
-              The institutional-grade trading ledger for Pakistan Stock Exchange investors.
+            <div style={{ marginBottom: "16px" }}><Logo height={28} /></div>
+            <p style={{ fontSize: "13px", fontWeight: 300, color: textSub, lineHeight: 1.7, maxWidth: "200px" }}>
+              The institutional-grade trading ledger for PSX investors.
             </p>
             <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
               {[Twitter, Github, Linkedin].map((Icon, i) => (
@@ -205,7 +213,7 @@ export function PublicFooter() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(16px, 3vw, 40px)" }}>
             {Object.entries(FOOTER_LINKS).map(([cat, items]) => (
               <div key={cat}>
-                <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: textMuted, marginBottom: "16px" }}>{cat}</p>
+                <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: textMuted, marginBottom: "14px" }}>{cat}</p>
                 <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
                   {items.map((item) => (
                     <li key={item.href}>
