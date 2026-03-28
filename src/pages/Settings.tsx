@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useTheme } from "@/components/theme-provider";
-import { Moon, Sun, Monitor, Bell, Lock, Eye } from "lucide-react";
+import { Moon, Sun, Monitor, Bell, Eye } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -10,27 +10,11 @@ export default function Settings() {
   const [privacyMode, setPrivacyMode] = useState(false);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="dashboard-app space-y-5">
       <div>
-        <h1 style={{
-          fontSize: 'clamp(36px, 4vw, 60px)',
-          fontWeight: '700',
-          letterSpacing: '-2px',
-          lineHeight: '1.0',
-          color: 'var(--text)',
-          marginBottom: '8px'
-        }}>
-          Settings
-        </h1>
-        <p style={{
-          fontSize: '15px',
-          fontWeight: '300',
-          lineHeight: '1.7',
-          color: 'var(--text2)'
-        }}>
-          Customize your PSX Ledger experience
-        </p>
+        <p className="dash-page-kicker">Preferences</p>
+        <h1 className="dash-page-title">Settings</h1>
+        <p className="dash-page-desc">Customize your PSX Ledger experience.</p>
       </div>
 
       {/* Theme Settings */}
@@ -42,20 +26,19 @@ export default function Settings() {
         <div className="table-header">
           <span className="table-header-title">Appearance</span>
         </div>
-        <div style={{ padding: '32px' }}>
-          <p style={{ fontSize: '14px', color: 'var(--text2)', marginBottom: '20px' }}>
+        <div style={{ padding: "clamp(20px, 5vw, 32px)" }}>
+          <p style={{ fontSize: "14px", color: "var(--text2)", marginBottom: "20px" }}>
             Choose your preferred theme
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => { setTheme("light"); toast.success("Light theme applied"); }}
-              className="flex items-center gap-3 px-5 py-4 transition-all"
+              className="flex min-h-[52px] flex-1 items-center justify-center gap-3 px-5 py-4 transition-all sm:justify-start"
               style={{
                 background: theme === "light" ? "var(--surface)" : "var(--bg2)",
                 border: theme === "light" ? "2px solid var(--green)" : "1px solid var(--border)",
                 color: "var(--text)",
                 cursor: "pointer",
-                flex: 1,
               }}
             >
               <Sun className="w-5 h-5" />
@@ -63,13 +46,12 @@ export default function Settings() {
             </button>
             <button
               onClick={() => { setTheme("dark"); toast.success("Dark theme applied"); }}
-              className="flex items-center gap-3 px-5 py-4 transition-all"
+              className="flex min-h-[52px] flex-1 items-center justify-center gap-3 px-5 py-4 transition-all sm:justify-start"
               style={{
                 background: theme === "dark" ? "var(--surface)" : "var(--bg2)",
                 border: theme === "dark" ? "2px solid var(--green)" : "1px solid var(--border)",
                 color: "var(--text)",
                 cursor: "pointer",
-                flex: 1,
               }}
             >
               <Moon className="w-5 h-5" />
@@ -77,13 +59,12 @@ export default function Settings() {
             </button>
             <button
               onClick={() => { setTheme("system"); toast.success("System theme applied"); }}
-              className="flex items-center gap-3 px-5 py-4 transition-all"
+              className="flex min-h-[52px] flex-1 items-center justify-center gap-3 px-5 py-4 transition-all sm:justify-start"
               style={{
                 background: theme === "system" ? "var(--surface)" : "var(--bg2)",
                 border: theme === "system" ? "2px solid var(--green)" : "1px solid var(--border)",
                 color: "var(--text)",
                 cursor: "pointer",
-                flex: 1,
               }}
             >
               <Monitor className="w-5 h-5" />
@@ -103,8 +84,8 @@ export default function Settings() {
         <div className="table-header">
           <span className="table-header-title">Notifications</span>
         </div>
-        <div style={{ padding: '32px' }}>
-          <div className="flex items-center justify-between">
+        <div style={{ padding: "clamp(20px, 5vw, 32px)" }}>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <Bell className="w-5 h-5" style={{ color: 'var(--green)' }} />
               <div>
@@ -121,7 +102,7 @@ export default function Settings() {
                 setNotifications(!notifications);
                 toast.success(notifications ? "Notifications disabled" : "Notifications enabled");
               }}
-              className="px-4 py-2 transition-all"
+              className="w-full px-4 py-3 transition-all sm:w-auto sm:py-2"
               style={{
                 background: notifications ? "var(--green)" : "var(--surface)",
                 color: notifications ? "#000" : "var(--text2)",
@@ -145,8 +126,8 @@ export default function Settings() {
         <div className="table-header">
           <span className="table-header-title">Privacy</span>
         </div>
-        <div style={{ padding: '32px' }}>
-          <div className="flex items-center justify-between mb-4">
+        <div style={{ padding: "clamp(20px, 5vw, 32px)" }}>
+          <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <Eye className="w-5 h-5" style={{ color: 'var(--green)' }} />
               <div>
@@ -163,7 +144,7 @@ export default function Settings() {
                 setPrivacyMode(!privacyMode);
                 toast.success(privacyMode ? "Privacy mode off" : "Privacy mode on");
               }}
-              className="px-4 py-2 transition-all"
+              className="w-full px-4 py-3 transition-all sm:w-auto sm:py-2"
               style={{
                 background: privacyMode ? "var(--green)" : "var(--surface)",
                 color: privacyMode ? "#000" : "var(--text2)",

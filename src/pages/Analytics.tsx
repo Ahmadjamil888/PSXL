@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell, PieChart, Pie, CartesianGrid, LineChart, Line, Legend,
-  ComposedChart, Scatter, ScatterChart, ZAxis, ReferenceLine
+  Scatter, ScatterChart, ZAxis, ReferenceLine
 } from "recharts";
 import { BarChart3 } from "lucide-react";
 
@@ -14,7 +14,7 @@ export default function Analytics() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="dashboard-app flex min-h-[40vh] items-center justify-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -34,9 +34,16 @@ export default function Analytics() {
     .slice(0, 10);
 
   const winLossData = [
-    { name: "Wins", value: stats.wins, fill: "hsl(145, 80%, 42%)" },
-    { name: "Losses", value: stats.losses, fill: "hsl(0, 72%, 55%)" },
+    { name: "Wins", value: stats.wins, fill: "var(--green)" },
+    { name: "Losses", value: stats.losses, fill: "var(--red)" },
   ];
+
+  const equityStroke =
+    stats.equityCurve.length === 0
+      ? "var(--chart-line)"
+      : stats.totalPnL >= 0
+        ? "var(--green)"
+        : "var(--red)";
 
   // Monthly performance
   const monthlyMap = new Map<string, number>();
@@ -109,36 +116,21 @@ export default function Analytics() {
   const hasData = trades.length > 0 && stats.closedTrades > 0;
 
   return (
-    <div className="space-y-6" style={{ color: 'var(--text)' }}>
+    <div className="dashboard-app space-y-5" style={{ color: "var(--text)" }}>
       <div>
-        <h1 style={{ 
-          fontSize: 'clamp(36px, 4vw, 60px)',
-          fontWeight: '700',
-          letterSpacing: '-2px',
-          lineHeight: '1.0',
-          color: 'var(--text)',
-          marginBottom: '8px'
-        }}>
-          Analytics
-        </h1>
-        <p style={{ 
-          fontSize: '15px',
-          fontWeight: '300',
-          lineHeight: '1.7',
-          color: 'var(--text2)'
-        }}>
-          Deep insights into your trading
-        </p>
+        <p className="dash-page-kicker">Insights</p>
+        <h1 className="dash-page-title">Analytics</h1>
+        <p className="dash-page-desc">Deep insights into your trading — charts scale on small screens.</p>
       </div>
 
       {!hasData ? (
-        <div className="text-center py-20" style={{ color: 'var(--text2)' }}>
+        <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] py-16 text-center" style={{ color: "var(--text2)" }}>
           <BarChart3 className="w-16 h-16 mx-auto mb-4" style={{ opacity: '0.2' }} />
           <p className="text-lg font-medium">No data yet</p>
           <p className="text-sm mt-1">Log some closed trades to unlock analytics</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {/* Equity Curve - Compact with gridlines */}
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="table-container reveal">
             <div className="table-header">
@@ -150,8 +142,8 @@ export default function Analytics() {
                 <AreaChart data={stats.equityCurve}>
                   <defs>
                     <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--green)" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="var(--green)" stopOpacity={0} />
+                      <stop offset="0%" stopColor={equityStroke} stopOpacity={0.3} />
+                      <stop offset="100%" stopColor={equityStroke} stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
@@ -177,7 +169,7 @@ export default function Analytics() {
                     color: 'var(--text)',
                     fontSize: '12px'
                   }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} formatter={(v: number) => [formatCurrency(v), "Equity"]} />
-                  <Area type="monotone" dataKey="equity" stroke="var(--green)" fill="url(#eqGrad)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="equity" stroke={equityStroke} fill="url(#eqGrad)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -204,7 +196,7 @@ export default function Analytics() {
                       stroke="none"
                     >
                       {winLossData.map((entry, index) => (
-                        <Cell key={index} fill={entry.fill === "hsl(145, 80%, 42%)" ? "#22c55e" : "#ef4444"} />
+                        <Cell key={index} fill={entry.fill} />
                       ))}
                     </Pie>
                     <Tooltip contentStyle={{ 
@@ -217,14 +209,14 @@ export default function Analytics() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex justify-center gap-4 mt-2 flex-wrap">
+              <div className="mt-2 flex flex-wrap justify-center gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ background: '#22c55e' }} />
-                  <span style={{ fontSize: '12px', color: 'var(--text2)' }}>Wins ({stats.wins})</span>
+                  <div className="h-3 w-3 rounded-full" style={{ background: "var(--green)" }} />
+                  <span style={{ fontSize: "12px", color: "var(--text2)" }}>Wins ({stats.wins})</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ background: '#ef4444' }} />
-                  <span style={{ fontSize: '12px', color: 'var(--text2)' }}>Losses ({stats.losses})</span>
+                  <div className="h-3 w-3 rounded-full" style={{ background: "var(--red)" }} />
+                  <span style={{ fontSize: "12px", color: "var(--text2)" }}>Losses ({stats.losses})</span>
                 </div>
               </div>
             </div>
@@ -251,7 +243,7 @@ export default function Analytics() {
                   }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} formatter={(v: number) => [formatCurrency(v), "P&L"]} />
                   <Bar dataKey="pnl" radius={[2, 2, 0, 0]}>
                     {monthlyData.map((entry, index) => (
-                      <Cell key={index} fill={entry.pnl >= 0 ? "#22c55e" : "#ef4444"} />
+                      <Cell key={index} fill={entry.pnl >= 0 ? "var(--green)" : "var(--red)"} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -306,7 +298,7 @@ export default function Analytics() {
               <span className="table-header-title">Performance Summary</span>
               <span className="table-badge">Metrics</span>
             </div>
-            <div style={{ padding: '32px' }}>
+            <div style={{ padding: "clamp(20px, 5vw, 32px)" }}>
               <div className="metrics-grid">
                 <div className="metric-card">
                   <div className="metric-label">Best Trade</div>
@@ -351,8 +343,8 @@ export default function Analytics() {
                       color: 'var(--text)',
                       fontSize: '12px'
                     }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} />
-                    <Bar yAxisId="left" dataKey="trades" fill="var(--green)" radius={[4, 4, 0, 0]} opacity={0.8} name="Trades" />
-                    <Line yAxisId="right" type="monotone" dataKey="pnl" stroke="#a3c45a" strokeWidth={2} dot={{ r: 3 }} name="P&L" />
+                    <Bar yAxisId="left" dataKey="trades" fill="var(--chart-volume)" radius={[4, 4, 0, 0]} name="Trades" />
+                    <Line yAxisId="right" type="monotone" dataKey="pnl" stroke="var(--green)" strokeWidth={2} dot={{ r: 3 }} name="P&L" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -381,8 +373,8 @@ export default function Analytics() {
                     color: 'var(--text)',
                     fontSize: '12px'
                   }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} />
-                  <Bar dataKey="wins" fill="#22c55e" radius={[4, 4, 0, 0]} opacity={0.8} name="Win Streaks" />
-                  <Bar dataKey="losses" fill="#ef4444" radius={[4, 4, 0, 0]} opacity={0.8} name="Loss Streaks" />
+                  <Bar dataKey="wins" fill="var(--green)" radius={[4, 4, 0, 0]} opacity={0.85} name="Win Streaks" />
+                  <Bar dataKey="losses" fill="var(--red)" radius={[4, 4, 0, 0]} opacity={0.85} name="Loss Streaks" />
                   <Legend iconType="circle" formatter={(value) => <span style={{ color: 'var(--text2)', fontSize: '10px' }}>{value}</span>} />
                 </BarChart>
               </ResponsiveContainer>
@@ -465,8 +457,8 @@ export default function Analytics() {
                   <LineChart data={stats.equityCurve}>
                     <defs>
                       <linearGradient id="cumulGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--green)" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="var(--green)" stopOpacity={0} />
+                        <stop offset="0%" stopColor={equityStroke} stopOpacity={0.3} />
+                        <stop offset="100%" stopColor={equityStroke} stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
@@ -490,8 +482,8 @@ export default function Analytics() {
                       color: 'var(--text)',
                       fontSize: '12px'
                     }} itemStyle={{ color: 'var(--text)' }} labelStyle={{ color: 'var(--text)' }} formatter={(v: number) => [formatCurrency(v), "Cumulative P&L"]} />
-                    <Area type="monotone" dataKey="equity" stroke="var(--green)" fill="url(#cumulGrad)" strokeWidth={2} />
-                    <Line type="monotone" dataKey="equity" stroke="var(--green)" strokeWidth={2} dot={false} />
+                    <Area type="monotone" dataKey="equity" stroke={equityStroke} fill="url(#cumulGrad)" strokeWidth={2} />
+                    <Line type="monotone" dataKey="equity" stroke={equityStroke} strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (

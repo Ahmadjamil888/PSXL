@@ -1,229 +1,298 @@
-import { useState } from 'react';
-import { useTheme } from '@/components/theme-provider';
-import CompanySearch from '@/components/CompanySearch';
-import { PSXCompany } from '@/data/psxCompanies';
+import { useState } from "react";
+import CompanySearch from "@/components/CompanySearch";
+import { PSXCompany } from "@/data/psxCompanies";
+
+type TabId = "search" | "sectors" | "watchlist";
 
 const Companies = () => {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
   const [selectedCompany, setSelectedCompany] = useState<PSXCompany | null>(null);
+  const [activeTab, setActiveTab] = useState<TabId>("search");
 
-  const handleCompanySelect = (company: PSXCompany) => {
-    setSelectedCompany(company);
-  };
+  const panelBg = "var(--surface)";
+  const statBg = "var(--bg2)";
+
+  const tabs: { id: TabId; label: string }[] = [
+    { id: "search", label: "Search Companies" },
+    { id: "sectors", label: "By Sector" },
+    { id: "watchlist", label: "Watchlist" },
+  ];
 
   return (
-    <div style={{ color: 'var(--text)' }}>
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ 
-          fontSize: 'clamp(36px, 4vw, 60px)',
-          fontWeight: '700',
-          letterSpacing: '-2px',
-          lineHeight: '1.0',
-          color: 'var(--text)',
-          marginBottom: '8px'
-        }}>
-          PSX Companies
-        </h1>
-        <p style={{ 
-          fontSize: '15px',
-          fontWeight: '300',
-          lineHeight: '1.7',
-          color: 'var(--text2)'
-        }}>
-          Browse and search through all listed companies on Pakistan Stock Exchange
+    <div className="dashboard-app space-y-5" style={{ color: "var(--text)" }}>
+      <div>
+        <p className="dash-page-kicker">Market</p>
+        <h1 className="dash-page-title">PSX Companies</h1>
+        <p className="dash-page-desc">
+          Browse and search listed companies on the Pakistan Stock Exchange.
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div style={{ 
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '1px',
-        background: 'var(--border)',
-        marginBottom: '24px'
-      }}>
-        <div style={{
-          background: isDark ? '#0a0a0a' : '#f7f7f7',
-          padding: '28px 32px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px'
-        }}>
-          <span style={{ fontSize: '10px', fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text3)' }}>Total Companies</span>
-          <span style={{ fontSize: '36px', fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>100+</span>
-          <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300 }}>Listed companies</span>
-        </div>
-        <div style={{
-          background: isDark ? '#0a0a0a' : '#f7f7f7',
-          padding: '28px 32px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px'
-        }}>
-          <span style={{ fontSize: '10px', fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text3)' }}>Sectors</span>
-          <span style={{ fontSize: '36px', fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>15</span>
-          <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300 }}>Industry sectors</span>
-        </div>
-        <div style={{
-          background: isDark ? '#0a0a0a' : '#f7f7f7',
-          padding: '28px 32px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px'
-        }}>
-          <span style={{ fontSize: '10px', fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text3)' }}>Market Cap</span>
-          <span style={{ fontSize: '36px', fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>$8.2T</span>
-          <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300 }}>Total market cap</span>
-        </div>
-        <div style={{
-          background: isDark ? '#0a0a0a' : '#f7f7f7',
-          padding: '28px 32px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px'
-        }}>
-          <span style={{ fontSize: '10px', fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text3)' }}>Volume</span>
-          <span style={{ fontSize: '36px', fontWeight: 700, letterSpacing: '-1px', color: 'var(--text)' }}>142M</span>
-          <span style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300 }}>Daily avg volume</span>
-        </div>
-      </div>
-
-      {/* Custom Tabs */}
-      <div style={{ 
-        display: 'flex', 
-        borderBottom: '1px solid var(--border)',
-        marginBottom: '24px'
-      }}>
+      <div
+        className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4"
+        style={{ color: "var(--text)" }}
+      >
         {[
-          { value: 'search', label: 'Search Companies' },
-          { value: 'sectors', label: 'By Sector' },
-          { value: 'watchlist', label: 'Watchlist' }
-        ].map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => {
-              const contents = document.querySelectorAll('.tab-content');
-              contents.forEach(content => {
-                const el = content as HTMLElement;
-                el.style.display = content.id === `tab-${tab.value}` ? 'block' : 'none';
-              });
-              
-              const buttons = document.querySelectorAll('.tab-button');
-              buttons.forEach(btn => {
-                const el = btn as HTMLElement;
-                if (btn.getAttribute('data-value') === tab.value) {
-                  el.style.color = 'var(--green)';
-                  el.style.borderBottom = '2px solid var(--green)';
-                } else {
-                  el.style.color = 'var(--text2)';
-                  el.style.borderBottom = 'none';
-                }
-              });
-            }}
-            className="tab-button"
-            data-value={tab.value}
+          { label: "Total Companies", val: "100+", sub: "Listed companies" },
+          { label: "Sectors", val: "15", sub: "Industry sectors" },
+          { label: "Market Cap", val: "$8.2T", sub: "Total market cap" },
+          { label: "Volume", val: "142M", sub: "Daily avg volume" },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="rounded-[10px] border border-[var(--border)]"
             style={{
-              padding: '12px 16px',
-              fontSize: '12px',
-              fontWeight: '400',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: tab.value === 'search' ? 'var(--green)' : 'var(--text2)',
-              background: 'none',
-              border: 'none',
-              borderBottom: tab.value === 'search' ? '2px solid var(--green)' : 'none',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
+              background: statBg,
+              padding: "clamp(14px, 3vw, 22px)",
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px",
             }}
           >
-            {tab.label}
-          </button>
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 600,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: "var(--text3)",
+              }}
+            >
+              {s.label}
+            </span>
+            <span
+              className="font-mono tabular-nums"
+              style={{
+                fontSize: "clamp(1.25rem, 4vw, 2rem)",
+                fontWeight: 700,
+                letterSpacing: "-0.03em",
+                color: "var(--text)",
+              }}
+            >
+              {s.val}
+            </span>
+            <span style={{ fontSize: "11px", color: "var(--text3)", fontWeight: 400 }}>{s.sub}</span>
+          </div>
         ))}
       </div>
 
-      {/* Tab Contents */}
-      <div id="tab-search" className="tab-content" style={{ display: 'block', marginBottom: '24px' }}>
-        <CompanySearch onCompanySelect={handleCompanySelect} />
+      <div
+        className="-mx-1 flex gap-0 overflow-x-auto pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible"
+        style={{ borderBottom: "1px solid var(--border)" }}
+      >
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className="shrink-0 px-3 py-3 text-left sm:px-4"
+              style={{
+                fontSize: "11px",
+                fontWeight: 600,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: isActive ? "var(--green)" : "var(--text2)",
+                background: "none",
+                border: "none",
+                borderBottom: isActive ? "2px solid var(--green)" : "2px solid transparent",
+                cursor: "pointer",
+                transition: "color 0.2s, border-color 0.2s",
+                minHeight: "44px",
+              }}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
-      <div id="tab-sectors" className="tab-content" style={{ display: 'none', marginBottom: '24px' }}>
-        <div style={{ background: isDark ? '#161616' : '#ebebeb', border: '1px solid var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: isDark ? '#161616' : '#ebebeb', borderBottom: '1px solid var(--border)' }}>
-            <span style={{ fontSize: '12px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text)' }}>Companies by Sector</span>
-            <span style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#22c55e', background: 'rgba(34, 197, 94, 0.1)', padding: '4px 10px', borderRadius: '2px' }}>Browse</span>
+      {activeTab === "search" && (
+        <div className="min-w-0">
+          <CompanySearch onCompanySelect={setSelectedCompany} />
+        </div>
+      )}
+
+      {activeTab === "sectors" && (
+        <div
+          className="overflow-hidden rounded-[10px] border border-[var(--border)]"
+          style={{ background: panelBg }}
+        >
+          <div
+            className="flex flex-col gap-2 border-b border-[var(--border)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+            style={{ background: "var(--bg2)" }}
+          >
+            <span
+              style={{
+                fontSize: "11px",
+                fontWeight: 600,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--text)",
+              }}
+            >
+              Companies by Sector
+            </span>
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "var(--green)",
+                background: "var(--bg2)",
+                border: "1px solid var(--border)",
+                padding: "4px 10px",
+                borderRadius: "4px",
+                width: "fit-content",
+              }}
+            >
+              Browse
+            </span>
           </div>
-          <div style={{ padding: '32px' }}>
-            <p style={{ color: 'var(--text2)', fontSize: '14px' }}>
+          <div style={{ padding: "clamp(20px, 5vw, 32px)" }}>
+            <p style={{ color: "var(--text2)", fontSize: "14px", lineHeight: 1.6 }}>
               Sector-wise company listing coming soon...
             </p>
           </div>
         </div>
-      </div>
+      )}
 
-      <div id="tab-watchlist" className="tab-content" style={{ display: 'none', marginBottom: '24px' }}>
-        <div style={{ background: isDark ? '#161616' : '#ebebeb', border: '1px solid var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: isDark ? '#161616' : '#ebebeb', borderBottom: '1px solid var(--border)' }}>
-            <span style={{ fontSize: '12px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text)' }}>Your Watchlist</span>
-            <span style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#22c55e', background: 'rgba(34, 197, 94, 0.1)', padding: '4px 10px', borderRadius: '2px' }}>Track</span>
+      {activeTab === "watchlist" && (
+        <div
+          className="overflow-hidden rounded-[10px] border border-[var(--border)]"
+          style={{ background: panelBg }}
+        >
+          <div
+            className="flex flex-col gap-2 border-b border-[var(--border)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+            style={{ background: "var(--bg2)" }}
+          >
+            <span
+              style={{
+                fontSize: "11px",
+                fontWeight: 600,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--text)",
+              }}
+            >
+              Your Watchlist
+            </span>
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "var(--green)",
+                background: "var(--bg2)",
+                border: "1px solid var(--border)",
+                padding: "4px 10px",
+                borderRadius: "4px",
+                width: "fit-content",
+              }}
+            >
+              Track
+            </span>
           </div>
-          <div style={{ padding: '32px' }}>
-            <p style={{ color: 'var(--text2)', fontSize: '14px' }}>
+          <div style={{ padding: "clamp(20px, 5vw, 32px)" }}>
+            <p style={{ color: "var(--text2)", fontSize: "14px", lineHeight: 1.6 }}>
               Your watchlist is empty. Add companies to track them here.
             </p>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Selected Company Detail */}
       {selectedCompany && (
-        <div style={{ marginTop: '24px', background: isDark ? '#161616' : '#ebebeb', border: '1px solid var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: isDark ? '#161616' : '#ebebeb', borderBottom: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div
+          className="overflow-hidden rounded-[10px] border border-[var(--border)]"
+          style={{ background: panelBg }}
+        >
+          <div
+            className="flex flex-col gap-3 border-b border-[var(--border)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+            style={{ background: "var(--bg2)" }}
+          >
+            <div className="flex min-w-0 items-center gap-3">
               {selectedCompany.logo && (
-                <img 
-                  src={selectedCompany.logo} 
-                  alt={selectedCompany.name}
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    objectFit: 'contain'
-                  }}
+                <img
+                  src={selectedCompany.logo}
+                  alt=""
+                  className="h-8 w-8 shrink-0 object-contain"
                   onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
+                    (e.target as HTMLImageElement).style.display = "none";
                   }}
                 />
               )}
-              <div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text)' }}>
+              <div className="min-w-0">
+                <div style={{ fontSize: "16px", fontWeight: 600, color: "var(--text)" }}>
                   {selectedCompany.name}
                 </div>
-                <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '2px' }}>
+                <div style={{ fontSize: "12px", color: "var(--text3)", marginTop: "2px" }}>
                   {selectedCompany.symbol} • {selectedCompany.sector}
                 </div>
               </div>
             </div>
-            <span style={{ fontSize: '10px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#22c55e', background: 'rgba(34, 197, 94, 0.1)', padding: '4px 10px', borderRadius: '2px' }}>Live</span>
+            <span
+              className="shrink-0 self-start sm:self-center"
+              style={{
+                fontSize: "10px",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "var(--green)",
+                background: "var(--bg2)",
+                border: "1px solid var(--border)",
+                padding: "4px 10px",
+                borderRadius: "4px",
+              }}
+            >
+              Live
+            </span>
           </div>
-          <div style={{ padding: '32px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1px', background: 'var(--border)' }}>
-              <div style={{ background: isDark ? '#161616' : '#ebebeb', padding: '24px', textAlign: 'center' }}>
-                <div style={{ fontSize: '10px', fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: '8px' }}>Current Price</div>
-                <div style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.5px', color: 'var(--text)' }}>PKR 245.50</div>
-              </div>
-              <div style={{ background: isDark ? '#161616' : '#ebebeb', padding: '24px', textAlign: 'center' }}>
-                <div style={{ fontSize: '10px', fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: '8px' }}>Change</div>
-                <div style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.5px', color: '#22c55e' }}>+2.35%</div>
-              </div>
-              <div style={{ background: isDark ? '#161616' : '#ebebeb', padding: '24px', textAlign: 'center' }}>
-                <div style={{ fontSize: '10px', fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: '8px' }}>Volume</div>
-                <div style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.5px', color: 'var(--text)' }}>1.2M</div>
-              </div>
-              <div style={{ background: isDark ? '#161616' : '#ebebeb', padding: '24px', textAlign: 'center' }}>
-                <div style={{ fontSize: '10px', fontWeight: 400, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: '8px' }}>Market Cap</div>
-                <div style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.5px', color: 'var(--text)' }}>PKR 82B</div>
-              </div>
+          <div style={{ padding: "clamp(16px, 4vw, 28px)" }}>
+            <div
+              className="grid grid-cols-2 gap-px sm:grid-cols-2 lg:grid-cols-4"
+              style={{ background: "var(--border)" }}
+            >
+              {[
+                { k: "Current Price", v: "PKR 245.50", vColor: "var(--text)" },
+                { k: "Change", v: "+2.35%", vColor: "var(--green)" },
+                { k: "Volume", v: "1.2M", vColor: "var(--text)" },
+                { k: "Market Cap", v: "PKR 82B", vColor: "var(--text)" },
+              ].map((row) => (
+                <div
+                  key={row.k}
+                  style={{
+                    background: panelBg,
+                    padding: "clamp(14px, 3vw, 22px)",
+                    textAlign: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "10px",
+                      fontWeight: 600,
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "var(--text3)",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    {row.k}
+                  </div>
+                  <div
+                    className="font-mono tabular-nums"
+                    style={{
+                      fontSize: "clamp(16px, 4vw, 22px)",
+                      fontWeight: 700,
+                      letterSpacing: "-0.02em",
+                      color: row.vColor,
+                    }}
+                  >
+                    {row.v}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

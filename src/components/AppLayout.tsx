@@ -75,7 +75,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = "var(--text)";
-                    e.currentTarget.style.borderColor = "var(--green)";
+                    e.currentTarget.style.borderColor = "var(--border2)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = "var(--text2)";
@@ -97,7 +97,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     to={item.to}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all relative"
                     style={{
-                      color: isActive ? "var(--green)" : "var(--text2)",
+                      color: isActive ? "var(--nav-accent)" : "var(--text2)",
                       background: isActive ? "var(--surface)" : "transparent",
                       border: isActive ? "1px solid var(--border)" : "1px solid transparent",
                     }}
@@ -119,8 +119,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     {isActive && (
                       <motion.div
                         layoutId="activeNav"
-                        className="absolute left-0 top-0 bottom-0 w-1"
-                        style={{ background: "var(--green)" }}
+                        className="absolute left-0 top-0 bottom-0 w-0.5"
+                        style={{ background: "var(--nav-accent)" }}
                         transition={{ type: "spring", duration: 0.3 }}
                       />
                     )}
@@ -214,7 +214,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = "var(--text)";
-              e.currentTarget.style.borderColor = "var(--green)";
+              e.currentTarget.style.borderColor = "var(--border2)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = "var(--text2)";
@@ -263,7 +263,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 to={item.to}
                 className="flex flex-col items-center gap-0.5 px-2 py-1 text-[10px]"
                 style={{
-                  color: isActive ? "var(--green)" : "var(--text2)",
+                  color: isActive ? "var(--nav-accent)" : "var(--text2)",
                 }}
               >
                 <item.icon className="w-4 h-4" />
@@ -284,16 +284,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Content */}
       <main
-        className="flex-1 overflow-auto"
+        className="flex-1 overflow-auto min-w-0"
         style={{
-          paddingLeft: !sidebarOpen ? "80px" : "280px",
+          paddingLeft: isMobile ? 0 : sidebarOpen ? "280px" : "80px",
         }}
       >
         <div
-          className="p-4 lg:p-8 max-w-8xl mx-auto"
+          className="w-full max-w-[1600px] mx-auto px-4 sm:px-5 lg:px-8 box-border min-w-0"
           style={{
-            paddingTop: isMobile ? "80px" : "32px",
-            paddingBottom: isMobile ? "100px" : "32px",
+            paddingTop: isMobile ? "72px" : "32px",
+            paddingBottom: isMobile
+              ? "calc(96px + env(safe-area-inset-bottom, 0px))"
+              : "32px",
+            paddingLeft: "max(0px, env(safe-area-inset-left, 0px))",
+            paddingRight: "max(0px, env(safe-area-inset-right, 0px))",
           }}
         >
           {children}

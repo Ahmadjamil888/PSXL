@@ -1,12 +1,11 @@
 import { useTrades, getTradeStats, calcPnL } from "@/hooks/useTrades";
 import { formatCurrency, formatPercent } from "@/lib/psx";
-import StatCard from "@/components/StatCard";
 import TradeForm from "@/components/TradeForm";
-import { TrendingUp, TrendingDown, Target, BarChart3, DollarSign, Activity, HelpCircle, Filter, X } from "lucide-react";
+import { BarChart3, HelpCircle, Filter, X } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell, CartesianGrid, PieChart, Pie, LineChart, Line, Legend
+  BarChart, Bar, Cell, CartesianGrid, PieChart, Pie, Legend
 } from "recharts";
 import { useState, useMemo } from "react";
 
@@ -47,7 +46,14 @@ export default function Dashboard() {
   }, [trades, symbolFilter, dateFrom, dateTo, pnlMin, pnlMax]);
   
   const displayedTrades = filteredTrades.slice(0, 10);
-  
+
+  const equityStroke =
+    stats.equityCurve.length === 0
+      ? "var(--chart-line)"
+      : stats.totalPnL >= 0
+        ? "var(--green)"
+        : "var(--red)";
+
   // Win rate tooltip content
   const getWinRateTip = (winRate: number) => {
     if (winRate >= 60) return "Excellent! You're consistently profitable.";
@@ -58,43 +64,26 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="dashboard-app flex items-center justify-center h-64">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6" style={{ color: 'var(--text)' }}>
-      {/* Header - Mobile responsive */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="dashboard-app space-y-5" style={{ color: "var(--text)" }}>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 style={{ 
-            fontSize: 'clamp(28px, 5vw, 48px)',
-            fontWeight: '700',
-            letterSpacing: '-1px',
-            lineHeight: '1.1',
-            color: 'var(--text)',
-            marginBottom: '8px'
-          }}>
-            Dashboard
-          </h1>
-          <p style={{ 
-            fontSize: '14px',
-            fontWeight: '300',
-            lineHeight: '1.6',
-            color: 'var(--text2)'
-          }}>
-            Your PSX trading overview
-          </p>
+          <p className="dash-page-kicker">Overview</p>
+          <h1 className="dash-page-title">Dashboard</h1>
+          <p className="dash-page-desc">Your PSX trading overview and latest activity.</p>
         </div>
-        <div className="w-full sm:w-auto">
+        <div className="w-full sm:w-auto sm:shrink-0">
           <TradeForm />
         </div>
       </div>
 
-      {/* Stat Cards - Responsive grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px" style={{ background: 'var(--border)' }}>
+      <div className="stat-grid">
         <div className="stat-card">
           <span className="stat-label">Total P&L</span>
           <span className={`stat-val ${stats.totalPnL >= 0 ? 'pos' : 'neg'}`}>
@@ -119,20 +108,19 @@ export default function Dashboard() {
               title={getWinRateTip(stats.winRate)}
             />
           </span>
-          <span className={`stat-val ${stats.winRate >= 50 ? 'pos' : 'neg'}`}>
+          <span className="stat-val">
             {stats.winRate.toFixed(1)}%
           </span>
           <span className="stat-sub">{stats.wins}W / {stats.losses}L</span>
-          <div 
-            className="win-rate-tip" 
+          <div
+            className="win-rate-tip"
             style={{
-              fontSize: '10px',
-              color: 'var(--text2)',
-              marginTop: '4px',
-              padding: '4px 8px',
-              background: 'var(--bg2)',
-              borderRadius: '4px',
-              border: '1px solid var(--border)'
+              marginTop: "6px",
+              padding: "8px 10px",
+              background: "var(--bg2)",
+              borderRadius: "6px",
+              border: "1px solid var(--border)",
+              color: "var(--text2)",
             }}
           >
             {getWinRateTip(stats.winRate)}
@@ -146,7 +134,7 @@ export default function Dashboard() {
       </div>
 
       {/* Charts Row - Compact sizing */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Equity Curve */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -164,8 +152,8 @@ export default function Dashboard() {
                 <AreaChart data={stats.equityCurve}>
                   <defs>
                     <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--green)" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="var(--green)" stopOpacity={0} />
+                      <stop offset="0%" stopColor={equityStroke} stopOpacity={0.35} />
+                      <stop offset="100%" stopColor={equityStroke} stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
@@ -195,12 +183,12 @@ export default function Dashboard() {
                     itemStyle={{ color: 'var(--text)' }}
                     labelStyle={{ color: 'var(--text)' }}
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="equity" 
-                    stroke="var(--green)" 
-                    fill="url(#equityGrad)" 
-                    strokeWidth={2} 
+                  <Area
+                    type="monotone"
+                    dataKey="equity"
+                    stroke={equityStroke}
+                    fill="url(#equityGrad)"
+                    strokeWidth={2}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -273,7 +261,7 @@ export default function Dashboard() {
       </div>
 
       {/* Additional Analytics Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Symbol Performance */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -343,18 +331,18 @@ export default function Dashboard() {
                 <PieChart>
                   <defs>
                     <linearGradient id="winGrad" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="var(--green)" stopOpacity={0.9} />
-                      <stop offset="100%" stopColor="var(--green)" stopOpacity={0.6} />
+                      <stop offset="0%" stopColor="var(--chart-slice-a)" stopOpacity={0.95} />
+                      <stop offset="100%" stopColor="var(--chart-slice-a)" stopOpacity={0.65} />
                     </linearGradient>
                     <linearGradient id="lossGrad" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="var(--red)" stopOpacity={0.9} />
-                      <stop offset="100%" stopColor="var(--red)" stopOpacity={0.6} />
+                      <stop offset="0%" stopColor="var(--chart-slice-b)" stopOpacity={0.55} />
+                      <stop offset="100%" stopColor="var(--chart-slice-b)" stopOpacity={0.25} />
                     </linearGradient>
                   </defs>
                   <Pie
                     data={[
-                      { name: 'Wins', value: stats.wins, fill: 'url(#winGrad)' },
-                      { name: 'Losses', value: stats.losses, fill: 'url(#lossGrad)' }
+                      { name: "Wins", value: stats.wins, fill: "url(#winGrad)" },
+                      { name: "Losses", value: stats.losses, fill: "url(#lossGrad)" },
                     ]}
                     cx="50%"
                     cy="50%"
@@ -428,7 +416,7 @@ export default function Dashboard() {
                     labelStyle={{ color: 'var(--text)' }}
                     formatter={(value: number) => [`${value} trades`, "Count"]}
                   />
-                  <Bar dataKey="count" fill="var(--green)" radius={[4, 4, 0, 0]} opacity={0.8} />
+                  <Bar dataKey="count" fill="var(--chart-volume)" radius={[4, 4, 0, 0]} opacity={1} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -448,54 +436,38 @@ export default function Dashboard() {
         >
           <div className="table-header">
             <span className="table-header-title">Monthly Trend</span>
-            <span className="table-badge">2025</span>
+            <span className="table-badge">2026</span>
           </div>
           <div style={{ padding: '16px', height: '200px' }}>
             {stats.monthlyData && stats.monthlyData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={stats.monthlyData}>
-                  <defs>
-                    <linearGradient id="monthlyGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--green)" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="var(--green)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
+                <BarChart data={stats.monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} vertical={false} />
-                  <XAxis 
-                    dataKey="month" 
-                    tick={{ fill: 'var(--text3)', fontSize: 10 }} 
-                    tickLine={false} 
+                  <XAxis
+                    dataKey="month"
+                    tick={{ fill: "var(--text3)", fontSize: 10 }}
+                    tickLine={false}
                     axisLine={false}
                   />
                   <YAxis hide />
                   <Tooltip
-                    contentStyle={{ 
-                      backgroundColor: 'var(--surface)', 
-                      border: '1px solid var(--border)', 
-                      borderRadius: '6px', 
-                      color: 'var(--text)',
-                      fontSize: '12px'
+                    contentStyle={{
+                      backgroundColor: "var(--surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "6px",
+                      color: "var(--text)",
+                      fontSize: "12px",
                     }}
-                    itemStyle={{ color: 'var(--text)' }}
-                    labelStyle={{ color: 'var(--text)' }}
+                    itemStyle={{ color: "var(--text)" }}
+                    labelStyle={{ color: "var(--text)" }}
                     formatter={(value: number) => [formatCurrency(value), "P&L"]}
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="pnl" 
-                    stroke="var(--green)" 
-                    fill="url(#monthlyGrad)" 
-                    strokeWidth={2}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="pnl" 
-                    stroke="var(--green)" 
-                    strokeWidth={2}
-                    dot={{ fill: 'var(--green)', strokeWidth: 0, r: 3 }}
-                    activeDot={{ r: 5, fill: 'var(--green)' }}
-                  />
-                </LineChart>
+                  <Bar dataKey="pnl" radius={[3, 3, 0, 0]}>
+                    {stats.monthlyData.map((entry, index) => (
+                      <Cell key={index} fill={entry.pnl >= 0 ? "var(--green)" : "var(--red)"} />
+                    ))}
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
             ) : (
               <div className="h-full flex items-center justify-center" style={{ color: 'var(--text2)', fontSize: '13px' }}>
@@ -672,39 +644,47 @@ export default function Dashboard() {
               <tbody>
                 {displayedTrades.map((trade) => {
                   const pnl = calcPnL(trade);
-                  const isPositive = pnl !== null && pnl > 0;
-                  const isNegative = pnl !== null && pnl < 0;
                   return (
-                    <tr key={trade.id} style={{ 
-                      background: isPositive ? 'rgba(163, 196, 90, 0.05)' : isNegative ? 'rgba(239, 68, 68, 0.05)' : undefined
-                    }}>
-                      <td style={{ color: 'var(--text3)', padding: '8px' }}>{trade.date}</td>
-                      <td className="sym" style={{ padding: '8px', fontWeight: 600 }}>{trade.symbol}</td>
-                      <td style={{ padding: '8px' }}>
-                        <span style={{
-                          color: trade.side === "buy" ? '#22c55e' : '#ef4444',
-                          fontWeight: '600',
-                          fontSize: '10px',
-                          textTransform: 'uppercase',
-                          padding: '2px 6px',
-                          borderRadius: '3px',
-                          background: trade.side === "buy" ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)'
-                        }}>
+                    <tr key={trade.id}>
+                      <td style={{ color: "var(--text3)", padding: "8px" }}>{trade.date}</td>
+                      <td className="sym" style={{ padding: "8px", fontWeight: 600 }}>
+                        {trade.symbol}
+                      </td>
+                      <td style={{ padding: "8px" }}>
+                        <span
+                          style={{
+                            color: "var(--text2)",
+                            fontWeight: 600,
+                            fontSize: "10px",
+                            letterSpacing: "0.06em",
+                            textTransform: "uppercase",
+                            padding: "3px 8px",
+                            borderRadius: "4px",
+                            background: "var(--bg2)",
+                            border: "1px solid var(--border)",
+                          }}
+                        >
                           {trade.side.toUpperCase()}
                         </span>
                       </td>
-                      <td style={{ padding: '8px', fontFamily: 'monospace' }}>{trade.quantity}</td>
-                      <td style={{ padding: '8px', fontFamily: 'monospace' }}>₨{trade.entry_price}</td>
-                      <td style={{ padding: '8px', fontFamily: 'monospace' }}>{trade.exit_price ? `₨${trade.exit_price}` : "—"}</td>
-                      <td style={{ padding: '8px', textAlign: 'right' }}>
+                      <td style={{ padding: "8px", fontFamily: "var(--font-mono, ui-monospace, monospace)" }}>{trade.quantity}</td>
+                      <td style={{ padding: "8px", fontFamily: "var(--font-mono, ui-monospace, monospace)" }}>₨{trade.entry_price}</td>
+                      <td style={{ padding: "8px", fontFamily: "var(--font-mono, ui-monospace, monospace)" }}>
+                        {trade.exit_price ? `₨${trade.exit_price}` : "—"}
+                      </td>
+                      <td style={{ padding: "8px", textAlign: "right" }}>
                         {pnl !== null ? (
-                          <span style={{
-                            color: pnl >= 0 ? '#22c55e' : '#ef4444',
-                            fontWeight: '700',
-                            fontFamily: 'monospace',
-                            fontSize: '13px'
-                          }}>
-                            {pnl >= 0 ? '+' : ''}{formatCurrency(pnl)}
+                          <span
+                            style={{
+                              color: pnl >= 0 ? "var(--green)" : "var(--red)",
+                              fontWeight: 700,
+                              fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                              fontSize: "13px",
+                              fontVariantNumeric: "tabular-nums",
+                            }}
+                          >
+                            {pnl >= 0 ? "+" : ""}
+                            {formatCurrency(pnl)}
                           </span>
                         ) : (
                           <span style={{ color: 'var(--text3)', fontSize: '11px' }}>Open</span>

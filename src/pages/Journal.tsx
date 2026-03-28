@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useTrades, calcPnL, calcPnLPercent, useDeleteTrade } from "@/hooks/useTrades";
 import { formatCurrency, formatPercent } from "@/lib/psx";
 import TradeForm from "@/components/TradeForm";
-import { Input } from "@/components/ui/input";
 import { Search, Trash2, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -30,85 +29,90 @@ export default function Journal() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="dashboard-app flex items-center justify-center min-h-[40vh]">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6" style={{ color: 'var(--text)' }}>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 style={{ 
-            fontSize: 'clamp(36px, 4vw, 60px)',
-            fontWeight: '700',
-            letterSpacing: '-2px',
-            lineHeight: '1.0',
-            color: 'var(--text)',
-            marginBottom: '8px'
-          }}>
-            Trade Journal
-          </h1>
-          <p style={{ 
-            fontSize: '15px',
-            fontWeight: '300',
-            lineHeight: '1.7',
-            color: 'var(--text2)'
-          }}>
-            {trades.length} trades logged
-          </p>
+    <div className="dashboard-app space-y-5" style={{ color: "var(--text)" }}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <p className="dash-page-kicker">Log</p>
+          <h1 className="dash-page-title">Trade Journal</h1>
+          <p className="dash-page-desc">{trades.length} trades logged — search, filter, and review.</p>
         </div>
-        <TradeForm />
+        <div className="w-full shrink-0 sm:w-auto">
+          <TradeForm />
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text3)' }} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative min-w-0 flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--text3)" }} />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by symbol or note..."
-            className="input-field"
-            style={{ 
-              paddingLeft: '36px',
-              width: '100%'
-            }}
+            className="input-field w-full"
+            style={{ paddingLeft: "40px", minHeight: "44px" }}
           />
         </div>
-        <div className="flex gap-2">
-          {(["all", "buy", "sell"] as const).map((s) => (
-            <button
-              key={s}
-              onClick={() => setSideFilter(s)}
-              style={{
-                padding: '8px 16px',
-                fontSize: '12px',
-                fontWeight: '400',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                background: sideFilter === s 
-                  ? s === "buy" ? 'var(--green)' : s === "sell" ? 'var(--red)' : 'var(--surface)'
-                  : 'transparent',
-                color: sideFilter === s 
-                  ? s === "buy" || s === "sell" ? '#000' : 'var(--text)'
-                  : 'var(--text2)',
-                border: '1px solid var(--border2)',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              {s.charAt(0).toUpperCase() + s.slice(1)}
-            </button>
-          ))}
+        <div className="flex flex-wrap gap-2 sm:shrink-0">
+          {(["all", "buy", "sell"] as const).map((s) => {
+            const active = sideFilter === s;
+            const base = {
+              padding: "10px 14px",
+              fontSize: "11px",
+              fontWeight: 600,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase" as const,
+              border: "1px solid var(--border)",
+              cursor: "pointer",
+              transition: "all 0.2s",
+              borderRadius: "6px",
+              minHeight: "44px",
+            };
+            if (s === "all") {
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSideFilter(s)}
+                  style={{
+                    ...base,
+                    background: active ? "var(--surface)" : "transparent",
+                    color: active ? "var(--text)" : "var(--text2)",
+                    borderColor: active ? "var(--border2)" : "var(--border)",
+                  }}
+                >
+                  All
+                </button>
+              );
+            }
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setSideFilter(s)}
+                style={{
+                  ...base,
+                  background: active ? (s === "buy" ? "rgba(34, 197, 94, 0.12)" : "rgba(239, 68, 68, 0.12)") : "transparent",
+                  color: active ? (s === "buy" ? "var(--green)" : "var(--red)") : "var(--text2)",
+                  borderColor: active ? (s === "buy" ? "var(--green)" : "var(--red)") : "var(--border)",
+                }}
+              >
+                {s.charAt(0).toUpperCase() + s.slice(1)}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Trade List */}
       {filtered.length > 0 ? (
-        <div className="space-y-1" style={{ background: 'var(--border)' }}>
+        <div className="flex flex-col gap-2 sm:gap-3">
           {filtered.map((trade, i) => {
             const pnl = calcPnL(trade);
             const pnlPct = calcPnLPercent(trade);
@@ -117,104 +121,88 @@ export default function Journal() {
                 key={trade.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className="stat-card"
-                style={{
-                  padding: '20px 24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '16px',
-                  borderBottom: '1px solid var(--border)'
-                }}
+                transition={{ delay: Math.min(i * 0.03, 0.3) }}
+                className="journal-trade-row"
               >
-                <div className="flex items-center gap-4 min-w-0">
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    background: trade.side === "buy"
-                        ? 'rgba(34, 197, 94, 0.1)' 
-                        : 'rgba(239, 68, 68, 0.1)'
-                  }}>
-                    <span style={{
-                      fontSize: '12px',
-                      fontWeight: '700',
-                      color: trade.side === "buy" ? 'var(--green)' : 'var(--red)'
-                    }}>
+                <div className="flex min-w-0 items-start gap-3 sm:items-center">
+                  <div
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                    style={{
+                      background: "var(--bg2)",
+                      border: "1px solid var(--border)",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        color: "var(--text2)",
+                        letterSpacing: "0.02em",
+                      }}
+                    >
                       {trade.side === "buy" ? "B" : "S"}
                     </span>
                   </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span style={{
-                        fontFamily: 'monospace',
-                        fontWeight: '600',
-                        fontSize: '14px',
-                        color: 'var(--text)'
-                      }}>{trade.symbol}</span>
-                      <span style={{ fontSize: '11px', color: 'var(--text3)' }}>{trade.date}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                      <span
+                        className="font-mono text-sm font-semibold"
+                        style={{ color: "var(--text)" }}
+                      >
+                        {trade.symbol}
+                      </span>
+                      <span className="text-[11px]" style={{ color: "var(--text3)" }}>
+                        {trade.date}
+                      </span>
                     </div>
-                    <div style={{ 
-                      fontSize: '12px', 
-                      color: 'var(--text2)', 
-                      marginTop: '2px' 
-                    }}>
+                    <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--text2)" }}>
                       {trade.quantity} × ₨{trade.entry_price}
                       {trade.exit_price ? ` → ₨${trade.exit_price}` : " (Open)"}
                       {trade.note && ` · ${trade.note}`}
-                    </div>
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[var(--border)] pt-3 sm:border-0 sm:pt-0 sm:pl-4">
                   {pnl !== null ? (
-                    <div className="text-right">
-                      <p style={{
-                        fontFamily: 'monospace',
-                        fontWeight: '600',
-                        fontSize: '14px',
-                        color: pnl >= 0 ? 'var(--green)' : 'var(--red)'
-                      }}>
+                    <div className="text-right sm:text-right">
+                      <p
+                        className="font-mono text-sm font-semibold tabular-nums"
+                        style={{ color: pnl >= 0 ? "var(--green)" : "var(--red)" }}
+                      >
                         {formatCurrency(pnl)}
                       </p>
-                      <p style={{
-                        fontSize: '11px',
-                        color: pnlPct! >= 0 ? 'var(--green)' : 'var(--red)'
-                      }}>
+                      <p
+                        className="text-[11px] tabular-nums"
+                        style={{ color: pnlPct! >= 0 ? "var(--green)" : "var(--red)" }}
+                      >
                         {formatPercent(pnlPct!)}
                       </p>
                     </div>
                   ) : (
-                    <span style={{ 
-                      fontSize: '11px', 
-                      color: 'var(--text3)', 
-                      fontWeight: '500' 
-                    }}>
+                    <span className="text-[11px] font-medium" style={{ color: "var(--text3)" }}>
                       OPEN
                     </span>
                   )}
                   <button
-                    onClick={() => handleDelete(trade.id)}
+                    type="button"
+                    aria-label="Delete trade"
+                    className="rounded-md p-2 transition-colors"
                     style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'var(--text2)',
-                      cursor: 'pointer',
-                      padding: '4px',
-                      transition: 'color 0.2s'
+                      background: "transparent",
+                      border: "1px solid transparent",
+                      color: "var(--text2)",
                     }}
+                    onClick={() => handleDelete(trade.id)}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = 'var(--red)';
+                      e.currentTarget.style.color = "var(--red)";
+                      e.currentTarget.style.borderColor = "var(--border)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'var(--text2)';
+                      e.currentTarget.style.color = "var(--text2)";
+                      e.currentTarget.style.borderColor = "transparent";
                     }}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </motion.div>
@@ -222,9 +210,11 @@ export default function Journal() {
           })}
         </div>
       ) : (
-        <div className="text-center py-16" style={{ color: 'var(--text2)' }}>
-          <BookOpen className="w-12 h-12 mx-auto mb-3" style={{ opacity: '0.3' }} />
-          <p>{trades.length === 0 ? "No trades yet. Log your first trade!" : "No trades match your filters."}</p>
+        <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] px-6 py-14 text-center" style={{ color: "var(--text2)" }}>
+          <BookOpen className="mx-auto mb-3 h-12 w-12 opacity-30" />
+          <p className="text-sm">
+            {trades.length === 0 ? "No trades yet. Log your first trade!" : "No trades match your filters."}
+          </p>
         </div>
       )}
     </div>

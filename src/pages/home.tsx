@@ -423,7 +423,7 @@ const SectionDesc = ({ children, maxWidth = 480 }: { children: React.ReactNode; 
 // ─── TICKER ──────────────────────────────────────────────────────────────────
 function Ticker() {
   return (
-    <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: "clamp(24px, 5vw, 32px)", background: "var(--lbg)", borderTop: "1px solid var(--lbdr)", display: "flex", alignItems: "center", overflow: "hidden", zIndex: 50 }}>
+    <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, minHeight: "clamp(28px, 5vw, 36px)", paddingBottom: "env(safe-area-inset-bottom, 0px)", background: "var(--lbg)", borderTop: "1px solid var(--lbdr)", display: "flex", alignItems: "center", overflow: "hidden", zIndex: 50 }}>
       <div className="psxl-ticker-track" style={{ display: "flex", gap: "clamp(20px, 4vw, 40px)", whiteSpace: "nowrap" }}>
         {[...STOCKS, ...STOCKS].map((s, i) => (
           <span key={i} style={{ fontSize: "clamp(9px, 1.5vw, 11px)", fontWeight: 500, color: s.pos ? "var(--lgrn)" : "var(--lred)", display: "flex", alignItems: "center", gap: 6 }}>
@@ -444,8 +444,12 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
   return (
     <nav className="psxl-nav" style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      height: "clamp(50px, 8vw, 56px)", display: "flex", alignItems: "center",
-      justifyContent: "space-between", padding: "0 clamp(12px, 3vw, 20px)",
+      minHeight: "clamp(50px, 8vw, 56px)", display: "flex", alignItems: "center",
+      justifyContent: "space-between",
+      paddingLeft: "max(clamp(12px, 3vw, 20px), env(safe-area-inset-left, 0px))",
+      paddingRight: "max(clamp(12px, 3vw, 20px), env(safe-area-inset-right, 0px))",
+      paddingTop: "max(0px, env(safe-area-inset-top, 0px))",
+      paddingBottom: 0,
       borderBottom: "1px solid var(--lbdr)", background: "var(--lbg)"
     }}>
       
@@ -1142,7 +1146,7 @@ export default function Landing() {
     <div className="psxl-root" data-theme={theme} style={{fontFamily:ff,overflowX:"hidden",width:"100%",margin:0,padding:0}}>
       <style>{SCOPED_CSS}</style>
       <Nav theme={theme} onToggle={toggle}/>
-      <main style={{width:"100%",margin:0,padding:0}}>
+      <main style={{width:"100%",margin:0,padding:0,paddingBottom:"calc(clamp(40px, 8vw, 64px) + env(safe-area-inset-bottom, 0px))"}}>
         <Hero/>
         <Features/>
         <LedgerDemo/>
