@@ -94,11 +94,13 @@ export function useDeleteTrade() {
 }
 
 // Computed helpers
+// P&L = (exit - entry) * qty - fees
+// entry_price is always the price you entered the position at,
+// exit_price is always the price you closed it at.
+// A higher exit than entry = profit; lower exit = loss, regardless of side.
 export function calcPnL(trade: Trade): number | null {
   if (!trade.exit_price) return null;
-  const gross = trade.side === "buy"
-    ? (trade.exit_price - trade.entry_price) * trade.quantity
-    : (trade.entry_price - trade.exit_price) * trade.quantity;
+  const gross = (trade.exit_price - trade.entry_price) * trade.quantity;
   return gross - (trade.fees ?? 0);
 }
 
