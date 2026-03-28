@@ -119,6 +119,20 @@ export function getTradeStats(trades: Trade[]) {
   const winRate = closed.length > 0 ? (wins / closed.length) * 100 : 0;
   const totalVolume = trades.reduce((sum, t) => sum + t.entry_price * t.quantity, 0);
 
+  // Buy / Sell breakdown
+  const buyClosed = closed.filter((t) => t.side === "buy");
+  const sellClosed = closed.filter((t) => t.side === "sell");
+  const buyPnLs = buyClosed.map((t) => calcPnL(t)!);
+  const sellPnLs = sellClosed.map((t) => calcPnL(t)!);
+  const buyPnL = buyPnLs.reduce((s, p) => s + p, 0);
+  const sellPnL = sellPnLs.reduce((s, p) => s + p, 0);
+  const buyWins = buyPnLs.filter((p) => p > 0).length;
+  const sellWins = sellPnLs.filter((p) => p > 0).length;
+  const buyWinRate = buyClosed.length > 0 ? (buyWins / buyClosed.length) * 100 : 0;
+  const sellWinRate = sellClosed.length > 0 ? (sellWins / sellClosed.length) * 100 : 0;
+  const avgBuyPnL = buyClosed.length > 0 ? buyPnL / buyClosed.length : 0;
+  const avgSellPnL = sellClosed.length > 0 ? sellPnL / sellClosed.length : 0;
+
   // Equity curve
   const sortedClosed = [...closed].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -146,6 +160,22 @@ export function getTradeStats(trades: Trade[]) {
   // Best/worst trade
   const bestTrade = pnls.length > 0 ? Math.max(...pnls) : 0;
   const worstTrade = pnls.length > 0 ? Math.min(...pnls) : 0;
+
+  // Avg win / avg loss
+  const winPnLs = pnls.filter((p) => p > 0);
+  const lossPnLs = pnls.filter((p) => p < 0);
+  const avgWin = winPnLs.length > 0 ? winPnLs.reduce((s, p) => s + p, 0) / winPnLs.length : 0;
+  const avgLoss = lossPnLs.length > 0 ? lossPnLs.reduce((s, p) => s + p, 0) / lossPnLs.length : 0;
+  const profitFactor = Math.abs(avgLoss) > 0 ? Math.abs(avgWin * winPnLs.length) / Math.abs(avgLoss * lossPnLs.length) : 0;
+
+  // Max drawdown
+  let peak = 0;
+  let maxDrawdown = 0;
+  equityCurve.forEach(({ equity }) => {
+    if (equity > peak) peak = equity;
+    const dd = peak - equity;
+    if (dd > maxDrawdown) maxDrawdown = dd;
+  });
 
   // Symbol performance (for Top Symbols chart)
   const symbolMap = new Map<string, number>();
@@ -180,6 +210,20 @@ export function getTradeStats(trades: Trade[]) {
     .map(([month, pnl]) => ({ month, pnl }))
     .sort((a, b) => a.month.localeCompare(b.month));
 
+  // Buy vs Sell monthly breakdown
+  const monthlyBuySellMap = new Map<string, { buy: number; sell: number }>();
+  closed.forEach((t) => {
+    const pnl = calcPnL(t)!;
+    const month = t.date.slice(0, 7);
+    const existing = monthlyBuySellMap.get(month) ?? { buy: 0, sell: 0 };
+    if (t.side === "buy") existing.buy += pnl;
+    else existing.sell += pnl;
+    monthlyBuySellMap.set(month, existing);
+  });
+  const monthlyBuySell = Array.from(monthlyBuySellMap.entries())
+    .map(([month, v]) => ({ month, ...v }))
+    .sort((a, b) => a.month.localeCompare(b.month));
+
   return {
     totalPnL,
     todayPnL,
@@ -193,8 +237,30 @@ export function getTradeStats(trades: Trade[]) {
     dailyPnL,
     bestTrade,
     worstTrade,
+    avgWin,
+    avgLoss,
+    profitFactor,
+    maxDrawdown,
     symbolPerformance,
     dayOfWeekData,
     monthlyData,
+    monthlyBuySell,
+    // Buy/Sell breakdown
+    buyStats: {
+      count: buyClosed.length,
+      pnl: buyPnL,
+      wins: buyWins,
+      losses: buyClosed.length - buyWins,
+      winRate: buyWinRate,
+      avgPnL: avgBuyPnL,
+    },
+    sellStats: {
+      count: sellClosed.length,
+      pnl: sellPnL,
+      wins: sellWins,
+      losses: sellClosed.length - sellWins,
+      winRate: sellWinRate,
+      avgPnL: avgSellPnL,
+    },
   };
 }
