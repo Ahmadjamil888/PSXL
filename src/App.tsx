@@ -13,9 +13,7 @@ import AboutPage from "@/pages/About";
 import PrivacyPage from "@/pages/Privacy";
 import ContactPage from "@/pages/Contact";
 import FeaturesPage from "@/pages/Features";
-import PricingPage from "@/pages/Pricing";
 import SecurityPage from "@/pages/Security";
-import BlogPage from "@/pages/Blog";
 import CareersPage from "@/pages/Careers";
 import TermsPage from "@/pages/Terms";
 import DisclaimerPage from "@/pages/Disclaimer";
@@ -73,9 +71,7 @@ const App = () => (
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/disclaimer" element={<DisclaimerPage />} />
               <Route path="/features" element={<FeaturesPage />} />
-              <Route path="/pricing" element={<PricingPage />} />
               <Route path="/security" element={<SecurityPage />} />
-              <Route path="/blog" element={<BlogPage />} />
               <Route path="/careers" element={<CareersPage />} />
               <Route path="/analytics-info" element={<AnalyticsInfoPage />} />
               {/* Auth */}
