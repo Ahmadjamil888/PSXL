@@ -563,7 +563,7 @@ function Hero() {
           </p>
           <div className="psxl-hero-actions" style={{display:"flex",gap:"clamp(8px, 2vw, 16px)",flexWrap:"wrap",alignItems:"center"}}>
             <a href="/auth" style={btnPrimary}>Get Started</a>
-            <a href="#psxl-ledger" style={btnGhost}>View Demo</a>
+            <a href="/dashboard?mode=guest" style={btnGhost}>Try as guest</a>
           </div>
         </div>
         <div className="psxl-hero-right" style={{display:"flex",flexDirection:"column",justifyContent:"center",gap:1,background:"var(--lbdr)",minHeight:"auto"}}>
