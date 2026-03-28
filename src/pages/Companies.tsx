@@ -1,27 +1,82 @@
 import { useState, useMemo } from "react";
-import { usePSXCompanies } from "@/hooks/usePSXCompanies";
-import { Search, Building2, RefreshCw } from "lucide-react";
+import { usePSXCompanies, PSXCompany } from "@/hooks/usePSXCompanies";
+import { usePSXQuote } from "@/hooks/usePSXQuote";
+import { Search, Building2, RefreshCw, TrendingUp, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
+import StockPanel from "@/components/StockPanel";
 
-const COLORS = [
-  "#a3c45a","#60a5fa","#f59e0b","#f472b6","#34d399",
-  "#a78bfa","#fb923c","#22d3ee","#e879f9","#4ade80",
-  "#f87171","#38bdf8","#fbbf24","#c084fc","#6ee7b7",
-];
-
-function sectorColor(sector: string) {
-  let hash = 0;
-  for (let i = 0; i < sector.length; i++) hash = sector.charCodeAt(i) + ((hash << 5) - hash);
-  return COLORS[Math.abs(hash) % COLORS.length];
+// ── Color helpers ─────────────────────────────────────────────────────────────
+const COLORS = ["#a3c45a","#60a5fa","#f59e0b","#f472b6","#34d399","#a78bfa","#fb923c","#22d3ee","#e879f9","#4ade80","#f87171","#38bdf8","#fbbf24","#c084fc","#6ee7b7"];
+function sectorColor(s: string) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = s.charCodeAt(i) + ((h << 5) - h);
+  return COLORS[Math.abs(h) % COLORS.length];
 }
 
+// ── Individual card with live quote ──────────────────────────────────────────
+function CompanyCard({ company, onClick }: { company: PSXCompany; onClick: () => void }) {
+  const { data: quote } = usePSXQuote(company.symbol);
+  const color = sectorColor(company.sector);
+  const isUp = (quote?.changePct ?? 0) >= 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      onClick={onClick}
+      style={{
+        background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "10px",
+        padding: "14px 16px", cursor: "pointer", transition: "border-color 0.15s, background 0.15s",
+        display: "flex", flexDirection: "column", gap: "8px",
+      }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = color; (e.currentTarget as HTMLElement).style.background = "var(--bg2)"; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"; (e.currentTarget as HTMLElement).style.background = "var(--surface)"; }}
+    >
+      {/* Top row: symbol + badges */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "6px" }}>
+        <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "var(--text)" }}>{company.symbol}</span>
+        <div style={{ display: "flex", gap: "3px" }}>
+          {company.isETF && <span style={{ fontSize: "8px", fontWeight: 700, color: "#60a5fa", background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.25)", borderRadius: "3px", padding: "1px 4px" }}>ETF</span>}
+          {company.isGEM && <span style={{ fontSize: "8px", fontWeight: 700, color: "#f59e0b", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: "3px", padding: "1px 4px" }}>GEM</span>}
+        </div>
+      </div>
+
+      {/* Name */}
+      <p style={{ fontSize: "11px", color: "var(--text2)", lineHeight: 1.35, margin: 0 }}>{company.name}</p>
+
+      {/* Live price */}
+      {quote ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "2px" }}>
+          <span style={{ fontFamily: "monospace", fontSize: "14px", fontWeight: 700, color: "var(--text)" }}>
+            ₨{quote.price.toFixed(2)}
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "3px", fontSize: "11px", fontWeight: 600, fontFamily: "monospace", color: isUp ? "var(--green)" : "var(--red)" }}>
+            {isUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+            {isUp ? "+" : ""}{quote.changePct.toFixed(2)}%
+          </span>
+        </div>
+      ) : (
+        <div style={{ height: "20px", background: "var(--bg2)", borderRadius: "4px", animation: "pulse 1.5s infinite" }} />
+      )}
+
+      {/* Sector badge */}
+      {company.sector && (
+        <span style={{ fontSize: "9px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color, background: `${color}15`, border: `1px solid ${color}30`, borderRadius: "4px", padding: "2px 6px", alignSelf: "flex-start" }}>
+          {company.sector}
+        </span>
+      )}
+    </motion.div>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 const Companies = () => {
   const { data: allCompanies = [], isLoading, isError, refetch } = usePSXCompanies();
-
   const [search, setSearch] = useState("");
   const [sector, setSector] = useState("All");
   const [showETF, setShowETF] = useState(false);
   const [showGEM, setShowGEM] = useState(false);
+  const [selected, setSelected] = useState<PSXCompany | null>(null);
 
   const sectors = useMemo(() => {
     const s = new Set(allCompanies.map(c => c.sector).filter(Boolean));
@@ -41,9 +96,7 @@ const Companies = () => {
 
   const sectorCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    allCompanies.forEach(c => {
-      if (!c.isETF && !c.isGEM) map[c.sector] = (map[c.sector] ?? 0) + 1;
-    });
+    allCompanies.forEach(c => { if (!c.isETF && !c.isGEM) map[c.sector] = (map[c.sector] ?? 0) + 1; });
     return map;
   }, [allCompanies]);
 
@@ -59,15 +112,15 @@ const Companies = () => {
           <p className="dash-page-kicker">Market</p>
           <h1 className="dash-page-title">PSX Companies</h1>
           <p className="dash-page-desc">
-            {isLoading ? "Loading live data from PSX…" : `${allCompanies.length} securities · ${sectors.length - 1} sectors · live from dps.psx.com.pk`}
+            {isLoading ? "Loading live data from PSX…" : `${allCompanies.length} securities · ${sectors.length - 1} sectors · click any card for live chart`}
           </p>
         </div>
-        <button onClick={() => refetch()} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text2)", borderRadius: "6px", cursor: "pointer", flexShrink: 0 }}>
+        <button onClick={() => refetch()} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text2)", borderRadius: "6px", cursor: "pointer", flexShrink: 0, alignSelf: "flex-start" }}>
           <RefreshCw size={12} /> Refresh
         </button>
       </div>
 
-      {/* Summary stats */}
+      {/* Stats */}
       <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
         {[
           { label: "Total Securities", val: String(allCompanies.length) },
@@ -91,35 +144,37 @@ const Companies = () => {
               placeholder="Search symbol or name…" className="input-field"
               style={{ width: "100%", paddingLeft: "36px" }} />
           </div>
-          {/* Toggle ETF / GEM */}
           {[
             { label: `ETFs (${etfCount})`, val: showETF, set: setShowETF },
             { label: `GEM (${gemCount})`, val: showGEM, set: setShowGEM },
           ].map(t => (
             <button key={t.label} onClick={() => t.set(!t.val)} style={{
               padding: "0 16px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.06em",
-              textTransform: "uppercase", borderRadius: "6px", border: `1px solid ${t.val ? "var(--green)" : "var(--border)"}`,
+              textTransform: "uppercase", borderRadius: "6px",
+              border: `1px solid ${t.val ? "var(--green)" : "var(--border)"}`,
               background: t.val ? "rgba(163,196,90,0.12)" : "transparent",
-              color: t.val ? "var(--green)" : "var(--text2)", cursor: "pointer", whiteSpace: "nowrap",
-              minHeight: "40px",
+              color: t.val ? "var(--green)" : "var(--text2)", cursor: "pointer", whiteSpace: "nowrap", minHeight: "40px",
             }}>{t.label}</button>
           ))}
         </div>
 
         {/* Sector pills */}
         <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "4px" }}>
-          {sectors.map(s => (
-            <button key={s} onClick={() => setSector(s)} style={{
-              flexShrink: 0, padding: "5px 12px", fontSize: "11px", fontWeight: 600,
-              letterSpacing: "0.05em", textTransform: "uppercase", borderRadius: "999px",
-              border: `1px solid ${sector === s ? sectorColor(s) : "var(--border)"}`,
-              background: sector === s ? `${sectorColor(s)}18` : "transparent",
-              color: sector === s ? sectorColor(s) : "var(--text2)",
-              cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.15s",
-            }}>
-              {s}{s !== "All" && sectorCounts[s] ? ` (${sectorCounts[s]})` : ""}
-            </button>
-          ))}
+          {sectors.map(s => {
+            const c = sectorColor(s);
+            return (
+              <button key={s} onClick={() => setSector(s)} style={{
+                flexShrink: 0, padding: "5px 12px", fontSize: "11px", fontWeight: 600,
+                letterSpacing: "0.05em", textTransform: "uppercase", borderRadius: "999px",
+                border: `1px solid ${sector === s ? c : "var(--border)"}`,
+                background: sector === s ? `${c}18` : "transparent",
+                color: sector === s ? c : "var(--text2)",
+                cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.15s",
+              }}>
+                {s}{s !== "All" && sectorCounts[s] ? ` (${sectorCounts[s]})` : ""}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -130,44 +185,21 @@ const Companies = () => {
           <p style={{ fontSize: "14px" }}>Fetching live data from PSX…</p>
         </div>
       )}
-
       {isError && (
         <div style={{ textAlign: "center", padding: "48px 0", color: "var(--red)" }}>
           <p style={{ fontSize: "14px" }}>Failed to load PSX data. <button onClick={() => refetch()} style={{ color: "var(--green)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>Retry</button></p>
         </div>
       )}
 
-      {/* Company grid */}
+      {/* Grid */}
       {!isLoading && !isError && (
         filtered.length > 0 ? (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))", gap: "8px" }}>
-            {filtered.map((company, i) => {
-              const color = sectorColor(company.sector);
-              return (
-                <motion.div key={company.symbol}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: Math.min(i * 0.008, 0.3) }}
-                  style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "10px", padding: "14px 16px", cursor: "default", transition: "border-color 0.15s, background 0.15s" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = color; (e.currentTarget as HTMLElement).style.background = "var(--bg2)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"; (e.currentTarget as HTMLElement).style.background = "var(--surface)"; }}
-                >
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "8px", marginBottom: "6px" }}>
-                    <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "var(--text)" }}>{company.symbol}</span>
-                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                      {company.isETF && <span style={{ fontSize: "8px", fontWeight: 700, letterSpacing: "0.08em", color: "#60a5fa", background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.25)", borderRadius: "3px", padding: "1px 5px" }}>ETF</span>}
-                      {company.isGEM && <span style={{ fontSize: "8px", fontWeight: 700, letterSpacing: "0.08em", color: "#f59e0b", background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: "3px", padding: "1px 5px" }}>GEM</span>}
-                    </div>
-                  </div>
-                  <p style={{ fontSize: "11px", color: "var(--text2)", lineHeight: 1.4, margin: "0 0 8px" }}>{company.name}</p>
-                  {company.sector && (
-                    <span style={{ fontSize: "9px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color, background: `${color}15`, border: `1px solid ${color}30`, borderRadius: "4px", padding: "2px 6px" }}>
-                      {company.sector}
-                    </span>
-                  )}
-                </motion.div>
-              );
-            })}
+            {filtered.map((company, i) => (
+              <motion.div key={company.symbol} transition={{ delay: Math.min(i * 0.006, 0.25) }}>
+                <CompanyCard company={company} onClick={() => setSelected(company)} />
+              </motion.div>
+            ))}
           </div>
         ) : (
           <div style={{ textAlign: "center", padding: "48px 0", color: "var(--text2)" }}>
@@ -175,6 +207,16 @@ const Companies = () => {
             <p style={{ fontSize: "14px" }}>No companies match your search.</p>
           </div>
         )
+      )}
+
+      {/* Stock panel slide-over */}
+      {selected && (
+        <StockPanel
+          symbol={selected.symbol}
+          name={selected.name}
+          sector={selected.sector}
+          onClose={() => setSelected(null)}
+        />
       )}
     </div>
   );
