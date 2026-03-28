@@ -188,6 +188,8 @@
     font-family: 'DM Sans', 'Helvetica Neue', system-ui, sans-serif;
     margin: 0;
     padding: 0;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
   }
 
   /* Custom scrollbar */

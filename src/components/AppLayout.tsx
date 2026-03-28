@@ -290,14 +290,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         }}
       >
         <div
-          className="w-full max-w-[1600px] mx-auto px-4 sm:px-5 lg:px-8 box-border min-w-0"
+          className="w-full max-w-[1600px] mx-auto box-border min-w-0 px-4 sm:px-5 lg:px-8"
           style={{
             paddingTop: isMobile ? "72px" : "32px",
             paddingBottom: isMobile
               ? "calc(96px + env(safe-area-inset-bottom, 0px))"
               : "32px",
-            paddingLeft: "max(0px, env(safe-area-inset-left, 0px))",
-            paddingRight: "max(0px, env(safe-area-inset-right, 0px))",
           }}
         >
           {children}

@@ -11,6 +11,15 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    proxy: {
+      // Yahoo Finance has no CORS for browsers — proxy in dev only. Production: set VITE_MARKET_PROXY_URL to your backend or use mock.
+      "/api/yahoo": {
+        target: "https://query1.finance.yahoo.com",
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/yahoo/, ""),
+        secure: true,
+      },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

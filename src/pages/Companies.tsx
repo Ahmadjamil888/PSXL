@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CompanySearch from "@/components/CompanySearch";
+import CompanyIntelPanel from "@/components/CompanyIntelPanel";
 import { PSXCompany } from "@/data/psxCompanies";
 
 type TabId = "search" | "sectors" | "watchlist";
@@ -23,7 +24,8 @@ const Companies = () => {
         <p className="dash-page-kicker">Market</p>
         <h1 className="dash-page-title">PSX Companies</h1>
         <p className="dash-page-desc">
-          Browse and search listed companies on the Pakistan Stock Exchange.
+          Browse PSX listings, pull live chart data when available, and review model signals vs your journal — not financial
+          advice.
         </p>
       </div>
 
@@ -204,98 +206,7 @@ const Companies = () => {
       )}
 
       {selectedCompany && (
-        <div
-          className="overflow-hidden rounded-[10px] border border-[var(--border)]"
-          style={{ background: panelBg }}
-        >
-          <div
-            className="flex flex-col gap-3 border-b border-[var(--border)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-            style={{ background: "var(--bg2)" }}
-          >
-            <div className="flex min-w-0 items-center gap-3">
-              {selectedCompany.logo && (
-                <img
-                  src={selectedCompany.logo}
-                  alt=""
-                  className="h-8 w-8 shrink-0 object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              )}
-              <div className="min-w-0">
-                <div style={{ fontSize: "16px", fontWeight: 600, color: "var(--text)" }}>
-                  {selectedCompany.name}
-                </div>
-                <div style={{ fontSize: "12px", color: "var(--text3)", marginTop: "2px" }}>
-                  {selectedCompany.symbol} • {selectedCompany.sector}
-                </div>
-              </div>
-            </div>
-            <span
-              className="shrink-0 self-start sm:self-center"
-              style={{
-                fontSize: "10px",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "var(--green)",
-                background: "var(--bg2)",
-                border: "1px solid var(--border)",
-                padding: "4px 10px",
-                borderRadius: "4px",
-              }}
-            >
-              Live
-            </span>
-          </div>
-          <div style={{ padding: "clamp(16px, 4vw, 28px)" }}>
-            <div
-              className="grid grid-cols-2 gap-px sm:grid-cols-2 lg:grid-cols-4"
-              style={{ background: "var(--border)" }}
-            >
-              {[
-                { k: "Current Price", v: "PKR 245.50", vColor: "var(--text)" },
-                { k: "Change", v: "+2.35%", vColor: "var(--green)" },
-                { k: "Volume", v: "1.2M", vColor: "var(--text)" },
-                { k: "Market Cap", v: "PKR 82B", vColor: "var(--text)" },
-              ].map((row) => (
-                <div
-                  key={row.k}
-                  style={{
-                    background: panelBg,
-                    padding: "clamp(14px, 3vw, 22px)",
-                    textAlign: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "10px",
-                      fontWeight: 600,
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                      color: "var(--text3)",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    {row.k}
-                  </div>
-                  <div
-                    className="font-mono tabular-nums"
-                    style={{
-                      fontSize: "clamp(16px, 4vw, 22px)",
-                      fontWeight: 700,
-                      letterSpacing: "-0.02em",
-                      color: row.vColor,
-                    }}
-                  >
-                    {row.v}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <CompanyIntelPanel company={selectedCompany} onClose={() => setSelectedCompany(null)} />
       )}
     </div>
   );
