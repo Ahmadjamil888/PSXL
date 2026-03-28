@@ -273,6 +273,7 @@ export default function AuthPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="input-field"
+                  autoComplete={isLogin ? "current-password" : "new-password"}
                   style={{ width: '100%', paddingRight: '40px' }}
                   required
                   minLength={6}

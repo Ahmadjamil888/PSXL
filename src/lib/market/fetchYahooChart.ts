@@ -6,8 +6,9 @@ function marketBaseUrl(): string {
   if (import.meta.env.VITE_FORCE_MARKET_MOCK === "true") return "";
   const custom = import.meta.env.VITE_MARKET_PROXY_URL as string | undefined;
   if (custom) return custom.replace(/\/$/, "");
+  // Only use the Vite dev proxy in development — in production Yahoo blocks CORS
   if (import.meta.env.DEV) return "/api/yahoo";
-  return "https://query1.finance.yahoo.com";
+  return ""; // production: always use mock (no proxy available)
 }
 
 interface YahooChartResult {
