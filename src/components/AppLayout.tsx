@@ -50,7 +50,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             className="flex flex-col shrink-0 overflow-hidden fixed left-0 top-0 h-screen"
             style={{
               borderRight: "1px solid var(--border)",
-              background: "var(--bg)",
+              background: "var(--chrome-bg)",
               zIndex: 100,
             }}
           >
@@ -231,7 +231,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         className="fixed top-0 left-0 right-0 z-40 lg:hidden"
         style={{
           borderBottom: "1px solid var(--border)",
-          background: "var(--bg)",
+          background: "var(--chrome-bg)",
           backdropFilter: "blur(10px)",
         }}
       >
@@ -250,7 +250,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
         style={{
           borderTop: "1px solid var(--border)",
-          background: "var(--bg)",
+          background: "var(--chrome-bg)",
           height: '64px',
         }}
       >

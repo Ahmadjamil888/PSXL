@@ -59,7 +59,6 @@ export function PublicNav() {
   const borderColor = resolved === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   const textColor = resolved === "dark" ? "#ffffff" : "#000000";
   const textMuted = resolved === "dark" ? "#888888" : "#666666";
-
   return (
     <>
       <nav style={{
@@ -68,7 +67,7 @@ export function PublicNav() {
         justifyContent: "space-between",
         padding: "0 clamp(16px, 4vw, 40px)",
         borderBottom: `1px solid ${scrolled ? borderColor : "transparent"}`,
-        background: navBg,
+        background: "var(--chrome-bg)",
         transition: "border-color 0.3s ease",
       }}>
         {/* Logo */}
@@ -131,8 +130,7 @@ export function PublicNav() {
           <button
             className="md:hidden"
             onClick={() => setOpen(!open)}
-            style={{ background: "none", border: `1px solid ${borderColor}`, padding: "8px", cursor: "pointer", color: textColor, borderRadius: "4px" }}
-            aria-label="Toggle menu"
+            style={{ background: "none", border: `1px solid ${borderColor}`, padding: "8px", cursor: "pointer", color: textColor, borderRadius: "4px" }}            aria-label="Toggle menu"
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -143,7 +141,7 @@ export function PublicNav() {
       {open && (
         <div style={{
           position: "fixed", top: "56px", left: 0, right: 0, zIndex: 99,
-          background: navBg, borderBottom: `1px solid ${borderColor}`,
+          background: "var(--chrome-bg)", borderBottom: `1px solid ${borderColor}`,
           padding: "16px clamp(16px, 4vw, 40px) 24px",
         }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -176,7 +174,7 @@ export function PublicNav() {
 
 export function PublicFooter() {
   const resolved = useResolvedTheme();
-  const footerBg = resolved === "dark" ? "#000000" : "#ffffff";
+  const footerBg = "var(--chrome-bg)";
   const borderColor = resolved === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   const textMuted = resolved === "dark" ? "#555555" : "#999999";
   const textSub = resolved === "dark" ? "#888888" : "#666666";
@@ -244,11 +242,8 @@ export function PublicFooter() {
 }
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
-  const resolved = useResolvedTheme();
-  const pageBg = resolved === "dark" ? "#000000" : "#ffffff";
-
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: pageBg, color: resolved === "dark" ? "#ffffff" : "#000000" }}>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg)", color: "var(--text)" }}>
       <PublicNav />
       <main style={{ flex: 1, paddingTop: "56px" }}>
         {children}
