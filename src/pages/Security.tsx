@@ -73,7 +73,11 @@ export default function SecurityPage() {
       <Section>
         <motion.div {...fade()} style={{ textAlign: "center" }}>
           <h2 style={{ fontSize: "clamp(22px, 4vw, 36px)", fontWeight: 700, letterSpacing: "-1px", color: "var(--text)", marginBottom: "16px" }}>Questions about security?</h2>
-          <p style={{ fontSize: "14px", color: "var(--text2)", marginBottom: "24px" }}>Contact our security team at <strong style={{ color: "var(--text)" }}>security@psxledger.com</strong></p>
+          <p style={{ fontSize: "14px", color: "var(--text2)", marginBottom: "24px" }}>Contact our security team at:</p>
+          <div style={{ background: "var(--bg2)", borderRadius: "8px", padding: "16px", marginBottom: "24px", display: "inline-block" }}>
+            <p>Email: <a href="mailto:ahmadjamildhami@gmail.com" style={{ color: "var(--green)", textDecoration: "none" }}>ahmadjamildhami@gmail.com</a></p>
+            <p style={{ marginTop: "4px" }}>WhatsApp: <a href="https://wa.me/923338107788" style={{ color: "var(--green)", textDecoration: "none" }}>+92 333 8107788</a></p>
+          </div>
           <a href="/contact" className="btn-ghost" style={{ textDecoration: "none", borderRadius: "4px", padding: "12px 24px", display: "inline-block" }}>Contact Us</a>
         </motion.div>
       </Section>

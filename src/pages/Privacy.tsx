@@ -112,10 +112,11 @@ export default function PrivacyPage() {
         <Block icon={Mail} title="Contact Us">
           <p style={{ marginBottom: "12px" }}>For privacy inquiries, contact us at:</p>
           <div style={{ background: "var(--bg2)", borderRadius: "8px", padding: "16px" }}>
-            <p style={{ fontWeight: 500, color: "var(--text)", marginBottom: "4px" }}>PSX Ledger Pro</p>
-            <p>Email: privacy@psxledger.com</p>
-            <p>Address: Karachi, Pakistan</p>
-            <p>Response time: within 48 hours</p>
+            <p style={{ fontWeight: 500, color: "var(--text)", marginBottom: "8px" }}>PSX Ledger Pro</p>
+            <p>Email: <a href="mailto:ahmadjamildhami@gmail.com" style={{ color: "var(--green)", textDecoration: "none" }}>ahmadjamildhami@gmail.com</a></p>
+            <p style={{ marginTop: "4px" }}>WhatsApp / Phone: <a href="https://wa.me/923338107788" style={{ color: "var(--green)", textDecoration: "none" }}>+92 333 8107788</a></p>
+            <p style={{ marginTop: "4px" }}>Address: Karachi, Pakistan</p>
+            <p style={{ marginTop: "4px", color: "var(--text3)", fontSize: "12px" }}>Response time: within 48 hours</p>
           </div>
         </Block>
 

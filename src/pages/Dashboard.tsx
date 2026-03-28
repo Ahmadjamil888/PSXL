@@ -94,7 +94,7 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="dashboard-app space-y-5" style={{ color: "var(--text)" }}>
+    <div className="dashboard-app space-y-6" style={{ color: "var(--text)" }}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
@@ -102,28 +102,31 @@ export default function Dashboard() {
           <h1 className="dash-page-title">Dashboard</h1>
           <p className="dash-page-desc">Your PSX trading overview and latest activity.</p>
         </div>
-        <div className="w-full sm:w-auto sm:shrink-0"><TradeForm /></div>
+        <div className="w-full sm:w-auto sm:shrink-0" style={{ position: "relative" }}>
+          <TradeForm />
+          <span style={{ position: "absolute", top: "-4px", right: "-4px", width: "8px", height: "8px", borderRadius: "50%", background: "var(--green)", animation: "pulse 2s infinite" }} />
+        </div>
       </div>
 
       {/* Stat cards */}
       <div className="stat-grid">
-        <div className="stat-card">
-          <span className="stat-label">Total P&L</span>
-          <span className={`stat-val ${stats.totalPnL >= 0 ? "pos" : "neg"}`}>{formatCurrency(stats.totalPnL)}</span>
+        <div className="stat-card" style={{ padding: "20px 22px" }}>
+          <span className="stat-label" style={{ color: "var(--text2)" }}>Portfolio P&L</span>
+          <span className={`stat-val ${stats.totalPnL >= 0 ? "pos" : "neg"}`} style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}>{formatCurrency(stats.totalPnL)}</span>
           <span className="stat-sub">{stats.closedTrades} closed trades</span>
         </div>
-        <div className="stat-card">
-          <span className="stat-label">Today's P&L</span>
+        <div className="stat-card" style={{ padding: "20px 22px" }}>
+          <span className="stat-label" style={{ color: "var(--text2)" }}>Today's Profit</span>
           <span className={`stat-val ${stats.todayPnL >= 0 ? "pos" : stats.todayPnL < 0 ? "neg" : ""}`}>{formatCurrency(stats.todayPnL)}</span>
           <span className="stat-sub">Real-time tracking</span>
         </div>
-        <div className="stat-card">
-          <span className="stat-label">Win Rate <HelpCircle className="w-3 h-3 ml-1 inline-block" style={{ color: "var(--text3)" }} /></span>
+        <div className="stat-card" style={{ padding: "20px 22px" }}>
+          <span className="stat-label" style={{ color: "var(--text2)" }}>Win Rate <HelpCircle className="w-3 h-3 ml-1 inline-block" style={{ color: "var(--text3)" }} /></span>
           <span className="stat-val">{stats.winRate.toFixed(1)}%</span>
           <span className="stat-sub">{stats.wins}W / {stats.losses}L</span>
         </div>
-        <div className="stat-card">
-          <span className="stat-label">Total Trades</span>
+        <div className="stat-card" style={{ padding: "20px 22px" }}>
+          <span className="stat-label" style={{ color: "var(--text2)" }}>Total Trades</span>
           <span className="stat-val">{stats.totalTrades}</span>
           <span className="stat-sub">{formatCurrency(stats.totalVolume)} volume</span>
         </div>
@@ -169,25 +172,29 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   {holdings.map((h, i) => (
-                    <tr key={h.symbol}>
-                      <td style={{ padding: "10px 12px", fontWeight: 600, color: "var(--text)" }}>
+                    <tr key={h.symbol}
+                      style={{ transition: "background 0.15s", cursor: "default" }}
+                      onMouseEnter={e => (e.currentTarget.style.background = "var(--bg2)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <td style={{ padding: "13px 14px", fontWeight: 600, color: "var(--text)" }}>
                         <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: COLORS[i % COLORS.length], marginRight: "8px" }} />
                         {h.symbol}
                       </td>
-                      <td style={{ padding: "10px 12px", fontFamily: "monospace" }}>{h.quantity.toLocaleString()}</td>
-                      <td style={{ padding: "10px 12px", fontFamily: "monospace" }}>₨{h.avgCost.toFixed(2)}</td>
-                      <td style={{ padding: "10px 12px", fontFamily: "monospace" }}>{formatCurrency(h.costBasis)}</td>
-                      <td style={{ padding: "10px 12px", fontFamily: "monospace" }}>{formatCurrency(h.marketValue)}</td>
-                      <td style={{ padding: "10px 12px", textAlign: "right", fontFamily: "monospace", fontWeight: 600, color: h.unrealizedPnL >= 0 ? "var(--green)" : "var(--red)" }}>
-                        {formatCurrency(h.unrealizedPnL)}<br />
-                        <span style={{ fontSize: "10px", fontWeight: 400 }}>{formatPercent(h.unrealizedPct)}</span>
+                      <td style={{ padding: "13px 14px", fontFamily: "monospace", color: "var(--text)" }}>{h.quantity.toLocaleString()}</td>
+                      <td style={{ padding: "13px 14px", fontFamily: "monospace", color: "var(--text)" }}>₨{h.avgCost.toFixed(2)}</td>
+                      <td style={{ padding: "13px 14px", fontFamily: "monospace", color: "var(--text)" }}>{formatCurrency(h.costBasis)}</td>
+                      <td style={{ padding: "13px 14px", fontFamily: "monospace", color: "var(--text)" }}>{formatCurrency(h.marketValue)}</td>
+                      <td style={{ padding: "13px 14px", textAlign: "right", fontFamily: "monospace", fontWeight: 700, color: h.unrealizedPnL >= 0 ? "var(--green)" : "var(--red)" }}>
+                        {h.unrealizedPnL >= 0 ? "+" : ""}{formatCurrency(h.unrealizedPnL)}<br />
+                        <span style={{ fontSize: "10px", fontWeight: 400, opacity: 0.85 }}>{formatPercent(h.unrealizedPct)}</span>
                       </td>
-                      <td style={{ padding: "10px 12px", textAlign: "right" }}>
+                      <td style={{ padding: "13px 14px", textAlign: "right" }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "6px" }}>
                           <div style={{ width: "48px", height: "4px", background: "var(--bg2)", borderRadius: "2px", overflow: "hidden" }}>
                             <div style={{ width: `${Math.min(h.allocation, 100)}%`, height: "100%", background: COLORS[i % COLORS.length], borderRadius: "2px" }} />
                           </div>
-                          <span style={{ fontFamily: "monospace", fontSize: "11px" }}>{h.allocation.toFixed(1)}%</span>
+                          <span style={{ fontFamily: "monospace", fontSize: "11px", color: "var(--text)" }}>{h.allocation.toFixed(1)}%</span>
                         </div>
                       </td>
                     </tr>

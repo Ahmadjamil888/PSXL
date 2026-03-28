@@ -78,27 +78,30 @@ export default function TradeForm() {
             style={{
               position: 'fixed',
               inset: 0,
-              zIndex: 50,
+              zIndex: 1000,
               display: 'flex',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               justifyContent: 'center',
-              background: 'rgba(0, 0, 0, 0.8)',
+              background: 'rgba(0, 0, 0, 0.85)',
               backdropFilter: 'blur(4px)',
-              padding: '16px'
+              padding: '0',
+              overflowY: 'auto',
             }}
             onClick={() => setOpen(false)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.97, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              exit={{ opacity: 0, scale: 0.97, y: 16 }}
               style={{
                 background: 'var(--surface)',
                 border: '1px solid var(--border)',
-                borderRadius: '0px',
+                borderRadius: '8px',
                 padding: '24px',
                 width: '100%',
-                maxWidth: '480px'
+                maxWidth: '480px',
+                margin: '16px',
+                marginBottom: '32px',
               }}
               onClick={(e) => e.stopPropagation()}
             >

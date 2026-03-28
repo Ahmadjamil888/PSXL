@@ -50,7 +50,13 @@ export default function DisclaimerPage() {
           </Block>
 
           <Block title="Contact">
-            <p>For questions about this disclaimer, contact us at: <strong style={{ color: "var(--text)" }}>legal@psxledger.com</strong></p>
+            <p>For questions about this disclaimer, contact us at:</p>
+            <div style={{ background: "var(--bg2)", borderRadius: "8px", padding: "16px", marginTop: "12px" }}>
+              <p style={{ fontWeight: 500, color: "var(--text)", marginBottom: "8px" }}>PSX Ledger Pro</p>
+              <p>Email: <a href="mailto:ahmadjamildhami@gmail.com" style={{ color: "var(--green)", textDecoration: "none" }}>ahmadjamildhami@gmail.com</a></p>
+              <p style={{ marginTop: "4px" }}>WhatsApp / Phone: <a href="https://wa.me/923338107788" style={{ color: "var(--green)", textDecoration: "none" }}>+92 333 8107788</a></p>
+              <p style={{ marginTop: "4px" }}>Address: Karachi, Pakistan</p>
+            </div>
           </Block>
         </div>
       </section>

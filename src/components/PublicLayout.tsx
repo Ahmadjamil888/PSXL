@@ -128,7 +128,8 @@ export function PublicNav() {
           <button
             className="md:hidden"
             onClick={() => setOpen(!open)}
-            style={{ background: "none", border: `1px solid ${borderColor}`, padding: "8px", cursor: "pointer", color: textColor, borderRadius: "4px" }}            aria-label="Toggle menu"
+            style={{ background: "none", border: `1px solid ${borderColor}`, padding: "8px", cursor: "pointer", color: textColor, borderRadius: "4px" }}
+            aria-label="Toggle menu"
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTheme } from "@/components/theme-provider";
+import { useLiveTicker } from "@/hooks/useLiveTicker";
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 type Theme = "dark" | "light";
@@ -422,10 +423,14 @@ const SectionDesc = ({ children, maxWidth = 480 }: { children: React.ReactNode; 
 
 // ─── TICKER ──────────────────────────────────────────────────────────────────
 function Ticker() {
+  const { items, isLive } = useLiveTicker();
   return (
     <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, minHeight: "clamp(28px, 5vw, 36px)", paddingBottom: "env(safe-area-inset-bottom, 0px)", background: "var(--lbg)", borderTop: "1px solid var(--lbdr)", display: "flex", alignItems: "center", overflow: "hidden", zIndex: 50 }}>
+      {isLive && (
+        <span style={{ flexShrink: 0, fontSize: "9px", fontWeight: 700, letterSpacing: "0.1em", color: "var(--lgrn)", padding: "0 8px", borderRight: "1px solid var(--lbdr)", whiteSpace: "nowrap" }}>LIVE</span>
+      )}
       <div className="psxl-ticker-track" style={{ display: "flex", gap: "clamp(20px, 4vw, 40px)", whiteSpace: "nowrap" }}>
-        {[...STOCKS, ...STOCKS].map((s, i) => (
+        {[...items, ...items].map((s, i) => (
           <span key={i} style={{ fontSize: "clamp(9px, 1.5vw, 11px)", fontWeight: 500, color: s.pos ? "var(--lgrn)" : "var(--lred)", display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ color: "var(--ltx)", fontWeight: 600 }}>{s.sym}</span>
             <span>{s.val}</span>
