@@ -678,3 +678,37 @@ img {
     justify-content: space-between;
   }
 }
+
+/* ─── Public layout footer responsive ─────────────────────────────────────── */
+.footer-top-grid {
+  grid-template-columns: clamp(180px, 22%, 220px) 1fr;
+}
+
+@media (max-width: 640px) {
+  .footer-top-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* btn-secondary for import/export buttons */
+.btn-secondary {
+  font-family: var(--ff, 'Helvetica Neue', sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.btn-secondary:hover {
+  border-color: var(--text3);
+  background: var(--bg2);
+}

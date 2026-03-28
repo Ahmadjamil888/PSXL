@@ -1,253 +1,138 @@
 import { motion } from "framer-motion";
-import { TrendingUp, Shield, Users, Target, Award, BarChart3 } from "lucide-react";
+import { TrendingUp, Shield, Users, Target, Award, BarChart3, BookOpen, Calculator, FileText, Layers } from "lucide-react";
+import PublicLayout from "@/components/PublicLayout";
+
+const fade = (delay = 0) => ({ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.5, delay } });
+
+const Section = ({ children, alt = false }: { children: React.ReactNode; alt?: boolean }) => (
+  <section style={{ background: alt ? "var(--bg2)" : "var(--bg)", padding: "clamp(48px, 8vw, 80px) clamp(16px, 5vw, 40px)" }}>
+    <div style={{ maxWidth: "960px", margin: "0 auto" }}>{children}</div>
+  </section>
+);
+
+const Kicker = ({ children }: { children: React.ReactNode }) => (
+  <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: "12px" }}>{children}</p>
+);
+
+const H2 = ({ children }: { children: React.ReactNode }) => (
+  <h2 style={{ fontSize: "clamp(24px, 4vw, 40px)", fontWeight: 700, letterSpacing: "-1px", color: "var(--text)", marginBottom: "16px" }}>{children}</h2>
+);
+
+const Desc = ({ children }: { children: React.ReactNode }) => (
+  <p style={{ fontSize: "15px", fontWeight: 300, lineHeight: 1.75, color: "var(--text2)", maxWidth: "600px" }}>{children}</p>
+);
 
 export default function AboutPage() {
+  const features = [
+    { icon: BookOpen, title: "Trade Entry & History", desc: "Log every buy and sell with full metadata — quantity, rate, brokerage, CDC charges, Zakat, and settlement date. T+2 settlement tracked automatically." },
+    { icon: TrendingUp, title: "Real-Time P&L Tracking", desc: "See realised and unrealised gain or loss per position and at portfolio level. Weighted average cost computed automatically using FIFO / WAC." },
+    { icon: Layers, title: "Sector & Scrip Breakdown", desc: "View exposure by KSE sector — Cement, Banking, E&P, Tech, and more. Instantly understand concentration risk across your holdings." },
+    { icon: Award, title: "Dividend Tracker", desc: "Record cash and bonus dividends, right issues, and stock splits. Adjust cost basis automatically and track dividend yield per holding." },
+    { icon: Calculator, title: "Tax Computation", desc: "Capital gains tax, withholding tax on dividends, and Zakat deductions — all calculated per FBR rules. Export a ready report for your tax consultant." },
+    { icon: FileText, title: "Export & Reports", desc: "Generate portfolio statements, gain/loss summaries, and broker reconciliation sheets. Export to CSV or PDF in one click." },
+  ];
+
+  const values = [
+    { title: "Transparency", desc: "Clear, honest communication about how your data is used and how our platform operates." },
+    { title: "Innovation", desc: "Continuously improving based on user feedback and emerging technologies." },
+    { title: "Reliability", desc: "99.9% uptime, daily automated backups with 30-day retention, and robust data recovery." },
+    { title: "Community", desc: "A growing community of informed PSX traders who share knowledge and help each other succeed." },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-8">
-              <TrendingUp className="w-8 h-8 text-primary" />
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-              About <span className="text-primary">PSX Ledger</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Your trusted companion for Pakistan Stock Exchange trading analytics, 
-              portfolio management, and financial insights.
-            </p>
-          </motion.div>
+    <PublicLayout>
+      {/* Hero */}
+      <Section>
+        <motion.div {...fade()}>
+          <Kicker>About Us</Kicker>
+          <H2>Built for PSX traders,<br />by PSX traders.</H2>
+          <Desc>PSX Ledger Pro is the institutional-grade trading ledger built exclusively for Pakistan Stock Exchange investors. We give every trader access to professional-grade analytics — from the first-time investor to the seasoned portfolio manager.</Desc>
+        </motion.div>
+      </Section>
+
+      {/* Mission */}
+      <Section alt>
+        <motion.div {...fade()} style={{ marginBottom: "40px" }}>
+          <Kicker>Mission</Kicker>
+          <H2>Our Mission</H2>
+          <Desc>We believe every trader deserves clarity over their portfolio. While international platforms offer generic solutions, none addressed the specific needs of PSX investors — from FBR tax rules to KSE sector mapping. We built the tool we wished existed.</Desc>
+        </motion.div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "16px" }}>
+          {[
+            { icon: Target, title: "Precision Analytics", desc: "Track every trade with detailed analytics including P&L calculations, win rates, and performance metrics tailored for PSX." },
+            { icon: Shield, title: "Secure & Private", desc: "AES-256 encryption at rest, TLS 1.3 in transit. Your trading data is never shared with third parties." },
+            { icon: Users, title: "Built for Traders", desc: "Developed by traders who understand the unique challenges of the Pakistan Stock Exchange." },
+          ].map((item, i) => (
+            <motion.div key={i} {...fade(i * 0.1)} style={{ background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "10px", padding: "24px" }}>
+              <item.icon size={20} style={{ color: "var(--green)", marginBottom: "12px" }} />
+              <h3 style={{ fontSize: "14px", fontWeight: 600, color: "var(--text)", marginBottom: "8px" }}>{item.title}</h3>
+              <p style={{ fontSize: "13px", fontWeight: 300, color: "var(--text2)", lineHeight: 1.65 }}>{item.desc}</p>
+            </motion.div>
+          ))}
         </div>
-      </section>
+      </Section>
 
-      {/* Mission Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/50">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              At PSX Ledger, we believe that every trader deserves access to professional-grade 
-              analytics tools. Whether you are a beginner taking your first steps in the Pakistan 
-              Stock Exchange or an experienced investor managing a diversified portfolio, our 
-              platform is designed to empower you with the insights you need to make informed 
-              trading decisions.
-            </p>
-          </motion.div>
+      {/* Features */}
+      <Section>
+        <motion.div {...fade()} style={{ marginBottom: "40px" }}>
+          <Kicker>Platform</Kicker>
+          <H2>Everything you need to trade with confidence</H2>
+        </motion.div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "16px" }}>
+          {features.map((f, i) => (
+            <motion.div key={i} {...fade(i * 0.07)} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "10px", padding: "24px" }}>
+              <f.icon size={20} style={{ color: "var(--green)", marginBottom: "12px" }} />
+              <h3 style={{ fontSize: "14px", fontWeight: 600, color: "var(--text)", marginBottom: "8px" }}>{f.title}</h3>
+              <p style={{ fontSize: "13px", fontWeight: 300, color: "var(--text2)", lineHeight: 1.65 }}>{f.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </Section>
 
-          <div className="grid sm:grid-cols-3 gap-8">
+      {/* Story */}
+      <Section alt>
+        <motion.div {...fade()}>
+          <Kicker>Our Story</Kicker>
+          <H2>From spreadsheets to a professional desk</H2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "8px" }}>
             {[
-              {
-                icon: Target,
-                title: "Precision Analytics",
-                description: "Track every trade with detailed analytics including profit/loss calculations, win rates, and performance metrics tailored specifically for PSX traders."
-              },
-              {
-                icon: Shield,
-                title: "Secure & Private",
-                description: "Your trading data is encrypted and stored securely. We prioritize your privacy with enterprise-grade security measures and never share your information."
-              },
-              {
-                icon: Users,
-                title: "Built for Traders",
-                description: "Developed by traders who understand the unique challenges of the Pakistan Stock Exchange. Every feature is crafted to simplify your trading workflow."
-              }
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="text-center p-6 rounded-lg bg-card border"
-              >
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
-                  <item.icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
-              </motion.div>
+              "PSX Ledger was born from a simple observation: traders in Pakistan needed better tools to track their investments. While international platforms offered generic solutions, none addressed the specific needs of PSX investors.",
+              "Founded in 2024, our team set out to build a comprehensive trading journal and analytics platform specifically designed for the Pakistan Stock Exchange — from calculating capital gains tax to understanding PSX-specific market patterns.",
+              "Today, PSX Ledger serves thousands of active traders across Pakistan. We have helped our users track millions of rupees in trades, identify profitable strategies, and become more disciplined investors.",
+            ].map((p, i) => (
+              <p key={i} style={{ fontSize: "15px", fontWeight: 300, lineHeight: 1.75, color: "var(--text2)" }}>{p}</p>
             ))}
           </div>
+        </motion.div>
+      </Section>
+
+      {/* Values */}
+      <Section>
+        <motion.div {...fade()} style={{ marginBottom: "40px" }}>
+          <Kicker>Values</Kicker>
+          <H2>What we stand for</H2>
+        </motion.div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px" }}>
+          {values.map((v, i) => (
+            <motion.div key={i} {...fade(i * 0.08)} style={{ padding: "24px", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "10px" }}>
+              <h4 style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)", marginBottom: "8px" }}>{v.title}</h4>
+              <p style={{ fontSize: "13px", fontWeight: 300, color: "var(--text2)", lineHeight: 1.65 }}>{v.desc}</p>
+            </motion.div>
+          ))}
         </div>
-      </section>
+      </Section>
 
-      {/* Story Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl font-bold mb-6 text-center">Our Story</h2>
-            <div className="prose prose-lg max-w-none text-muted-foreground">
-              <p className="mb-4">
-                PSX Ledger was born from a simple observation: traders in Pakistan needed better tools 
-                to track their investments. While international platforms offered generic solutions, 
-                none addressed the specific needs of Pakistan Stock Exchange investors. From 
-                calculating capital gains tax to understanding PSX-specific market patterns, local 
-                traders were left to manage their portfolios with spreadsheets and manual calculations.
-              </p>
-              <p className="mb-4">
-                Founded in 2024, our team set out to build a comprehensive trading journal and 
-                analytics platform specifically designed for the Pakistan Stock Exchange. We 
-                understood that successful trading requires more than just buying low and selling 
-                high—it requires discipline, data-driven decision making, and continuous learning 
-                from past trades.
-              </p>
-              <p className="mb-4">
-                Our platform has grown to serve thousands of active traders across Pakistan, from 
-                Karachi to Islamabad, Lahore to Peshawar. We have helped our users track millions 
-                of rupees in trades, identify profitable strategies, and ultimately become more 
-                successful investors. Our commitment to continuous improvement means we regularly 
-                add new features based on user feedback and market changes.
-              </p>
-              <p>
-                Today, PSX Ledger stands as the premier trading analytics platform for Pakistani 
-                investors. Whether you are trading blue-chip stocks like OGDC and ENGRO, exploring 
-                opportunities in the banking sector, or investing in emerging companies, our tools 
-                provide the insights you need to trade with confidence. Join our growing community 
-                of informed traders and take your PSX investment journey to the next level.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/50">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl font-bold mb-4">What We Offer</h2>
-            <p className="text-lg text-muted-foreground">
-              Comprehensive tools designed for serious PSX traders
-            </p>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 gap-6">
-            {[
-              {
-                icon: BarChart3,
-                title: "Advanced Analytics",
-                description: "Track your portfolio performance with detailed equity curves, win/loss ratios, and monthly breakdowns. Visualize your trading journey with interactive charts."
-              },
-              {
-                icon: Award,
-                title: "Trade Journal",
-                description: "Maintain a comprehensive record of all your trades with notes, emotions, and lessons learned. Review past decisions to improve future performance."
-              },
-              {
-                icon: TrendingUp,
-                title: "Real-time Tracking",
-                description: "Monitor your open positions and overall portfolio value. Stay updated with market movements and their impact on your investments."
-              },
-              {
-                icon: Shield,
-                title: "Tax Reporting",
-                description: "Generate comprehensive reports for tax filing. Track capital gains, losses, and dividends to simplify your annual tax returns."
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="p-6 rounded-lg bg-card border"
-              >
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 mb-4">
-                  <feature.icon className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
-              </motion.div>
-            ))}
+      {/* CTA */}
+      <Section alt>
+        <motion.div {...fade()} style={{ textAlign: "center" }}>
+          <H2>Ready to take control of your trades?</H2>
+          <Desc>Join thousands of PSX traders who use PSX Ledger Pro to track, analyse, and improve their performance.</Desc>
+          <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "28px", flexWrap: "wrap" }}>
+            <a href="/auth" className="btn-primary" style={{ textDecoration: "none", borderRadius: "4px", padding: "14px 28px" }}>Get Started Free</a>
+            <a href="/contact" className="btn-ghost" style={{ textDecoration: "none", borderRadius: "4px", padding: "14px 28px" }}>Contact Us</a>
           </div>
-        </div>
-      </section>
-
-      {/* Team/Values Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl font-bold mb-6">Our Values</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-              <div className="p-4">
-                <h4 className="font-semibold mb-2">Transparency</h4>
-                <p className="text-sm text-muted-foreground">
-                  We believe in clear, honest communication with our users about how their data is used and how our platform operates.
-                </p>
-              </div>
-              <div className="p-4">
-                <h4 className="font-semibold mb-2">Innovation</h4>
-                <p className="text-sm text-muted-foreground">
-                  We continuously improve our platform based on user feedback and emerging technologies to provide the best trading experience.
-                </p>
-              </div>
-              <div className="p-4">
-                <h4 className="font-semibold mb-2">Reliability</h4>
-                <p className="text-sm text-muted-foreground">
-                  Your trading data is precious. We ensure 99.9% uptime and robust data backup systems to keep your records safe.
-                </p>
-              </div>
-              <div className="p-4">
-                <h4 className="font-semibold mb-2">Community</h4>
-                <p className="text-sm text-muted-foreground">
-                  We foster a community of informed traders who share knowledge and help each other succeed in the Pakistan Stock Exchange.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Contact CTA */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-primary/5">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl font-bold mb-4">Get in Touch</h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Have questions about PSX Ledger? We would love to hear from you. 
-              Reach out to our team for support, feedback, or partnership inquiries.
-            </p>
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
-            >
-              Contact Us
-            </a>
-          </motion.div>
-        </div>
-      </section>
-    </div>
+        </motion.div>
+      </Section>
+    </PublicLayout>
   );
 }

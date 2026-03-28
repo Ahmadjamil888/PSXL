@@ -111,6 +111,77 @@ export function calcPnLPercent(trade: Trade): number | null {
   return (pnl / (trade.entry_price * trade.quantity)) * 100;
 }
 
+// ── Holdings (open positions) ────────────────────────────────────────────────
+export interface Holding {
+  symbol: string;
+  quantity: number;       // net open shares
+  avgCost: number;        // weighted average cost per share
+  costBasis: number;      // avgCost * quantity
+  marketValue: number;    // entry_price used as proxy (no live feed)
+  unrealizedPnL: number;
+  unrealizedPct: number;
+  allocation: number;     // % of total cost basis (filled in by caller)
+}
+
+export function computeHoldings(trades: Trade[]): Holding[] {
+  // FIFO-lite: track per-symbol buy lots, reduce on sells
+  const lots = new Map<string, { qty: number; cost: number }[]>();
+
+  // Process in chronological order
+  const sorted = [...trades].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  for (const t of sorted) {
+    const sym = t.symbol.toUpperCase();
+    if (!lots.has(sym)) lots.set(sym, []);
+    const symLots = lots.get(sym)!;
+
+    if (t.side === "buy") {
+      symLots.push({ qty: t.quantity, cost: t.entry_price });
+    } else {
+      // reduce existing lots FIFO
+      let toReduce = t.quantity;
+      while (toReduce > 0 && symLots.length > 0) {
+        const lot = symLots[0];
+        if (lot.qty <= toReduce) {
+          toReduce -= lot.qty;
+          symLots.shift();
+        } else {
+          lot.qty -= toReduce;
+          toReduce = 0;
+        }
+      }
+    }
+  }
+
+  const holdings: Holding[] = [];
+  let totalCost = 0;
+
+  for (const [symbol, symLots] of lots.entries()) {
+    const totalQty = symLots.reduce((s, l) => s + l.qty, 0);
+    if (totalQty <= 0) continue;
+    const totalLotCost = symLots.reduce((s, l) => s + l.qty * l.cost, 0);
+    const avgCost = totalLotCost / totalQty;
+    const costBasis = avgCost * totalQty;
+
+    // Use last known entry price as market proxy
+    const lastTrade = [...sorted].reverse().find(t => t.symbol.toUpperCase() === symbol);
+    const marketPrice = lastTrade?.exit_price ?? lastTrade?.entry_price ?? avgCost;
+    const marketValue = marketPrice * totalQty;
+    const unrealizedPnL = marketValue - costBasis;
+    const unrealizedPct = costBasis > 0 ? (unrealizedPnL / costBasis) * 100 : 0;
+
+    totalCost += costBasis;
+    holdings.push({ symbol, quantity: totalQty, avgCost, costBasis, marketValue, unrealizedPnL, unrealizedPct, allocation: 0 });
+  }
+
+  // Fill allocation %
+  holdings.forEach(h => { h.allocation = totalCost > 0 ? (h.costBasis / totalCost) * 100 : 0; });
+
+  return holdings.sort((a, b) => b.costBasis - a.costBasis);
+}
+
 export function getTradeStats(trades: Trade[]) {
   const closed = trades.filter((t) => t.exit_price != null);
   const pnls = closed.map((t) => calcPnL(t)!);

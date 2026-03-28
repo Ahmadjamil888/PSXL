@@ -77,10 +77,12 @@ const IconClock    = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18
 const IconLock     = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="8" width="12" height="8" rx="1"/><path d="M6 8 L6 5 C6 3.3 7.3 2 9 2 C10.7 2 12 3.3 12 5 L12 8"/></svg>);
 const IconInfoSec  = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="9" r="7"/><line x1="9" y1="6" x2="9" y2="9"/><line x1="9" y1="12" x2="9" y2="12.5" strokeWidth="2"/></svg>);
 
-const LogoMark = ({ size = 28 }: { size?: number }) => (
-  <svg viewBox="0 0 14 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width:size*0.5,height:size}}>
-    <path d="M10 2 C10 2, 8 8, 7 14 C6 20, 7.5 24, 11 26" stroke="#a3c45a" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-  </svg>
+const LogoImg = ({ theme, height = 32 }: { theme: Theme; height?: number }) => (
+  <img
+    src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
+    alt="PSX Ledger Pro"
+    style={{ height: `${height}px`, width: "auto", display: "block" }}
+  />
 );
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -454,8 +456,8 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
     }}>
       
       {/* Logo */}
-      <a href="#psxl-top" style={{ display: "flex", alignItems: "center", fontWeight: 700, color: "var(--ltx)", textDecoration: "none", fontSize: "clamp(14px, 3vw, 18px)", letterSpacing: -0.5 }}>
-        PSXL<LogoMark size={28} />
+      <a href="#psxl-top" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+        <LogoImg theme={theme} height={32} />
       </a>
 
       {/* Desktop Links */}
@@ -1094,7 +1096,7 @@ function CTA() {
 }
 
 // ─── FOOTER ──────────────────────────────────────────────────────────────────
-function Footer() {
+function Footer({ theme }: { theme: Theme }) {
   const cols=[
     {title:"Product",   links:[{label:"Features",href:"#psxl-features"},{label:"How It Works",href:"#psxl-how"},{label:"Security",href:"#psxl-security"}]},
     {title:"Resources", links:[{label:"Documentation",href:"/docs"},{label:"CSV Templates",href:"/templates"},{label:"Tax Guide",href:"/tax-guide"},{label:"FAQ",href:"#psxl-faq"}]},
@@ -1105,8 +1107,8 @@ function Footer() {
     <footer style={{background:"var(--lbg)",borderTop:"1px solid var(--lbdr)",padding:"clamp(40px, 8vw, 60px) clamp(16px, 4vw, 40px)",fontFamily:ff,width:"100%",boxSizing:"border-box",margin:0}}>
       <div className="psxl-footer-grid" style={{display:"grid",gridTemplateColumns:"clamp(200px, 25%, 240px) 1fr",gap:"clamp(40px, 6vw, 80px)",paddingBottom:"clamp(30px, 5vw, 48px)",borderBottom:"1px solid var(--lbdr)",marginBottom:"clamp(24px, 4vw, 40px)",width:"100%"}}>
         <div>
-          <a href="/" style={{fontSize:"clamp(18px, 3vw, 22px)",fontWeight:700,letterSpacing:-0.5,color:"var(--ltx)",marginBottom:16,display:"flex",alignItems:"center",textDecoration:"none"}}>
-            PSX<LogoMark size={32}/>
+          <a href="/" style={{marginBottom:16,display:"flex",alignItems:"center",textDecoration:"none"}}>
+            <LogoImg theme={theme} height={36}/>
           </a>
           <p style={{fontSize:"clamp(11px, 1.6vw, 12px)",fontWeight:300,color:"var(--ltx3)",lineHeight:1.6}}>The institutional-grade trading ledger for Pakistan Stock Exchange investors.</p>
         </div>
@@ -1157,7 +1159,7 @@ export default function Landing() {
         <FAQ/>
         <CTA/>
       </main>
-      <Footer/>
+      <Footer theme={theme}/>
       <Ticker/>
     </div>
   );

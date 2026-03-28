@@ -1,32 +1,25 @@
 import { useTheme } from "@/components/theme-provider";
 
-const Logo = ({ className = "" }: { className?: string }) => {
+export function useResolvedTheme(): "dark" | "light" {
   const { theme } = useTheme();
+  if (theme === "system") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return theme;
+}
+
+const Logo = ({ className = "", height = 36 }: { className?: string; height?: number }) => {
+  const resolved = useResolvedTheme();
+  const src = resolved === "dark" ? "/logo-dark.png" : "/logo-light.png";
 
   return (
-    <div className={`nav-logo ${className}`} style={{ 
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0',
-      fontSize: '20px',
-      fontWeight: '700',
-      letterSpacing: '-0.5px',
-      color: 'var(--logo-text)',
-      textDecoration: 'none'
-    }}>
-      <span className="psx">PSX</span>
-      <span className="l-mark" style={{
-        display: 'inline-block',
-        width: '14px',
-        height: '28px',
-        position: 'relative',
-        marginLeft: '1px'
-      }}>
-        <svg viewBox="0 0 14 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '14px', height: '28px' }}>
-          <path d="M10 2 C10 2, 8 8, 7 14 C6 20, 7.5 24, 11 26" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-        </svg>
-      </span>
-    </div>
+    <img
+      src={src}
+      alt="PSX Ledger Pro"
+      height={height}
+      style={{ height: `${height}px`, width: "auto", display: "block" }}
+      className={className}
+    />
   );
 };
 
