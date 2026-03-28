@@ -7,8 +7,8 @@
 
 :root {
   --ff: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --green: #6b7c2e;
-  --green-dim: #556325;
+  --green: #a3c45a;
+  --green-dim: #8db84a;
   --red: #ef4444;
   --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -30,7 +30,7 @@
     --text: #1a1a1a;
     --text2: #666666;
     --text3: #999999;
-    --green: #6b7c2e;
+    --green: #a3c45a;
     --red: #ef4444;
 
     --card: 0 0% 98%;
@@ -39,7 +39,7 @@
     --popover: 0 0% 97%;
     --popover-foreground: 0 0% 0%;
 
-    --primary: 76 46% 33%;
+    --primary: 80 43% 56%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96%;
@@ -54,13 +54,13 @@
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --profit: 76 46% 33%;
+    --profit: 80 43% 56%;
     --profit-foreground: 0 0% 100%;
     --loss: 0 70% 50%;
     --loss-foreground: 0 0% 100%;
 
     --input: 0 0% 92%;
-    --ring: 76 46% 33%;
+    --ring: 80 43% 56%;
 
     --radius: 0.75rem;
 
@@ -70,14 +70,14 @@
 
     --sidebar-background: 0 0% 99%;
     --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 76 46% 33%;
+    --sidebar-primary: 80 43% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 94%;
     --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 76 46% 33%;
+    --sidebar-ring: 80 43% 56%;
 
-    --chart-1: 76 46% 33%;
+    --chart-1: 80 43% 56%;
     --chart-2: 0 0% 40%;
     --chart-3: 0 0% 60%;
     --chart-4: 0 0% 20%;
@@ -87,7 +87,7 @@
     --chart-line: #64748b;
     --chart-line-muted: rgba(100, 116, 139, 0.2);
     --chart-volume: rgba(15, 23, 42, 0.14);
-    --chart-slice-a: #6b7c2e;
+    --chart-slice-a: #a3c45a;
     --chart-slice-b: #cbd5e1;
     --nav-accent: rgba(15, 23, 42, 0.88);
   }
