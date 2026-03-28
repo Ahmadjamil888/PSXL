@@ -14,28 +14,16 @@
 }
 
 [data-theme="dark"] {
-  --bg: #000000;
-  --bg2: #0a0a0a;
-  --bg3: #111111;
-  --surface: #161616;
-  --border: #222222;
-  --border2: #2a2a2a;
-  --text: #ffffff;
-  --text2: #999999;
-  --text3: #555555;
+  --bg: #000000; --bg2: #0a0a0a; --bg3: #141414;
+  --surface: #1a1a1a; --border: #1f1f1f; --border2: #2a2a2a;
+  --text: #ffffff; --text2: #999999; --text3: #555555;
   --logo-text: #ffffff;
 }
 
 [data-theme="light"] {
-  --bg: #ffffff;
-  --bg2: #f7f7f7;
-  --bg3: #f0f0f0;
-  --surface: #ebebeb;
-  --border: #e0e0e0;
-  --border2: #d0d0d0;
-  --text: #000000;
-  --text2: #555555;
-  --text3: #999999;
+  --bg: #ffffff; --bg2: #f5f5f5; --bg3: #eeeeee;
+  --surface: #ffffff; --border: #e0e0e0; --border2: #d0d0d0;
+  --text: #000000; --text2: #555555; --text3: #999999;
   --logo-text: #000000;
 }
 

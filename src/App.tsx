@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import { DynamicFavicon } from "@/components/DynamicFavicon";
 import AppLayout from "@/components/AppLayout";
+import PublicLayout from "@/components/PublicLayout";
 import AuthPage from "@/pages/Auth";
 import Landing from "@/pages/home";
 import AboutPage from "@/pages/About";
@@ -65,7 +66,7 @@ const App = () => (
           <AuthProvider>
             <Routes>
               {/* Public pages */}
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />

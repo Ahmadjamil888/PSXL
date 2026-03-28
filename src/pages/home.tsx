@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useTheme } from "@/components/theme-provider";
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 type Theme = "dark" | "light";
@@ -218,22 +219,19 @@ const SCOPED_CSS = `
     width: 100%;
     margin: 0;
     padding: 0;
-  }
 
-  .psxl-root[data-theme="dark"] {
-    --lbg:  #181818; --lbg2: #1a1a1a; --lbg3: #242424;
-    --lsrf: #242424; --lbdr: rgba(255,255,255,0.06); --lbdr2:rgba(255,255,255,0.12);
-    --ltx:  #ffffff; --ltx2: #ffffff; --ltx3: #555555;
-    --lgrn: #a3c45a; --lgrnD:#8db84a; --lred: #ef4444;
-    color-scheme: dark;
-  }
-
-  .psxl-root[data-theme="light"] {
-    --lbg:  #f8f9fa; --lbg2: #f1f3f4; --lbg3: #e8eaed;
+    /* light defaults */
+    --lbg:  #ffffff; --lbg2: #f5f5f5; --lbg3: #eeeeee;
     --lsrf: #ffffff; --lbdr: rgba(0,0,0,0.08); --lbdr2:rgba(0,0,0,0.16);
-    --ltx:  #1a1a1a; --ltx2: #666666; --ltx3: #b3b3b3;
+    --ltx:  #000000; --ltx2: #555555; --ltx3: #999999;
     --lgrn: #a3c45a; --lgrnD:#8db84a; --lred: #dc2626;
-    color-scheme: light;
+  }
+
+  .dark .psxl-root, [data-theme="dark"] .psxl-root, .psxl-root.dark {
+    --lbg:  #000000; --lbg2: #0a0a0a; --lbg3: #141414;
+    --lsrf: #1a1a1a; --lbdr: rgba(255,255,255,0.08); --lbdr2:rgba(255,255,255,0.16);
+    --ltx:  #ffffff; --ltx2: #999999; --ltx3: #555555;
+    --lgrn: #a3c45a; --lgrnD:#8db84a; --lred: #ef4444;
   }
 
   .psxl-root ::-webkit-scrollbar       { width: 2px; }
@@ -1139,16 +1137,14 @@ function Footer({ theme }: { theme: Theme }) {
   );
 }
 
-// ... (rest of the code remains the same)
+// ─── LANDING PAGE ─────────────────────────────────────────────────────────────
 export default function Landing() {
-  const [theme,setTheme]=useState<Theme>("dark");
-  const toggle=useCallback(()=>setTheme(t=>t==="dark"?"light":"dark"),[]);
-
+  const { theme } = useTheme();
+  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
   return (
-    <div className="psxl-root" data-theme={theme} style={{fontFamily:ff,overflowX:"hidden",width:"100%",margin:0,padding:0}}>
+    <div className={`psxl-root${isDark ? " dark" : ""}`} style={{fontFamily:ff,overflowX:"hidden",width:"100%",margin:0,padding:0}}>
       <style>{SCOPED_CSS}</style>
-      <Nav theme={theme} onToggle={toggle}/>
-      <main style={{width:"100%",margin:0,padding:0,paddingBottom:"calc(clamp(40px, 8vw, 64px) + env(safe-area-inset-bottom, 0px))"}}>
+      <main style={{width:"100%",margin:0,padding:0}}>
         <Hero/>
         <Features/>
         <LedgerDemo/>
@@ -1159,7 +1155,6 @@ export default function Landing() {
         <FAQ/>
         <CTA/>
       </main>
-      <Footer theme={theme}/>
       <Ticker/>
     </div>
   );

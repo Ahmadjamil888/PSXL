@@ -21,9 +21,9 @@
     /* Legacy compatibility - light */
     --background: 0 0% 97%;
     --foreground: 0 0% 10%;
-    --bg: #f8f9fa;
-    --bg2: #f1f3f4;
-    --bg3: #e8eaed;
+    --bg: #ffffff;
+    --bg2: #f5f5f5;
+    --bg3: #eeeeee;
     --surface: #ffffff;
     --border: rgba(0, 0, 0, 0.08);
     --border2: rgba(0, 0, 0, 0.16);
@@ -108,10 +108,10 @@
     /* Legacy compatibility */
     --background: 0 0% 9%;
     --foreground: 0 0% 100%;
-    --bg: #181818;
-    --bg2: #1a1a1a;
-    --bg3: #242424;
-    --surface: #242424;
+    --bg: #000000;
+    --bg2: #0a0a0a;
+    --bg3: #141414;
+    --surface: #1a1a1a;
     --border: rgba(255, 255, 255, 0.06);
     --border2: rgba(255, 255, 255, 0.12);
     --text: #ffffff;
@@ -689,7 +689,6 @@ img {
     grid-template-columns: 1fr !important;
   }
 }
-
 /* btn-secondary for import/export buttons */
 .btn-secondary {
   font-family: var(--ff, 'Helvetica Neue', sans-serif);
