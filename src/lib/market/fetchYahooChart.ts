@@ -1,26 +1,5 @@
 import type { ChartPoint } from "./mockSeries";
 import { generateMockSeries } from "./mockSeries";
-import { toYahooPsxSymbol } from "./yahooSymbol";
-
-function marketBaseUrl(): string {
-  if (import.meta.env.VITE_FORCE_MARKET_MOCK === "true") return "";
-  const custom = import.meta.env.VITE_MARKET_PROXY_URL as string | undefined;
-  if (custom) return custom.replace(/\/$/, "");
-  // Only use the Vite dev proxy in development — in production Yahoo blocks CORS
-  if (import.meta.env.DEV) return "/api/yahoo";
-  return ""; // production: always use mock (no proxy available)
-}
-
-interface YahooChartResult {
-  chart?: {
-    result?: Array<{
-      meta?: { currency?: string; regularMarketPrice?: number };
-      timestamp?: number[];
-      indicators?: { quote?: Array<{ close?: Array<number | null> }> };
-    }>;
-    error?: { description?: string };
-  };
-}
 
 export interface MarketChartPayload {
   points: ChartPoint[];
@@ -30,67 +9,50 @@ export interface MarketChartPayload {
   changePct: number | null;
 }
 
-function parseYahoo(json: YahooChartResult): ChartPoint[] {
-  const r = json.chart?.result?.[0];
-  if (!r?.timestamp?.length) return [];
-  const closes = r.indicators?.quote?.[0]?.close ?? [];
-  const points: ChartPoint[] = [];
-  for (let i = 0; i < r.timestamp.length; i++) {
-    const c = closes[i];
-    if (c != null && Number.isFinite(c)) {
-      points.push({ t: r.timestamp[i], close: c });
-    }
-  }
-  return points;
-}
-
 /**
- * Fetches ~1y daily bars for a PSX symbol via Yahoo (when proxy/CORS allows).
- * Falls back to deterministic mock series.
+ * Fetches EOD historical data from PSX's own public API.
+ * Endpoint: https://dps.psx.com.pk/timeseries/eod/{SYMBOL}
+ * Returns: [[timestamp, close, volume, open], ...]
+ * CORS-open, no auth required, works in production.
  */
 export async function fetchMarketChart(psxSymbol: string): Promise<MarketChartPayload> {
-  const yahooSym = toYahooPsxSymbol(psxSymbol);
-  const base = marketBaseUrl();
+  const sym = psxSymbol.trim().toUpperCase();
 
-  if (!base) {
-    const points = generateMockSeries(psxSymbol);
-    const last = points[points.length - 1]?.close ?? 0;
+  try {
+    const url = `https://dps.psx.com.pk/timeseries/eod/${encodeURIComponent(sym)}`;
+    const res = await fetch(url, {
+      credentials: "omit",
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const json = await res.json();
+    // Response shape: { status: 1, data: [[ts, close, volume, open], ...] }
+    const raw: [number, number, number, number][] = json?.data ?? [];
+
+    if (raw.length < 5) throw new Error("Insufficient data");
+
+    // Sort ascending by timestamp
+    const sorted = [...raw].sort((a, b) => a[0] - b[0]);
+    const points: ChartPoint[] = sorted.map(([t, close]) => ({ t, close }));
+
+    const last = points[points.length - 1]?.close ?? null;
+    const prev = points.length > 1 ? points[points.length - 2]?.close : null;
+    const changePct = last != null && prev != null && prev > 0
+      ? Math.round(((last - prev) / prev) * 10000) / 100
+      : null;
+
     return {
       points,
-      source: "mock",
+      source: "live",
       currency: "PKR",
       regularMarketPrice: last,
-      changePct: null,
-    };
-  }
-
-  const url = `${base}/v8/finance/chart/${encodeURIComponent(yahooSym)}?interval=1d&range=1y`;
-  try {
-    const res = await fetch(url, { credentials: "omit" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = (await res.json()) as YahooChartResult;
-    if (json.chart?.error) throw new Error(json.chart.error.description ?? "Yahoo error");
-    const rawPoints = parseYahoo(json);
-    const source: "live" | "mock" = rawPoints.length >= 20 ? "live" : "mock";
-    const points = source === "live" ? rawPoints : generateMockSeries(psxSymbol);
-
-    const meta = json.chart?.result?.[0]?.meta;
-    const lastClose = points[points.length - 1]?.close ?? null;
-    const prevClose = points.length > 5 ? points[points.length - 6]?.close : null;
-    let changePct: number | null = null;
-    if (lastClose != null && prevClose != null && prevClose > 0) {
-      changePct = ((lastClose - prevClose) / prevClose) * 100;
-    }
-
-    return {
-      points,
-      source,
-      currency: meta?.currency ?? "PKR",
-      regularMarketPrice: meta?.regularMarketPrice ?? lastClose,
-      changePct: changePct != null ? Math.round(changePct * 100) / 100 : null,
+      changePct,
     };
   } catch {
-    const points = generateMockSeries(psxSymbol);
+    // Fallback to deterministic mock
+    const points = generateMockSeries(sym);
     const last = points[points.length - 1]?.close ?? 0;
     return {
       points,

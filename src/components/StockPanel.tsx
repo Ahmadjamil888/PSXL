@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { X, TrendingUp, TrendingDown, BarChart2, Activity, RefreshCw, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePSXQuote } from "@/hooks/usePSXQuote";
@@ -43,10 +43,26 @@ export default function StockPanel({ symbol, name, sector, onClose }: Props) {
   const { data: chart, isLoading: cLoading } = useMarketChart(symbol);
   const { data: trades = [] } = useTrades();
 
-  // Filter chart points by range
+  // Merge live price into chart — override last point with real-time price from market-watch
+  const mergedPoints = useMemo(() => {
+    if (!chart?.points?.length) return [];
+    const pts = [...chart.points];
+    if (quote?.source === "live" && quote.price > 0) {
+      // Replace or append today's point with the live price
+      const todayTs = Math.floor(Date.now() / 1000);
+      const last = pts[pts.length - 1];
+      if (last && todayTs - last.t < 86400 * 2) {
+        pts[pts.length - 1] = { ...last, close: quote.price };
+      } else {
+        pts.push({ t: todayTs, close: quote.price });
+      }
+    }
+    return pts;
+  }, [chart?.points, quote?.price, quote?.source]);
+
   const now = Date.now() / 1000;
   const rangeSecs: Record<Range, number> = { "1W": 7 * 86400, "1M": 30 * 86400, "3M": 90 * 86400, "1Y": 365 * 86400 };
-  const chartPoints = (chart?.points ?? [])
+  const chartPoints = mergedPoints
     .filter(p => p.t >= now - rangeSecs[range])
     .map(p => ({ t: p.t, date: fmtDate(p.t), close: p.close }));
 
