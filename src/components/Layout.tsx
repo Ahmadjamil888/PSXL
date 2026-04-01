@@ -75,7 +75,7 @@ export function Nav() {
 
 export function Footer() {
   const links = {
-    Product: ["Features", "Analytics", "Pricing"],
+    Product: ["Features", "Analytics"],
     Company: ["About", "Blog", "Careers", "Contact"],
     Legal: ["Privacy", "Terms", "Security"],
   };

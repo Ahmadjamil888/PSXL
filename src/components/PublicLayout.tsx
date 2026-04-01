@@ -16,7 +16,6 @@ const FOOTER_LINKS = {
   Product: [
     { label: "Features", href: "/features" },
     { label: "Analytics", href: "/analytics-info" },
-    { label: "Pricing", href: "/pricing" },
   ],
   Company: [
     { label: "About", href: "/about" },

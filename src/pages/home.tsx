@@ -467,9 +467,9 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
 
       {/* Desktop Links */}
       <ul className="psxl-nav-links" style={{ display: "flex", gap: "clamp(16px, 3vw, 24px)", listStyle: "none" }}>
-        {["Features", "FAQ"].map((label) => (
+        {["Features", "Blog", "FAQ"].map((label) => (
           <li key={label}>
-            <a href={`#psxl-${label.toLowerCase()}`} style={{ fontSize: "clamp(11px, 1.5vw, 12px)", color: "var(--ltx2)", textDecoration: "none", fontWeight: 400, letterSpacing: "0.05em" }}>
+            <a href={label === "Blog" ? "/blog" : `#psxl-${label.toLowerCase()}`} style={{ fontSize: "clamp(11px, 1.5vw, 12px)", color: "var(--ltx2)", textDecoration: "none", fontWeight: 400, letterSpacing: "0.05em" }}>
               {label}
             </a>
           </li>
@@ -529,8 +529,8 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
           zIndex: 50
         }}>
           <div style={{display:"flex",flexDirection:"column",gap:16}}>
-            {["Features", "FAQ"].map((label) => (
-              <a key={label} href={`#psxl-${label.toLowerCase()}`} style={{ color: "var(--ltx)", textDecoration: "none", fontSize: "clamp(12px, 2vw, 14px)", padding: "8px 0" }}>
+            {["Features", "Blog", "FAQ"].map((label) => (
+              <a key={label} href={label === "Blog" ? "/blog" : `#psxl-${label.toLowerCase()}`} style={{ color: "var(--ltx)", textDecoration: "none", fontSize: "clamp(12px, 2vw, 14px)", padding: "8px 0" }}>
                 {label}
               </a>
             ))}
