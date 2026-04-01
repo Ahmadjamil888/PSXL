@@ -1138,19 +1138,13 @@ function Footer({ theme }: { theme: Theme }) {
           <a href="/terms" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Terms</a>
           <a href="/disclaimer" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Disclaimer</a>
         </div>
-      </div>
-    </footer>
-  );
-}
-
-// ─── BLOGS ──────────────────────────────────────────────────────────────────
 function BlogCard({post}: {post:BlogPostPreview}) {
   const [hov,setHov]=useState(false);
   return (
     <a href={`/blog/${post.slug}`} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:16,transition:"background .2s",height:"100%",textDecoration:"none"}}>
+      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:16,transition:"background .2s",height:"100%",textDecoration:"none",minWidth:"clamp(280px, 30vw, 360px)"}}>
       <h3 style={{fontSize:"clamp(16px, 2.5vw, 18px)",fontWeight:600,letterSpacing:-0.5,color:"var(--ltx)",lineHeight:1.2}}>{post.title}</h3>
-      <p style={{fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)"}}>{post.excerpt}</p>
+      <p style={{fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",flex:1}}>{post.excerpt}</p>
       <div style={{display:"flex",alignItems:"center",gap:8,fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)"}}>
         <span style={{color:"var(--lgrn)"}}>{formatDate(post.date)}</span>
         <span style={{color:"var(--ltx3)"}}> · </span>
@@ -1161,15 +1155,114 @@ function BlogCard({post}: {post:BlogPostPreview}) {
 }
 
 function Blogs() {
-  const posts = getSortedPosts();
+  const posts = getSortedPosts().slice(0, 4);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % posts.length);
+  };
+  
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev - 1 + posts.length) % posts.length);
+  };
+  
+  const scrollToIndex = (index: number) => {
+    if (containerRef.current) {
+      const cardWidth = containerRef.current.scrollWidth / posts.length;
+      containerRef.current.scrollTo({ left: cardWidth * index, behavior: 'smooth' });
+    }
+  };
+  
+  useEffect(() => {
+    scrollToIndex(currentIndex);
+  }, [currentIndex]);
+  
   return (
-    <section id="psxl-blogs" style={{...sectionBase("var(--lbg)")}}>
+    <section id="psxl-blogs" style={{...sectionBase("var(--lbg)"), overflow:"hidden"}}>
       <Reveal style={{maxWidth:480,marginBottom:"clamp(40px, 8vw, 80px)"}}>
         <SectionLabel>Blog</SectionLabel><Divider/>
         <SectionH2>Insights from the PSX community.</SectionH2>
       </Reveal>
-      <div className="psxl-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:"var(--lbdr)",width:"100%"}}>
-        {posts.map((post,i)=><Reveal key={i} delay={i*80}><BlogCard post={post}/></Reveal>)}
+      
+      {/* Carousel Container */}
+      <div style={{position:"relative",width:"100%",maxWidth:1400,margin:"0 auto"}}>
+        {/* Navigation Buttons */}
+        <button 
+          onClick={prevSlide}
+          style={{
+            position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",
+            zIndex:10,width:44,height:44,borderRadius:"50%",border:"1px solid var(--lbdr)",
+            background:"var(--lbg)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
+            fontSize:20,color:"var(--ltx)",transition:"all 0.2s"
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = "var(--lbg2)"}
+          onMouseLeave={(e) => e.currentTarget.style.background = "var(--lbg)"}
+        >
+          ←
+        </button>
+        <button 
+          onClick={nextSlide}
+          style={{
+            position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",
+            zIndex:10,width:44,height:44,borderRadius:"50%",border:"1px solid var(--lbdr)",
+            background:"var(--lbg)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
+            fontSize:20,color:"var(--ltx)",transition:"all 0.2s"
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = "var(--lbg2)"}
+          onMouseLeave={(e) => e.currentTarget.style.background = "var(--lbg)"}
+        >
+          →
+        </button>
+        
+        {/* Carousel */}
+        <div 
+          ref={containerRef}
+          style={{
+            display:"flex",
+            gap:"clamp(16px, 2vw, 24px)",
+            overflowX:"auto",
+            scrollSnapType:"x mandatory",
+            scrollbarWidth:"none",
+            msOverflowStyle:"none",
+            padding:"0 clamp(50px, 5vw, 80px)",
+            WebkitOverflowScrolling:"touch"
+          }}
+        >
+          {posts.map((post, i) => (
+            <div key={i} style={{scrollSnapAlign:"center",flex:"0 0 auto"}}>
+              <Reveal delay={i * 60}>
+                <BlogCard post={post}/>
+              </Reveal>
+            </div>
+          ))}
+        </div>
+        
+        {/* Dots Indicator */}
+        <div style={{display:"flex",justifyContent:"center",gap:8,marginTop:32}}>
+          {posts.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              style={{
+                width:8,
+                height:8,
+                borderRadius:"50%",
+                border:"none",
+                cursor:"pointer",
+                background: i === currentIndex ? "var(--lgrn)" : "var(--lbdr2)",
+                transition:"background 0.2s"
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* View All Link */}
+        <div style={{textAlign:"center",marginTop:32}}>
+          <a href="/blog" style={{fontSize:"clamp(12px, 1.5vw, 14px)",color:"var(--lgrn)",textDecoration:"none",fontWeight:500,letterSpacing:"0.05em"}}>
+            View all articles →
+          </a>
+        </div>
       </div>
     </section>
   );
