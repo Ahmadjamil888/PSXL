@@ -1147,8 +1147,8 @@ function Footer({ theme }: { theme: Theme }) {
 function BlogCard({post}: {post:BlogPostPreview}) {
   const [hov,setHov]=useState(false);
   return (
-    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:16,transition:"background .2s",height:"100%"}}>
+    <a href={`/blog/${post.slug}`} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
+      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:16,transition:"background .2s",height:"100%",textDecoration:"none"}}>
       <h3 style={{fontSize:"clamp(16px, 2.5vw, 18px)",fontWeight:600,letterSpacing:-0.5,color:"var(--ltx)",lineHeight:1.2}}>{post.title}</h3>
       <p style={{fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)"}}>{post.excerpt}</p>
       <div style={{display:"flex",alignItems:"center",gap:8,fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)"}}>
@@ -1156,7 +1156,7 @@ function BlogCard({post}: {post:BlogPostPreview}) {
         <span style={{color:"var(--ltx3)"}}> · </span>
         <span style={{color:"var(--ltx3)"}}>{post.category}</span>
       </div>
-    </div>
+    </a>
   );
 }
 
