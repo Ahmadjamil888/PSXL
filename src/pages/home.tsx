@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTheme } from "@/components/theme-provider";
 import { useLiveTicker } from "@/hooks/useLiveTicker";
+import { getSortedPosts, formatDate } from "@/data/blogPosts";
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 type Theme = "dark" | "light";
@@ -58,6 +59,7 @@ const sectionBase = (bg: string): React.CSSProperties => ({
   margin: 0,
 });
 
+interface BlogPostPreview { slug: string; title: string; excerpt: string; category: string; date: string; }
 interface Stock       { sym: string; val: string; chg: string; pct: string; pos: boolean; }
 interface Trade       { date: string; sym: string; sector: string; type: "BUY" | "SELL"; qty: number; rate: number; value: number; charges: number; pl: number | null; }
 interface Feature     { num: string; title: string; body: string; tag: string; icon: React.ReactNode; }
@@ -555,7 +557,7 @@ function Hero() {
       <div className="psxl-hero" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"calc(100vh - clamp(50px, 8vw, 56px))",height:"auto"}}>
         <div className="psxl-hero-left" style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"clamp(30px, 5vw, 60px)"}}>
           <p className="psxl-hero-eyebrow" style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:"clamp(16px, 3vw, 24px)"}}>Pakistan Stock Exchange Ledger</p>
-          <h1 className="psxl-hero-h1" style={{fontSize:"clamp(36px, 8vw, 88px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)",marginBottom:"clamp(20px, 3vw, 32px)"}}>
+          <h1 className="psxl-hero-h1" style={{fontSize:"clamp(36px, 8vw, 88px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)"}}>
             Track every<br/>trade with<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>precision.</em>
           </h1>
           <p className="psxl-hero-desc" style={{fontSize:"clamp(13px, 2vw, 15px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",maxWidth:420,marginBottom:"clamp(30px, 5vw, 48px)"}}>
@@ -718,8 +720,7 @@ function Analytics() {
           borderRadius: '4px',
           padding: '8px 12px',
           fontSize: '12px',
-          color: 'var(--ltx)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          color: 'var(--ltx)'
         }}>
           <strong>{label}</strong>
           <div style={{ color: val >= 0 ? 'var(--lgrn)' : 'var(--lred)', fontWeight: 600 }}>
@@ -1113,7 +1114,7 @@ function Footer({ theme }: { theme: Theme }) {
           <a href="/" style={{marginBottom:16,display:"flex",alignItems:"center",textDecoration:"none"}}>
             <LogoImg theme={theme} height={36}/>
           </a>
-          <p style={{fontSize:"clamp(11px, 1.6vw, 12px)",fontWeight:300,color:"var(--ltx3)",lineHeight:1.6}}>The institutional-grade trading ledger for Pakistan Stock Exchange investors.</p>
+          <p style={{fontSize:"clamp(11px, 1.6vw, 12px)",fontWeight:300,color:"var(--ltx3)",lineHeight:1.6}}>The institutional-grade trading ledger built exclusively for PSX investors. Record, analyse, and report your equity positions with the clarity of a professional desk.</p>
         </div>
         <div className="psxl-footer-cols" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"clamp(20px, 3vw, 40px)",width:"100%"}}>
           {cols.map((c,i)=>(
@@ -1142,6 +1143,38 @@ function Footer({ theme }: { theme: Theme }) {
   );
 }
 
+// ─── BLOGS ──────────────────────────────────────────────────────────────────
+function BlogCard({post}: {post:BlogPostPreview}) {
+  const [hov,setHov]=useState(false);
+  return (
+    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
+      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:16,transition:"background .2s",height:"100%"}}>
+      <h3 style={{fontSize:"clamp(16px, 2.5vw, 18px)",fontWeight:600,letterSpacing:-0.5,color:"var(--ltx)",lineHeight:1.2}}>{post.title}</h3>
+      <p style={{fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)"}}>{post.excerpt}</p>
+      <div style={{display:"flex",alignItems:"center",gap:8,fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)"}}>
+        <span style={{color:"var(--lgrn)"}}>{formatDate(post.date)}</span>
+        <span style={{color:"var(--ltx3)"}}> · </span>
+        <span style={{color:"var(--ltx3)"}}>{post.category}</span>
+      </div>
+    </div>
+  );
+}
+
+function Blogs() {
+  const posts = getSortedPosts();
+  return (
+    <section id="psxl-blogs" style={{...sectionBase("var(--lbg)")}}>
+      <Reveal style={{maxWidth:480,marginBottom:"clamp(40px, 8vw, 80px)"}}>
+        <SectionLabel>Blog</SectionLabel><Divider/>
+        <SectionH2>Insights from the PSX community.</SectionH2>
+      </Reveal>
+      <div className="psxl-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:"var(--lbdr)",width:"100%"}}>
+        {posts.map((post,i)=><Reveal key={i} delay={i*80}><BlogCard post={post}/></Reveal>)}
+      </div>
+    </section>
+  );
+}
+
 // ─── LANDING PAGE ─────────────────────────────────────────────────────────────
 export default function Landing() {
   const { theme } = useTheme();
@@ -1156,6 +1189,7 @@ export default function Landing() {
         <Analytics/>
         <HowItWorks/>
         <Testimonials/>
+        <Blogs/>
         <Security/>
         <FAQ/>
         <CTA/>
