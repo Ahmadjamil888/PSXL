@@ -22,6 +22,8 @@ import CareersPage from "@/pages/Careers";
 import TermsPage from "@/pages/Terms";
 import DisclaimerPage from "@/pages/Disclaimer";
 import AnalyticsInfoPage from "@/pages/AnalyticsInfo";
+import BlogPage from "@/pages/Blog";
+import BlogPostPage from "@/pages/BlogPost";
 import Dashboard from "@/pages/Dashboard";
 import Journal from "@/pages/Journal";
 import Analytics from "@/pages/Analytics";
@@ -95,6 +97,8 @@ const App = () => (
                 <Route path="/security" element={<SecurityPage />} />
                 <Route path="/careers" element={<CareersPage />} />
                 <Route path="/analytics-info" element={<AnalyticsInfoPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/:slug" element={<BlogPostPage />} />
                 {/* Auth */}
                 <Route path="/auth" element={<AuthRoute />} />
                 <Route path="/auth/callback" element={<AuthPage />} />
