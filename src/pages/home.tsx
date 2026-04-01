@@ -1138,6 +1138,12 @@ function Footer({ theme }: { theme: Theme }) {
           <a href="/terms" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Terms</a>
           <a href="/disclaimer" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Disclaimer</a>
         </div>
+      </div>
+    </footer>
+  );
+}
+
+// ─── BLOGS ──────────────────────────────────────────────────────────────────
 function BlogCard({post}: {post:BlogPostPreview}) {
   const [hov,setHov]=useState(false);
   return (
