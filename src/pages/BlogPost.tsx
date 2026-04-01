@@ -27,8 +27,8 @@ export default function BlogPostPage() {
   return (
     <PublicLayout>
       {/* Hero */}
-      <section style={{ background: "var(--bg)", padding: "clamp(24px, 4vw, 40px) clamp(16px, 5vw, 40px)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+      <section style={{ background: "var(--bg)", padding: "clamp(16px, 3vw, 28px) clamp(16px, 4vw, 48px)" }}>
+        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             {/* Back link */}
             <Link to="/blog" style={{
@@ -59,14 +59,14 @@ export default function BlogPostPage() {
             <h1 style={{
               fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700,
               letterSpacing: "-1px", color: "var(--text)", lineHeight: 1.2,
-              marginBottom: "16px",
+              marginBottom: "12px",
               textAlign: "center"
             }}>
               {post.title}
             </h1>
 
             {/* Meta */}
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", justifyContent: "center", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", justifyContent: "center", paddingBottom: "16px", borderBottom: "1px solid var(--border)" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text2)" }}>
                 <Calendar size={12} /> {formatDate(post.date)}
               </span>
@@ -79,8 +79,8 @@ export default function BlogPostPage() {
       </section>
 
       {/* Content */}
-      <section style={{ background: "var(--bg2)", padding: "clamp(24px, 4vw, 40px) clamp(16px, 5vw, 40px)" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+      <section style={{ background: "var(--bg2)", padding: "clamp(20px, 3vw, 32px) clamp(16px, 4vw, 48px)" }}>
+        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
           {content ? (
             <motion.div
               initial={{ opacity: 0 }}
@@ -176,8 +176,8 @@ export default function BlogPostPage() {
 
       {/* Prev / Next navigation */}
       {(prevPost || nextPost) && (
-        <section style={{ background: "var(--bg)", padding: "clamp(24px, 4vw, 40px) clamp(16px, 5vw, 40px)" }}>
-          <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+        <section style={{ background: "var(--bg)", padding: "clamp(20px, 3vw, 32px) clamp(16px, 4vw, 48px)" }}>
+          <div style={{ maxWidth: "1400px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
             {prevPost ? (
               <Link to={`/blog/${prevPost.slug}`} style={{ textDecoration: "none" }}>
                 <div style={{

@@ -12,8 +12,8 @@ const fade = (delay = 0) => ({
 });
 
 const Section = ({ children, alt = false }: { children: React.ReactNode; alt?: boolean }) => (
-  <section style={{ background: alt ? "var(--bg2)" : "var(--bg)", padding: "clamp(24px, 4vw, 40px) clamp(16px, 5vw, 40px)" }}>
-    <div style={{ maxWidth: "1200px", margin: "0 auto" }}>{children}</div>
+  <section style={{ background: alt ? "var(--bg2)" : "var(--bg)", padding: "clamp(20px, 3vw, 32px) clamp(16px, 4vw, 48px)" }}>
+    <div style={{ maxWidth: "1400px", margin: "0 auto" }}>{children}</div>
   </section>
 );
 
