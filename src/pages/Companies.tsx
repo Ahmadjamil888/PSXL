@@ -2,6 +2,19 @@ import { useState, useMemo } from "react";
 import { usePSXCompanies } from "@/hooks/usePSXCompanies";
 import { Search, Building2, RefreshCw } from "lucide-react";
 
+const COLORS = {
+  primary: '#10B981',
+  primaryLight: 'rgba(16, 185, 129, 0.15)',
+  danger: '#EF4444',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#A3A3A3',
+  textTertiary: '#737373',
+  border: '#2A2A2A',
+  borderHover: '#3A3A3A',
+  bgCard: '#1A1A1A',
+  bgInput: '#141414',
+};
+
 const Companies = () => {
   const { data: allCompanies = [], isLoading, isError, refetch } = usePSXCompanies();
   const [search, setSearch] = useState("");
@@ -32,34 +45,46 @@ const Companies = () => {
             {isLoading ? "Loading…" : `${allCompanies.length} listed companies · ${sectors.length - 1} sectors`}
           </p>
         </div>
-        <button onClick={() => refetch()} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text2)", borderRadius: "6px", cursor: "pointer", flexShrink: 0, alignSelf: "flex-start" }}>
-          <RefreshCw size={12} /> Refresh
+        <button onClick={() => refetch()} className="btn-secondary" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 16px", fontSize: "12px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+          <RefreshCw size={14} /> Refresh
         </button>
       </div>
 
       {/* Search */}
       <div style={{ position: "relative" }}>
-        <Search size={14} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text3)", pointerEvents: "none" }} />
+        <Search size={16} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)", color: COLORS.textTertiary, pointerEvents: "none" }} />
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search by symbol or company name…"
           className="input-field"
-          style={{ width: "100%", paddingLeft: "36px" }}
+          style={{
+            width: "100%",
+            padding: "14px 16px 14px 44px",
+            fontSize: "14px",
+            background: COLORS.bgInput,
+            border: `1px solid ${COLORS.border}`,
+            borderRadius: "12px",
+            color: COLORS.textPrimary,
+            outline: "none",
+            transition: "border-color 0.2s ease"
+          }}
+          onFocus={(e) => e.target.style.borderColor = COLORS.primary}
+          onBlur={(e) => e.target.style.borderColor = COLORS.border}
         />
       </div>
 
       {/* Sector pills */}
-      <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "4px" }}>
+      <div style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px" }}>
         {sectors.map(s => (
           <button key={s} onClick={() => setSector(s)} style={{
-            flexShrink: 0, padding: "5px 12px", fontSize: "11px", fontWeight: 600,
+            flexShrink: 0, padding: "8px 16px", fontSize: "12px", fontWeight: 600,
             letterSpacing: "0.05em", textTransform: "uppercase", borderRadius: "999px",
-            border: `1px solid ${sector === s ? "var(--green)" : "var(--border)"}`,
-            background: sector === s ? "rgba(163,196,90,0.12)" : "transparent",
-            color: sector === s ? "var(--green)" : "var(--text2)",
-            cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.15s",
+            border: `1px solid ${sector === s ? COLORS.primary : COLORS.border}`,
+            background: sector === s ? COLORS.primaryLight : "transparent",
+            color: sector === s ? COLORS.primary : COLORS.textSecondary,
+            cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s ease",
           }}>
             {s}
           </button>
@@ -68,50 +93,48 @@ const Companies = () => {
 
       {/* Loading / Error */}
       {isLoading && (
-        <div style={{ textAlign: "center", padding: "48px 0", color: "var(--text2)" }}>
+        <div style={{ textAlign: "center", padding: "48px 0", color: COLORS.textSecondary }}>
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" style={{ margin: "0 auto 12px" }} />
           <p style={{ fontSize: "14px" }}>Loading PSX companies…</p>
         </div>
       )}
       {isError && (
-        <div style={{ textAlign: "center", padding: "48px 0", color: "var(--red)" }}>
-          <p style={{ fontSize: "14px" }}>Failed to load. <button onClick={() => refetch()} style={{ color: "var(--green)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>Retry</button></p>
+        <div style={{ textAlign: "center", padding: "48px 0", color: COLORS.danger }}>
+          <p style={{ fontSize: "14px" }}>Failed to load. <button onClick={() => refetch()} style={{ color: COLORS.primary, background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>Retry</button></p>
         </div>
       )}
 
       {/* Company list */}
       {!isLoading && !isError && (
         filtered.length > 0 ? (
-          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "10px", overflow: "hidden" }}>
-            <div style={{ padding: "10px 16px", background: "var(--bg2)", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text)" }}>
-                {filtered.length} {filtered.length === 1 ? "company" : "companies"}
-              </span>
-              {search && <span style={{ fontSize: "11px", color: "var(--text3)" }}>matching "{search}"</span>}
+          <div className="table-container" style={{ maxHeight: "60vh", overflowY: "auto" }}>
+            <div className="table-header">
+              <span className="table-header-title">{filtered.length} {filtered.length === 1 ? "company" : "companies"}</span>
+              {search && <span style={{ fontSize: "12px", color: COLORS.textSecondary }}>matching "{search}"</span>}
             </div>
-            <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
+            <div>
               {filtered.map((company, i) => (
                 <div
                   key={company.symbol}
                   style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "12px 16px",
-                    borderBottom: i < filtered.length - 1 ? "1px solid var(--border)" : "none",
-                    transition: "background 0.12s",
+                    padding: "16px 20px",
+                    borderBottom: i < filtered.length - 1 ? `1px solid ${COLORS.border}` : "none",
+                    transition: "background 0.15s ease",
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "var(--bg2)")}
+                  onMouseEnter={e => (e.currentTarget.style.background = "#1F1F1F")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
-                    <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: 700, color: "var(--text)", flexShrink: 0, minWidth: "72px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "16px", minWidth: 0 }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "14px", fontWeight: 700, color: COLORS.textPrimary, flexShrink: 0, minWidth: "80px" }}>
                       {company.symbol}
                     </span>
-                    <span style={{ fontSize: "13px", color: "var(--text2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: "14px", color: COLORS.textSecondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {company.name}
                     </span>
                   </div>
                   {company.sector && (
-                    <span style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--text3)", flexShrink: 0, marginLeft: "12px" }}>
+                    <span className="status-tag" style={{ flexShrink: 0, marginLeft: "16px", background: "rgba(59, 130, 246, 0.15)", color: "#3B82F6", border: "1px solid rgba(59, 130, 246, 0.3)" }}>
                       {company.sector}
                     </span>
                   )}
@@ -120,8 +143,8 @@ const Companies = () => {
             </div>
           </div>
         ) : (
-          <div style={{ textAlign: "center", padding: "48px 0", color: "var(--text2)" }}>
-            <Building2 size={40} style={{ opacity: 0.2, margin: "0 auto 12px" }} />
+          <div style={{ textAlign: "center", padding: "48px 0", color: COLORS.textSecondary }}>
+            <Building2 size={48} style={{ opacity: 0.3, margin: "0 auto 16px" }} />
             <p style={{ fontSize: "14px" }}>No companies match "{search}"</p>
           </div>
         )

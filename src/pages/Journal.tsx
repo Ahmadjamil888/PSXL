@@ -7,6 +7,21 @@ import { Search, Trash2, BookOpen, Download, Upload, X, ChevronDown } from "luci
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
+const COLORS = {
+  success: '#22C55E',
+  successLight: 'rgba(34, 197, 94, 0.15)',
+  danger: '#EF4444',
+  dangerLight: 'rgba(239, 68, 68, 0.15)',
+  primary: '#10B981',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#A3A3A3',
+  textTertiary: '#737373',
+  border: '#2A2A2A',
+  borderHover: '#3A3A3A',
+  bgCard: '#1A1A1A',
+  bgInput: '#141414',
+};
+
 type SideFilter = "all" | "buy" | "sell";
 type StatusFilter = "all" | "open" | "closed";
 
@@ -179,26 +194,26 @@ export default function Journal() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "12px", padding: "24px", width: "100%", maxWidth: "520px", maxHeight: "80vh", overflowY: "auto" }}
+              style={{ background: COLORS.bgCard, border: `1px solid ${COLORS.border}`, borderRadius: "12px", padding: "24px", width: "100%", maxWidth: "520px", maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }}
             >
               <div className="flex items-center justify-between mb-4">
-                <h2 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text)" }}>Import Preview</h2>
-                <button onClick={() => setImportPreview(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text2)" }}>
+                <h2 style={{ fontSize: "16px", fontWeight: 700, color: COLORS.textPrimary }}>Import Preview</h2>
+                <button onClick={() => setImportPreview(null)} style={{ background: "none", border: "none", cursor: "pointer", color: COLORS.textSecondary, padding: "4px", borderRadius: "6px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {importPreview.errors.length > 0 && (
-                <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: "8px", padding: "12px", marginBottom: "16px" }}>
-                  <p style={{ fontSize: "12px", fontWeight: 600, color: "var(--red)", marginBottom: "6px" }}>Errors ({importPreview.errors.length})</p>
+                <div style={{ background: COLORS.dangerLight, border: `1px solid rgba(239,68,68,0.3)`, borderRadius: "8px", padding: "12px", marginBottom: "16px" }}>
+                  <p style={{ fontSize: "12px", fontWeight: 600, color: COLORS.danger, marginBottom: "6px" }}>Errors ({importPreview.errors.length})</p>
                   {importPreview.errors.map((e, i) => (
-                    <p key={i} style={{ fontSize: "12px", color: "var(--red)", opacity: 0.8 }}>{e}</p>
+                    <p key={i} style={{ fontSize: "12px", color: COLORS.danger, opacity: 0.9 }}>{e}</p>
                   ))}
                 </div>
               )}
@@ -261,25 +276,25 @@ export default function Journal() {
                 type="button"
                 onClick={() => setSideFilter(s)}
                 style={{
-                  padding: "10px 14px",
+                  padding: "10px 16px",
                   fontSize: "11px",
                   fontWeight: 600,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
-                  border: "1px solid var(--border)",
+                  border: "1px solid",
                   cursor: "pointer",
-                  transition: "all 0.2s",
-                  borderRadius: "6px",
+                  transition: "all 0.2s ease",
+                  borderRadius: "8px",
                   minHeight: "44px",
                   background: active
-                    ? s === "buy" ? "rgba(34,197,94,0.12)" : s === "sell" ? "rgba(239,68,68,0.12)" : "var(--surface)"
+                    ? s === "buy" ? COLORS.successLight : s === "sell" ? COLORS.dangerLight : COLORS.bgCard
                     : "transparent",
                   color: active
-                    ? s === "buy" ? "var(--green)" : s === "sell" ? "var(--red)" : "var(--text)"
-                    : "var(--text2)",
+                    ? s === "buy" ? COLORS.success : s === "sell" ? COLORS.danger : COLORS.textPrimary
+                    : COLORS.textSecondary,
                   borderColor: active
-                    ? s === "buy" ? "var(--green)" : s === "sell" ? "var(--red)" : "var(--border2)"
-                    : "var(--border)",
+                    ? s === "buy" ? COLORS.success : s === "sell" ? COLORS.danger : COLORS.borderHover
+                    : COLORS.border,
                 }}
               >
                 {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
@@ -291,18 +306,18 @@ export default function Journal() {
             type="button"
             onClick={() => setShowFilters((v) => !v)}
             style={{
-              padding: "10px 14px",
+              padding: "10px 16px",
               fontSize: "11px",
               fontWeight: 600,
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              border: `1px solid ${showFilters || activeFilterCount > 0 ? "var(--primary)" : "var(--border)"}`,
+              border: `1px solid ${showFilters || activeFilterCount > 0 ? COLORS.primary : COLORS.border}`,
               cursor: "pointer",
-              transition: "all 0.2s",
-              borderRadius: "6px",
+              transition: "all 0.2s ease",
+              borderRadius: "8px",
               minHeight: "44px",
-              background: showFilters || activeFilterCount > 0 ? "rgba(var(--primary-rgb,99,102,241),0.1)" : "transparent",
-              color: showFilters || activeFilterCount > 0 ? "var(--primary)" : "var(--text2)",
+              background: showFilters || activeFilterCount > 0 ? "rgba(16, 185, 129, 0.1)" : "transparent",
+              color: showFilters || activeFilterCount > 0 ? COLORS.primary : COLORS.textSecondary,
               display: "flex",
               alignItems: "center",
               gap: "6px",
@@ -310,7 +325,7 @@ export default function Journal() {
           >
             Filters
             {activeFilterCount > 0 && (
-              <span style={{ background: "var(--primary)", color: "#fff", borderRadius: "999px", fontSize: "10px", padding: "1px 6px", fontWeight: 700 }}>
+              <span style={{ background: COLORS.primary, color: "#fff", borderRadius: "999px", fontSize: "10px", padding: "2px 8px", fontWeight: 700 }}>
                 {activeFilterCount}
               </span>
             )}
@@ -463,14 +478,14 @@ export default function Journal() {
 
       {/* Results count */}
       {filtered.length !== trades.length && (
-        <p style={{ fontSize: "12px", color: "var(--text3)" }}>
+        <p style={{ fontSize: "13px", color: COLORS.textTertiary }}>
           Showing {filtered.length} of {trades.length} trades
         </p>
       )}
 
       {/* Trade List */}
       {filtered.length > 0 ? (
-        <div className="flex flex-col gap-2 sm:gap-3">
+        <div className="flex flex-col gap-3">
           {filtered.map((trade, i) => {
             const pnl = calcPnL(trade);
             const pnlPct = calcPnLPercent(trade);
@@ -481,53 +496,86 @@ export default function Journal() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.3) }}
                 className="journal-trade-row"
+                style={{
+                  background: `linear-gradient(135deg, ${COLORS.bgCard} 0%, #141414 100%)`,
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: "12px",
+                  padding: "16px 18px",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = COLORS.borderHover;
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = COLORS.border;
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.3)";
+                }}
               >
-                <div className="flex min-w-0 items-start gap-3 sm:items-center">
+                <div className="flex min-w-0 items-start gap-4 sm:items-center">
                   <div
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
-                    style={{ background: "var(--bg2)", border: "1px solid var(--border)" }}
+                    style={{
+                      background: trade.side === "buy" ? COLORS.successLight : COLORS.dangerLight,
+                      border: `1px solid ${trade.side === "buy" ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}`,
+                    }}
                   >
-                    <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text2)", letterSpacing: "0.02em" }}>
+                    <span style={{ fontSize: "12px", fontWeight: 700, color: trade.side === "buy" ? COLORS.success : COLORS.danger, letterSpacing: "0.02em" }}>
                       {trade.side === "buy" ? "B" : "S"}
                     </span>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                      <span className="font-mono text-sm font-semibold" style={{ color: "var(--text)" }}>
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <span className="font-mono text-sm font-semibold" style={{ color: COLORS.textPrimary }}>
                         {trade.symbol}
                       </span>
-                      <span className="text-[11px]" style={{ color: "var(--text3)" }}>
+                      <span className="text-[12px]" style={{ color: COLORS.textTertiary }}>
                         {trade.date}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--text2)" }}>
-                      {trade.quantity} × ₨{trade.entry_price}
+                    <p className="mt-1 text-[13px] leading-relaxed" style={{ color: COLORS.textSecondary }}>
+                      {trade.quantity.toLocaleString()} × ₨{trade.entry_price}
                       {trade.exit_price ? ` → ₨${trade.exit_price}` : " (Open)"}
                       {trade.note && ` · ${trade.note}`}
                     </p>
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[var(--border)] pt-3 sm:border-0 sm:pt-0 sm:pl-4">
+                <div className="flex shrink-0 items-center justify-between gap-4 border-t sm:border-0 sm:pl-4" style={{ borderColor: COLORS.border, paddingTop: "12px" }}>
                   {pnl !== null ? (
                     <div className="text-right">
-                      <p className="font-mono text-sm font-semibold tabular-nums" style={{ color: pnl >= 0 ? "var(--green)" : "var(--red)" }}>
-                        {formatCurrency(pnl)}
+                      <p className="font-mono text-sm font-bold tabular-nums" style={{ color: pnl >= 0 ? COLORS.success : COLORS.danger }}>
+                        {pnl >= 0 ? "+" : ""}{formatCurrency(pnl)}
                       </p>
-                      <p className="text-[11px] tabular-nums" style={{ color: pnlPct! >= 0 ? "var(--green)" : "var(--red)" }}>
-                        {formatPercent(pnlPct!)}
+                      <p className="text-[11px] tabular-nums" style={{ color: pnlPct! >= 0 ? COLORS.success : COLORS.danger }}>
+                        {pnlPct! >= 0 ? "+" : ""}{formatPercent(pnlPct!)}
                       </p>
                     </div>
                   ) : (
-                    <span className="text-[11px] font-medium" style={{ color: "var(--text3)" }}>OPEN</span>
+                    <span className="text-[11px] font-semibold tracking-wider" style={{ color: COLORS.textTertiary }}>OPEN</span>
                   )}
                   <button
                     type="button"
                     aria-label="Delete trade"
-                    className="rounded-md p-2 transition-colors"
-                    style={{ background: "transparent", border: "1px solid transparent", color: "var(--text2)" }}
+                    className="rounded-lg p-2 transition-all"
+                    style={{
+                      background: "transparent",
+                      border: "1px solid transparent",
+                      color: COLORS.textSecondary,
+                    }}
                     onClick={() => handleDelete(trade.id)}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--red)"; e.currentTarget.style.borderColor = "var(--border)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text2)"; e.currentTarget.style.borderColor = "transparent"; }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = COLORS.danger;
+                      e.currentTarget.style.borderColor = COLORS.border;
+                      e.currentTarget.style.background = "rgba(239,68,68,0.05)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = COLORS.textSecondary;
+                      e.currentTarget.style.borderColor = "transparent";
+                      e.currentTarget.style.background = "transparent";
+                    }}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -537,8 +585,8 @@ export default function Journal() {
           })}
         </div>
       ) : (
-        <div className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)] px-6 py-14 text-center" style={{ color: "var(--text2)" }}>
-          <BookOpen className="mx-auto mb-3 h-12 w-12 opacity-30" />
+        <div className="text-center py-14 rounded-xl" style={{ background: COLORS.bgCard, border: `1px solid ${COLORS.border}`, color: COLORS.textSecondary }}>
+          <BookOpen className="mx-auto mb-3 h-12 w-12" style={{ opacity: 0.3 }} />
           <p className="text-sm">
             {trades.length === 0 ? "No trades yet. Log your first trade!" : "No trades match your filters."}
           </p>
