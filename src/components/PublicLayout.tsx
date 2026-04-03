@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Menu, X, Twitter, Github, Linkedin, ChevronRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "@/components/Logo";
-import { useTheme } from "@/components/theme-provider";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -32,18 +31,13 @@ const FOOTER_LINKS = {
 };
 
 function useResolvedTheme(): "dark" | "light" {
-  const { theme } = useTheme();
-  if (theme === "system") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-  return theme;
+  return "dark";
 }
 
 export function PublicNav() {
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
-  const { theme, setTheme } = useTheme();
   const resolved = useResolvedTheme();
 
   // Track viewport width to switch between mobile/desktop nav
@@ -98,25 +92,6 @@ export function PublicNav() {
 
         {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Theme toggle pill */}
-          <div
-            onClick={() => setTheme(resolved === "dark" ? "light" : "dark")}
-            style={{
-              width: 40, height: 22,
-              background: resolved === "dark" ? "#1a1a1a" : "#e0e0e0",
-              border: `1px solid ${borderColor}`,
-              borderRadius: 11, cursor: "pointer",
-              display: "flex", alignItems: "center", padding: "0 3px", flexShrink: 0,
-            }}
-            aria-label="Toggle theme"
-          >
-            <div style={{
-              width: 14, height: 14, borderRadius: "50%", background: "var(--green)",
-              transform: resolved === "dark" ? "translateX(0)" : "translateX(18px)",
-              transition: "transform 0.2s ease",
-            }} />
-          </div>
-
           {/* Get Started + Try as Guest — desktop only */}
           {!isMobile && (
             <>
