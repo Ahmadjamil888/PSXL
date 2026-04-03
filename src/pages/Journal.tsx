@@ -8,18 +8,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
 const COLORS = {
-  success: '#22C55E',
-  successLight: 'rgba(34, 197, 94, 0.15)',
-  danger: '#EF4444',
-  dangerLight: 'rgba(239, 68, 68, 0.15)',
-  primary: '#10B981',
-  textPrimary: '#FFFFFF',
-  textSecondary: '#A3A3A3',
-  textTertiary: '#737373',
-  border: '#2A2A2A',
-  borderHover: '#3A3A3A',
-  bgCard: '#1A1A1A',
-  bgInput: '#141414',
+  success: 'var(--success, #22C55E)',
+  successLight: 'var(--success-light, rgba(34, 197, 94, 0.15))',
+  danger: 'var(--danger, #EF4444)',
+  dangerLight: 'var(--danger-light, rgba(239, 68, 68, 0.15))',
+  primary: 'var(--primary, #10B981)',
+  textPrimary: 'var(--text-primary, #FFFFFF)',
+  textSecondary: 'var(--text-secondary, #A3A3A3)',
+  textTertiary: 'var(--text-tertiary, #737373)',
+  border: 'var(--border-default, #2A2A2A)',
+  borderHover: 'var(--border-hover, #3A3A3A)',
+  bgCard: 'var(--bg-card, #1A1A1A)',
+  bgInput: 'var(--bg-input, #141414)',
 };
 
 type SideFilter = "all" | "buy" | "sell";

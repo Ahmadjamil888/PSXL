@@ -9,16 +9,16 @@ import {
 import { BarChart3 } from "lucide-react";
 
 const COLORS = {
-  success: '#22C55E',
-  danger: '#EF4444',
-  primary: '#10B981',
-  info: '#3B82F6',
-  warning: '#F59E0B',
-  textPrimary: '#FFFFFF',
-  textSecondary: '#A3A3A3',
-  textTertiary: '#737373',
-  border: '#2A2A2A',
-  bgCard: '#1A1A1A',
+  success: 'var(--success, #22C55E)',
+  danger: 'var(--danger, #EF4444)',
+  primary: 'var(--primary, #10B981)',
+  info: 'var(--info, #3B82F6)',
+  warning: 'var(--warning, #F59E0B)',
+  textPrimary: 'var(--text-primary, #FFFFFF)',
+  textSecondary: 'var(--text-secondary, #A3A3A3)',
+  textTertiary: 'var(--text-tertiary, #737373)',
+  border: 'var(--border-default, #2A2A2A)',
+  bgCard: 'var(--bg-card, #1A1A1A)',
 };
 
 const CARD = "table-container reveal";

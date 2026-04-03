@@ -3,16 +3,16 @@ import { usePSXCompanies } from "@/hooks/usePSXCompanies";
 import { Search, Building2, RefreshCw } from "lucide-react";
 
 const COLORS = {
-  primary: '#10B981',
-  primaryLight: 'rgba(16, 185, 129, 0.15)',
-  danger: '#EF4444',
-  textPrimary: '#FFFFFF',
-  textSecondary: '#A3A3A3',
-  textTertiary: '#737373',
-  border: '#2A2A2A',
-  borderHover: '#3A3A3A',
-  bgCard: '#1A1A1A',
-  bgInput: '#141414',
+  primary: 'var(--primary, #10B981)',
+  primaryLight: 'var(--success-light, rgba(16, 185, 129, 0.15))',
+  danger: 'var(--danger, #EF4444)',
+  textPrimary: 'var(--text-primary, #FFFFFF)',
+  textSecondary: 'var(--text-secondary, #A3A3A3)',
+  textTertiary: 'var(--text-tertiary, #737373)',
+  border: 'var(--border-default, #2A2A2A)',
+  borderHover: 'var(--border-hover, #3A3A3A)',
+  bgCard: 'var(--bg-card, #1A1A1A)',
+  bgInput: 'var(--bg-input, #141414)',
 };
 
 const Companies = () => {

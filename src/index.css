@@ -6,17 +6,30 @@
 
 @layer base {
   :root {
+    /* Light theme - Semantic Colors */
+    --success: #16A34A;
+    --success-light: rgba(22, 163, 74, 0.12);
+    --danger: #DC2626;
+    --danger-light: rgba(220, 38, 38, 0.12);
+    --warning: #D97706;
+    --warning-light: rgba(217, 119, 6, 0.12);
+    --info: #2563EB;
+    --info-light: rgba(37, 99, 235, 0.12);
+    --primary: #16A34A;
+    --primary-hover: #15803D;
+    --primary-active: #166534;
+    
     /* Light theme colors */
-    --bg-base: #f8f9fa;
+    --bg-canvas: #f8f9fa;
     --bg-card: #ffffff;
+    --bg-card-hover: #f1f3f4;
     --bg-input: #f1f3f4;
-    --border-subtle: rgba(0, 0, 0, 0.08);
-    --border-strong: rgba(0, 0, 0, 0.16);
+    --border-default: rgba(0, 0, 0, 0.12);
+    --border-hover: rgba(0, 0, 0, 0.2);
     --text-primary: #1a1a1a;
-    --text-muted: #666666;
-    --text-dim: #999999;
-    --accent: #a3c45a;
-    --accent-hover: #8db84a;
+    --text-secondary: #4b5563;
+    --text-tertiary: #6b7280;
+    --text-disabled: #9ca3af;
     
     /* Legacy compatibility - light */
     --background: 0 0% 97%;
@@ -31,8 +44,8 @@
     --text: #1a1a1a;
     --text2: #666666;
     --text3: #999999;
-    --green: #a3c45a;
-    --red: #ef4444;
+    --green: #16A34A;
+    --red: #DC2626;
 
     --card: 0 0% 98%;
     --card-foreground: 0 0% 0%;

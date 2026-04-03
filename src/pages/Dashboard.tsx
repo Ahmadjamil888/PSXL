@@ -12,12 +12,12 @@ import { useState, useMemo } from "react";
 // ── Semantic color palette ───────────────────────────────────────────────────
 const COLORS = {
   // Primary palette
-  primary: '#10B981',
-  success: '#22C55E',
-  danger: '#EF4444',
-  warning: '#F59E0B',
-  info: '#3B82F6',
-  // Extended palette for charts
+  primary: 'var(--primary, #10B981)',
+  success: 'var(--success, #22C55E)',
+  danger: 'var(--danger, #EF4444)',
+  warning: 'var(--warning, #F59E0B)',
+  info: 'var(--info, #3B82F6)',
+  // Extended palette for charts (keeping hex for charts as they need specific colors)
   purple: '#8B5CF6',
   pink: '#EC4899',
   teal: '#14B8A6',
@@ -38,16 +38,16 @@ const COLORS = {
 // Enhanced tooltip styles
 const TT = {
   contentStyle: {
-    backgroundColor: '#262626',
-    border: '1px solid #3A3A3A',
+    backgroundColor: 'var(--bg-card, #262626)',
+    border: '1px solid var(--border-hover, #3A3A3A)',
     borderRadius: '8px',
-    color: '#FFFFFF',
+    color: 'var(--text-primary, #FFFFFF)',
     fontSize: '12px',
     padding: '12px',
     boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
   },
-  itemStyle: { color: '#FFFFFF' },
-  labelStyle: { color: '#A3A3A3', fontSize: '11px', marginBottom: '4px' },
+  itemStyle: { color: 'var(--text-primary, #FFFFFF)' },
+  labelStyle: { color: 'var(--text-secondary, #A3A3A3)', fontSize: '11px', marginBottom: '4px' },
 };
 
 const Card = ({ title, badge, children, delay = 0, span2 = false }: {
