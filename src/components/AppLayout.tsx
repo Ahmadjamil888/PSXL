@@ -2,8 +2,6 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LayoutDashboard, BookOpen, BarChart3, LogOut, Building, Settings, User, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ThemeToggle from "@/components/ThemeToggle";
-import { useTheme } from "@/components/theme-provider";
 import Logo from "@/components/Logo";
 import { useState, useEffect } from "react";
 
@@ -19,7 +17,6 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { signOut, user, profilePicture } = useAuth();
   const location = useLocation();
-  const { theme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -63,7 +60,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <Logo />
               </div>
               <div className="flex items-center gap-2">
-                <ThemeToggle />
                 <button
                   onClick={() => setSidebarOpen(false)}
                   className="p-2 transition-colors"
@@ -238,9 +234,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <Logo />
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
           </div>
         </div>
       </div>

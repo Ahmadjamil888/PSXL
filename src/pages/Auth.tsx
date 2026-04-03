@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Zap } from "lucide-react";
 import { toast } from "sonner";
-import ThemeToggle from "@/components/ThemeToggle";
 import Logo from "@/components/Logo";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -97,12 +96,6 @@ export default function AuthPage() {
       background: 'var(--chrome-bg)', 
       color: 'var(--text)' 
     }}>
-      {/* Theme Toggle */}
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-      
-      {/* OAuth Callback Loading */}
       {callbackLoading && (
         <motion.div
           initial={{ opacity: 0 }}
