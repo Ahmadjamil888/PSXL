@@ -229,8 +229,15 @@ export function PublicFooter() {
           </div>
         </div>
 
+        {/* Financial Disclaimer Banner - YMYL Requirement */}
+        <div style={{ background: "rgba(163,196,90,0.05)", border: "1px solid rgba(163,196,90,0.2)", borderRadius: "8px", padding: "16px 20px", marginBottom: "20px" }}>
+          <p style={{ fontSize: "12px", color: textSub, lineHeight: 1.6, margin: 0 }}>
+            <strong style={{ color: "var(--green)" }}>Important:</strong> Content on PSXL is for informational purposes only and does not constitute financial, investment, tax, or legal advice. Always consult a qualified professional before making investment decisions. Past performance does not guarantee future results.
+          </p>
+        </div>
+
         {/* Bottom bar */}
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "20px 0" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "20px 0", borderTop: `1px solid ${borderColor}` }}>
           <span style={{ fontSize: "12px", color: textMuted }}>© {new Date().getFullYear()} PSX Ledger Pro. All rights reserved.</span>
           <div style={{ display: "flex", gap: "20px" }}>
             {[{ label: "Privacy", href: "/privacy" }, { label: "Terms", href: "/terms" }, { label: "Disclaimer", href: "/disclaimer" }].map(l => (

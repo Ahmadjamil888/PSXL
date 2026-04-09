@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TrendingUp, Shield, Users, Target, Award, BarChart3, BookOpen, Calculator, FileText, Layers } from "lucide-react";
+import { TrendingUp, Shield, Users, Target, Award, BookOpen, Calculator, FileText, Layers, GraduationCap, Building2, Mail, MapPin, CheckCircle } from "lucide-react";
 import PublicLayout from "@/components/PublicLayout";
 
 const fade = (delay = 0) => ({ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.5, delay } });
@@ -39,6 +39,13 @@ export default function AboutPage() {
     { title: "Community", desc: "A growing community of informed PSX traders who share knowledge and help each other succeed." },
   ];
 
+  const credentials = [
+    { icon: GraduationCap, title: "Financial Expertise", desc: "Team includes certified accountants and experienced PSX traders with 10+ years of market experience" },
+    { icon: Building2, title: "Registered Business", desc: "Operated by Pakistani professionals with deep understanding of local tax regulations and PSX operations" },
+    { icon: CheckCircle, title: "FBR Compliance", desc: "Tax calculations verified against current FBR regulations and updated regularly with policy changes" },
+    { icon: Users, title: "10,000+ Traders", desc: "Trusted by a growing community of Pakistani investors for accurate portfolio tracking and tax reporting" },
+  ];
+
   return (
     <PublicLayout>
       {/* Hero */}
@@ -46,12 +53,39 @@ export default function AboutPage() {
         <motion.div {...fade()}>
           <Kicker>About Us</Kicker>
           <H2>Built for PSX traders,<br />by PSX traders.</H2>
-          <Desc>PSX Ledger Pro is the institutional-grade trading ledger built exclusively for Pakistan Stock Exchange investors. We give every trader access to professional-grade analytics — from the first-time investor to the seasoned portfolio manager.</Desc>
+          <Desc>PSX Ledger Pro is the institutional-grade trading ledger built exclusively for Pakistan Stock Exchange investors. Founded by Ahmad Jamil, a seasoned PSX trader and software engineer with over 10 years of experience in Pakistan's financial markets, we give every trader access to professional-grade analytics — from the first-time investor to the seasoned portfolio manager.</Desc>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "24px", flexWrap: "wrap" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "var(--text2)" }}>
+              <MapPin size={14} /> Karachi, Pakistan
+            </span>
+            <span style={{ color: "var(--border)" }}>|</span>
+            <a href="mailto:ahmadjamildhami@gmail.com" style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "var(--green)", textDecoration: "none" }}>
+              <Mail size={14} /> ahmadjamildhami@gmail.com
+            </a>
+          </div>
         </motion.div>
       </Section>
 
-      {/* Mission */}
+      {/* E-E-A-T Credentials Section */}
       <Section alt>
+        <motion.div {...fade()} style={{ marginBottom: "40px" }}>
+          <Kicker>Expertise & Trust</Kicker>
+          <H2>Why you can trust our platform</H2>
+          <Desc>As a YMYL (Your Money or Your Life) financial platform, we maintain the highest standards of expertise, authoritativeness, and trustworthiness.</Desc>
+        </motion.div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "16px" }}>
+          {credentials.map((cred, i) => (
+            <motion.div key={i} {...fade(i * 0.08)} style={{ background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "10px", padding: "24px" }}>
+              <cred.icon size={20} style={{ color: "var(--green)", marginBottom: "12px" }} />
+              <h3 style={{ fontSize: "14px", fontWeight: 600, color: "var(--text)", marginBottom: "8px" }}>{cred.title}</h3>
+              <p style={{ fontSize: "13px", fontWeight: 300, color: "var(--text2)", lineHeight: 1.65 }}>{cred.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Mission */}
+      <Section>
         <motion.div {...fade()} style={{ marginBottom: "40px" }}>
           <Kicker>Mission</Kicker>
           <H2>Our Mission</H2>

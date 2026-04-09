@@ -16,7 +16,7 @@ const posts: BlogPost[] = [
     excerpt: "Explore the leading fintech innovators transforming Pakistan's financial landscape with cutting-edge digital solutions for payments, lending, and investment.",
     category: "Fintech",
     date: "2026-04-01",
-    author: "PSX Ledger Team",
+    author: "Ahmad Jamil",
     metaDescription: "Discover the top Pakistani fintech companies revolutionizing digital finance in 2026. From Easypaisa to JazzCash, learn about innovative payment and investment solutions.",
     keywords: ["Pakistani fintech", "digital payments Pakistan", "Easypaisa", "JazzCash", "fintech companies 2026"]
   },
@@ -26,7 +26,7 @@ const posts: BlogPost[] = [
     excerpt: "Discover how financial technology is revolutionizing the way investors approach the Pakistan Stock Exchange with real-time analytics and automated trading.",
     category: "Investment",
     date: "2026-03-28",
-    author: "PSX Ledger Team",
+    author: "Ahmad Jamil",
     metaDescription: "Learn how fintech innovations are transforming PSX investing. Real-time data, AI analytics, and mobile trading are changing how Pakistanis invest in stocks.",
     keywords: ["PSX investing", "fintech Pakistan", "stock market technology", "AI trading", "real-time analytics"]
   },
@@ -36,7 +36,7 @@ const posts: BlogPost[] = [
     excerpt: "A comprehensive guide covering everything you need to know to start trading on the Pakistan Stock Exchange, from account setup to your first trade.",
     category: "Education",
     date: "2026-03-25",
-    author: "PSX Ledger Team",
+    author: "Ahmad Jamil",
     metaDescription: "Complete beginner's guide to PSX trading in 2026. Learn how to open a brokerage account, understand KSE-100, and make your first stock trade on Pakistan Stock Exchange.",
     keywords: ["PSX beginner guide", "how to trade PSX", "Pakistan stock exchange tutorial", "KSE-100 guide", "stock trading Pakistan"]
   },
@@ -46,7 +46,7 @@ const posts: BlogPost[] = [
     excerpt: "Learn effective strategies to diversify your investment portfolio across sectors and asset classes to minimize risk and maximize returns in the PSX.",
     category: "Strategy",
     date: "2026-03-22",
-    author: "PSX Ledger Team",
+    author: "Ahmad Jamil",
     metaDescription: "Master portfolio diversification strategies for PSX investing. Learn how to spread risk across sectors, asset classes, and investment types for optimal returns.",
     keywords: ["portfolio diversification", "PSX strategy", "risk management", "asset allocation", "Pakistan investment"]
   },
@@ -56,7 +56,7 @@ const posts: BlogPost[] = [
     excerpt: "Deep dive into the Karachi Stock Exchange 100 Index and other key market indicators that every PSX investor should understand for better trading decisions.",
     category: "Analysis",
     date: "2026-03-18",
-    author: "PSX Ledger Team",
+    author: "Ahmad Jamil",
     metaDescription: "Comprehensive guide to PSX market indices. Understand KSE-100, KSE-30, and All-Share Index to make informed investment decisions on Pakistan Stock Exchange.",
     keywords: ["KSE-100 index", "PSX market indices", "Pakistan stock exchange analysis", "KSE-30", "market indicators"]
   },
@@ -66,7 +66,7 @@ const posts: BlogPost[] = [
     excerpt: "Navigate the complex tax landscape of stock trading in Pakistan with our comprehensive guide on capital gains tax and reporting requirements.",
     category: "Tax",
     date: "2026-03-15",
-    author: "PSX Ledger Team",
+    author: "Ahmad Jamil",
     metaDescription: "Complete tax guide for PSX traders in Pakistan. Learn about capital gains tax, withholding tax, and filing requirements for stock market investments.",
     keywords: ["capital gains tax Pakistan", "PSX tax implications", "stock trading tax", "withholding tax PSX", "FBR tax filing"]
   },
