@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Zap } from "lucide-react";
 import { toast } from "sonner";
 import Logo from "@/components/Logo";
+import EmotionalOnboarding from "@/components/EmotionalOnboarding";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function AuthPage() {
@@ -19,6 +20,7 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [callbackLoading, setCallbackLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // After auth: migrate guest trades → DB, then redirect
   const migrateAndRedirect = async (userId: string) => {
@@ -75,6 +77,7 @@ export default function AuthPage() {
         const { error } = await signUp(email, password, name);
         if (error) throw error;
         toast.success("Account created! Check your email to verify.");
+        setShowOnboarding(true);
       }
     } catch (err: any) {
       toast.error(err.message || "Authentication failed");
@@ -88,6 +91,23 @@ export default function AuthPage() {
       await signInWithGoogle();
     } catch {
       toast.error("Google sign-in failed");
+    }
+  };
+
+  const handleOnboardingComplete = async (data: any) => {
+    // TODO: Save onboarding data to database once schema is updated
+    console.log('Onboarding data:', data);
+    toast.success("Onboarding completed!");
+    setShowOnboarding(false);
+    if (user) {
+      await migrateAndRedirect(user.id);
+    }
+  };
+
+  const handleOnboardingSkip = async () => {
+    setShowOnboarding(false);
+    if (user) {
+      await migrateAndRedirect(user.id);
     }
   };
 
@@ -378,6 +398,13 @@ export default function AuthPage() {
           </p>
         </div>
       </motion.div>
+      )}
+
+      {showOnboarding && (
+        <EmotionalOnboarding
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
       )}
     </div>
   );

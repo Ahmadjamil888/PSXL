@@ -1,7 +1,8 @@
 import { useTrades, getTradeStats, calcPnL, computeHoldings } from "@/hooks/useTrades";
 import { formatCurrency, formatPercent } from "@/lib/psx";
 import TradeForm from "@/components/TradeForm";
-import { BarChart3, HelpCircle, Filter, X, TrendingUp, Package } from "lucide-react";
+import CoTraderChat from "@/components/CoTraderChat";
+import { BarChart3, HelpCircle, Filter, X, TrendingUp, Package, AlertTriangle, Target, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -139,15 +140,41 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <p className="dash-page-kicker">Overview</p>
+          <p className="dash-page-kicker">Brutal Reality</p>
           <h1 className="dash-page-title">Dashboard</h1>
-          <p className="dash-page-desc">Your PSX trading overview and latest activity.</p>
+          <p className="dash-page-desc">Uncomfortable truths about your trading behavior.</p>
         </div>
         <div className="w-full sm:w-auto sm:shrink-0" style={{ position: "relative" }}>
           <TradeForm />
           <span style={{ position: "absolute", top: "-4px", right: "-4px", width: "8px", height: "8px", borderRadius: "50%", background: "var(--green)", animation: "pulse 2s infinite" }} />
         </div>
       </div>
+
+      {/* Brutal Reality Warning */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="table-container"
+        style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(245, 158, 11, 0.1))', border: '1px solid rgba(239, 68, 68, 0.3)' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 20px' }}>
+          <AlertTriangle className="w-5 h-5 text-red-500" />
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: '14px', fontWeight: 600, color: '#FFFFFF', marginBottom: '4px' }}>
+              Brutal Reality Check
+            </p>
+            <p style={{ fontSize: '12px', color: '#A3A3A3' }}>
+              {stats.totalPnL < 0 
+                ? `You've lost ${formatCurrency(Math.abs(stats.totalPnL))}. 90% of traders lose money. What makes you different?`
+                : stats.winRate < 50
+                ? `Your ${stats.winRate.toFixed(1)}% win rate means you're losing more than you win. Time to fix your strategy.`
+                : `You're profitable, but are you disciplined? One mistake can wipe out months of gains.`
+              }
+            </p>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Stat cards */}
       <div className="stat-grid">
@@ -158,6 +185,12 @@ export default function Dashboard() {
             {formatCurrency(stats.totalPnL)}
           </span>
           <span className="stat-sub">{stats.closedTrades} closed trades</span>
+          {stats.totalPnL < 0 && (
+            <span style={{ fontSize: "10px", color: "#EF4444", marginTop: "4px" }}>
+              <TrendingDown className="w-3 h-3 inline-block mr-1" />
+              You're losing money
+            </span>
+          )}
         </div>
         <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
           <span className="stat-label" style={{ color: "var(--text2)" }}>Today's Profit</span>
@@ -166,16 +199,32 @@ export default function Dashboard() {
             {formatCurrency(stats.todayPnL)}
           </span>
           <span className="stat-sub">Real-time tracking</span>
+          {stats.todayPnL < 0 && (
+            <span style={{ fontSize: "10px", color: "#EF4444", marginTop: "4px" }}>
+              Revenge trading?
+            </span>
+          )}
         </div>
         <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
           <span className="stat-label" style={{ color: "var(--text2)" }}>Win Rate <HelpCircle className="w-3 h-3 ml-1 inline-block" style={{ color: "var(--text3)" }} /></span>
           <span className="stat-val" style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", lineHeight: 1.2 }}>{stats.winRate.toFixed(1)}%</span>
           <span className="stat-sub">{stats.wins}W / {stats.losses}L</span>
+          {stats.winRate < 50 && (
+            <span style={{ fontSize: "10px", color: "#F59E0B", marginTop: "4px" }}>
+              <AlertTriangle className="w-3 h-3 inline-block mr-1" />
+              Below 50% = losing
+            </span>
+          )}
         </div>
         <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
           <span className="stat-label" style={{ color: "var(--text2)" }}>Total Trades</span>
           <span className="stat-val" style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", lineHeight: 1.2 }}>{stats.totalTrades}</span>
           <span className="stat-sub">{formatCurrency(stats.totalVolume)} volume</span>
+          {stats.totalTrades > 50 && (
+            <span style={{ fontSize: "10px", color: "#A3A3A3", marginTop: "4px" }}>
+              Overtrading?
+            </span>
+          )}
         </div>
       </div>
 
@@ -311,6 +360,78 @@ export default function Dashboard() {
           </div>
         </motion.div>
       )}
+
+      {/* ── Behavioral Insights (Brutal Reality) ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="table-container"
+      >
+        <div className="table-header">
+          <span className="table-header-title">Behavioral Insights</span>
+          <span className="table-badge" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+            Brutal Truths
+          </span>
+        </div>
+        <div style={{ padding: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            {[
+              {
+                icon: <Target className="w-5 h-5 text-red-500" />,
+                title: 'Your Biggest Problem',
+                value: stats.totalPnL < 0 ? 'Losing money' : stats.winRate < 50 ? 'Low win rate' : 'Complacency',
+                desc: stats.totalPnL < 0 
+                  ? 'You\'re in the 90% who lose. Fix your strategy or stop trading.'
+                  : stats.winRate < 50
+                  ? 'Below 50% win rate means you\'re statistically losing over time.'
+                  : 'Success breeds overconfidence. One bad decision can wipe out months of gains.'
+              },
+              {
+                icon: <TrendingDown className="w-5 h-5 text-orange-500" />,
+                title: 'Discipline Score',
+                value: stats.winRate >= 60 ? '68/100' : stats.winRate >= 50 ? '45/100' : '32/100',
+                desc: stats.winRate >= 60 
+                  ? 'Good, but not great. Room for improvement on risk management.'
+                  : stats.winRate >= 50
+                  ? 'Barely passing. Your emotions are controlling your trades.'
+                  : 'Failing. You\'re gambling, not trading.'
+              },
+              {
+                icon: <AlertTriangle className="w-5 h-5 text-yellow-500" />,
+                title: 'Risk Pattern',
+                value: stats.todayPnL < 0 ? 'Dangerous' : 'Moderate',
+                desc: stats.todayPnL < 0
+                  ? 'Trading while down leads to revenge trading. Stop for the day.'
+                  : 'You\'re taking calculated risks, but stay vigilant.'
+              }
+            ].map((insight, i) => (
+              <div
+                key={i}
+                style={{
+                  background: 'rgba(0, 0, 0, 0.3)',
+                  border: '1px solid rgba(239, 68, 68, 0.2)',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  {insight.icon}
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#A3A3A3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {insight.title}
+                  </span>
+                </div>
+                <p style={{ fontSize: '18px', fontWeight: 700, color: '#FFFFFF', marginBottom: '8px' }}>
+                  {insight.value}
+                </p>
+                <p style={{ fontSize: '12px', color: '#A3A3A3', lineHeight: '1.5' }}>
+                  {insight.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
 
       {/* ── Charts row 1: Equity + Daily PnL ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -754,6 +875,8 @@ export default function Dashboard() {
           </div>
         )}
       </motion.div>
+      
+      <CoTraderChat />
     </div>
   );
 }

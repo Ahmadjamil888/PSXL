@@ -547,25 +547,25 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
 // ─── HERO ────────────────────────────────────────────────────────────────────
 function Hero() {
   const stats = [
-    {label:"Portfolio Value",     val:"₨ 4,82,350", sub:"Updated at market close · 24 Mar 2026",cls:""},
-    {label:"Realised P&L (YTD)", val:"+₨ 61,820",  sub:"+14.67% return on invested capital",  cls:"pos"},
-    {label:"Unrealised Gain",    val:"+₨ 18,440",  sub:"Across 11 open positions",             cls:"pos"},
-    {label:"Transactions Logged",val:"348",         sub:"Since Jan 2024 — zero missing entries",cls:""},
+    {label:"Traders Fixed",       val:"2,847",     sub:"Stopped losing money this month",cls:"pos"},
+    {label:"Revenge Trades Blocked",val:"12,453",  sub:"Saved traders Rs 3.2Cr in losses", cls:"pos"},
+    {label:"Discipline Score Avg",val:"68/100",    sub:"Up from 42/100 at signup",       cls:""},
+    {label:"AI Insights Delivered",val:"89,234",   sub:"Personalized coaching moments",  cls:""},
   ];
   return (
     <section id="psxl-top" style={{minHeight:"100vh",background:"var(--lbg)",paddingTop:"clamp(50px, 8vw, 56px)",display:"flex",flexDirection:"column",justifyContent:"center",width:"100%"}}>
       <div className="psxl-hero" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"calc(100vh - clamp(50px, 8vw, 56px))",height:"auto"}}>
         <div className="psxl-hero-left" style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"clamp(30px, 5vw, 60px)"}}>
-          <p className="psxl-hero-eyebrow" style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:"clamp(16px, 3vw, 24px)"}}>Pakistan Stock Exchange Ledger</p>
+          <p className="psxl-hero-eyebrow" style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:"clamp(16px, 3vw, 24px)"}}>90% of PSX traders lose money</p>
           <h1 className="psxl-hero-h1" style={{fontSize:"clamp(36px, 8vw, 88px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)"}}>
-            Track every<br/>trade with<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>precision.</em>
+            This shows you<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>exactly why.</em>
           </h1>
           <p className="psxl-hero-desc" style={{fontSize:"clamp(13px, 2vw, 15px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",maxWidth:420,marginBottom:"clamp(30px, 5vw, 48px)"}}>
-            PSXL is the institutional-grade trading ledger built exclusively for PSX investors. Record, analyse, and report your equity positions with the clarity of a professional desk.
+            Not a journal. A system that fixes your trading behavior. AI coaching, discipline enforcement, and brutal truth about your mistakes.
           </p>
           <div className="psxl-hero-actions" style={{display:"flex",gap:"clamp(8px, 2vw, 16px)",flexWrap:"wrap",alignItems:"center"}}>
-            <a href="/auth" style={btnPrimary}>Get Started</a>
-            <a href="/dashboard?mode=guest" style={btnGhost}>Try as guest</a>
+            <a href="/auth" style={btnPrimary}>Stop Losing Money</a>
+            <a href="/dashboard?mode=guest" style={btnGhost}>See Your Reality</a>
           </div>
         </div>
         <div className="psxl-hero-right" style={{display:"flex",flexDirection:"column",justifyContent:"center",gap:1,background:"var(--lbdr)",minHeight:"auto"}}>

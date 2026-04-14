@@ -195,7 +195,7 @@ export function PublicFooter() {
           <div>
             <div style={{ marginBottom: "16px" }}><Logo height={28} /></div>
             <p style={{ fontSize: "13px", fontWeight: 300, color: textSub, lineHeight: 1.7, maxWidth: "200px" }}>
-              The institutional-grade trading ledger for PSX investors.
+              Not a journal. A system that fixes your trading behavior.
             </p>
             <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
               {[Twitter, Github, Linkedin].map((Icon, i) => (

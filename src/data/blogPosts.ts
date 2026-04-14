@@ -11,6 +11,46 @@ export interface BlogPost {
 
 const posts: BlogPost[] = [
   {
+    slug: "why-90-percent-traders-lose-money",
+    title: "Why 90% of Traders Lose Money: The Brutal Truth About Trading Psychology",
+    excerpt: "Understanding the psychological traps that cause 90% of traders to lose money - and how to avoid becoming another statistic.",
+    category: "Psychology",
+    date: "2026-04-10",
+    author: "PSX Ledger Team",
+    metaDescription: "90% of traders lose money. Learn why revenge trading, emotional decisions, and lack of discipline cause trading failures - and how to fix them.",
+    keywords: ["trading psychology", "why traders lose", "revenge trading", "emotional trading", "trading discipline"]
+  },
+  {
+    slug: "stop-revenge-trading-now",
+    title: "Stop Revenge Trading Now: How to Break the Cycle of Loss-Chasing",
+    excerpt: "Revenge trading is the #1 reason traders blow up their accounts. Learn the psychology behind it and practical strategies to stop it for good.",
+    category: "Psychology",
+    date: "2026-04-08",
+    author: "PSX Ledger Team",
+    metaDescription: "Revenge trading destroys more portfolios than bad analysis. Learn to recognize the signs and stop chasing losses with practical behavioral strategies.",
+    keywords: ["revenge trading", "stop loss chasing", "trading discipline", "emotional control", "loss recovery"]
+  },
+  {
+    slug: "behavioral-control-system-trading",
+    title: "Building a Behavioral Control System for Consistent Trading Profits",
+    excerpt: "Create a systematic approach to control your trading behavior. Rules, checklists, and accountability mechanisms to eliminate emotional decisions.",
+    category: "Strategy",
+    date: "2026-04-05",
+    author: "PSX Ledger Team",
+    metaDescription: "Build a behavioral control system for your trading. Pre-trade checklists, post-trade reviews, and accountability to eliminate emotional mistakes.",
+    keywords: ["behavioral control", "trading system", "trading rules", "accountability", "systematic trading"]
+  },
+  {
+    slug: "brutal-truth-dashboard",
+    title: "The Brutal Truth Dashboard: Why You Need Uncomfortable Trading Insights",
+    excerpt: "Comfortable dashboards lie to you. Learn why confronting uncomfortable truths about your trading behavior is the only path to improvement.",
+    category: "Psychology",
+    date: "2026-04-03",
+    author: "PSX Ledger Team",
+    metaDescription: "Why you need a brutal reality dashboard. Confronting uncomfortable truths about revenge trading, overtrading, and emotional decisions is essential for improvement.",
+    keywords: ["trading dashboard", "brutal truth", "trading analytics", "self-awareness", "trading improvement"]
+  },
+  {
     slug: "top-pakistani-fintech-companies-2026",
     title: "Top Pakistani Fintech Companies Driving the Digital Finance Revolution in 2026",
     excerpt: "Explore the leading fintech innovators transforming Pakistan's financial landscape with cutting-edge digital solutions for payments, lending, and investment.",

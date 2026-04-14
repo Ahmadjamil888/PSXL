@@ -5,6 +5,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { GuestProvider, useGuest } from "@/contexts/GuestContext";
+import { AIProvider } from "@/contexts/AIContext";
+import { DisciplineProvider } from "@/contexts/DisciplineContext";
+import { ChatProvider } from "@/contexts/ChatContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import { DynamicFavicon } from "@/components/DynamicFavicon";
 import AppLayout from "@/components/AppLayout";
@@ -85,7 +88,10 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <GuestProvider>
-              <Routes>
+              <AIProvider>
+                <DisciplineProvider>
+                  <ChatProvider>
+                    <Routes>
                 {/* Public pages */}
                 <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
                 <Route path="/about" element={<AboutPage />} />
@@ -109,14 +115,17 @@ const App = () => (
                 <Route path="/companies" element={<ProtectedRoute><Companies /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </GuestProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ChatProvider>
+            </DisciplineProvider>
+          </AIProvider>
+        </GuestProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </TooltipProvider>
+</ThemeProvider>
+</QueryClientProvider>
 );
 
 export default App;
