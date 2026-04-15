@@ -85,9 +85,9 @@ export interface AIAnalysisResponse {
 }
 
 /**
- * Call Gemini API for AI analysis
+ * Call Gemini API for AI analysis with streaming support
  */
-async function callGemini(prompt: string): Promise<string> {
+async function callGemini(prompt: string, onChunk?: (chunk: string) => void): Promise<string> {
   const client = getClient();
   if (!client) {
     throw new Error('Gemini API key not configured. Please set VITE_GEMINI_API_KEY environment variable.');
@@ -98,10 +98,54 @@ async function callGemini(prompt: string): Promise<string> {
       model: GEMINI_MODEL,
       contents: prompt,
     });
-    return response.text || '';
+    const text = response.text || '';
+    if (onChunk) {
+      onChunk(text);
+    }
+    return text;
   } catch (error) {
     console.error('Gemini API call failed:', error);
     throw error;
+  }
+}
+
+/**
+ * Call Gemini API with streaming
+ */
+export async function analyzeWithAIStreaming(
+  request: AIAnalysisRequest,
+  onChunk: (chunk: string) => void
+): Promise<AIAnalysisResponse> {
+  try {
+    const prompt = buildSystemPrompt(request);
+    const response = await callGemini(prompt, onChunk);
+
+    // Strip markdown formatting
+    const cleanResponse = stripMarkdown(response);
+
+    // Parse response for structured insights
+    const insights = {
+      portfolioImpact: extractSection(cleanResponse, 'portfolio impact', 'your holdings'),
+      behavioralInsight: extractSection(cleanResponse, 'behavioral', 'pattern', 'mistake'),
+      riskFactors: extractList(cleanResponse, 'risk', 'factor', 'watch'),
+      recommendations: extractList(cleanResponse, 'recommend', 'suggest', 'consider'),
+    };
+
+    const warnings = extractWarnings(cleanResponse);
+    const isUrgent = cleanResponse.toLowerCase().includes('urgent') || cleanResponse.toLowerCase().includes('immediately');
+
+    return {
+      message: cleanResponse,
+      insights: Object.fromEntries(Object.entries(insights).filter(([_, v]) => v !== null)),
+      warnings: warnings.length > 0 ? warnings : undefined,
+      isUrgent,
+    };
+  } catch (error) {
+    console.error('AI analysis failed:', error);
+    return {
+      message: 'I apologize, but I\'m having trouble connecting to the Gemini AI service right now. Please try again in a moment.',
+      isUrgent: false,
+    };
   }
 }
 
@@ -168,10 +212,87 @@ Rules: No buy/sell signals, no guarantees, cautious language only, focus on inte
     prompt += `User: ${userMessage}\n`;
   }
 
-  prompt += `Response: Concise (under 150 words), mentoring tone, cautious guidance.`;
+  prompt += `Response: Ultra-concise (under 100 words), plain text (no markdown), mentoring tone, cautious guidance. No bold formatting.`;
 
   return prompt;
 }
+
+/**
+ * Strip markdown formatting from text
+ */
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*/g, '')
+    .replace(/\*/g, '')
+    .replace(/__/g, '')
+    .replace(/_/g, '')
+    .replace(/#{1,6}\s/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/`{1,3}/g, '')
+    .trim();
+}
+
+/**
+ * Data Context Manager - maintains cached user data for AI
+ */
+class DataContextManager {
+  private cachedTrades: Trade[] = [];
+  private cachedHoldings: PortfolioHolding[] = [];
+  private lastSync: Date | null = null;
+  private syncInterval: number = 60000; // 1 minute
+  private syncTimer: NodeJS.Timeout | null = null;
+
+  /**
+   * Update cached data
+   */
+  updateData(trades: Trade[], holdings: PortfolioHolding[]) {
+    this.cachedTrades = trades;
+    this.cachedHoldings = holdings;
+    this.lastSync = new Date();
+  }
+
+  /**
+   * Get cached data
+   */
+  getData() {
+    return {
+      trades: this.cachedTrades,
+      holdings: this.cachedHoldings,
+      lastSync: this.lastSync,
+    };
+  }
+
+  /**
+   * Start automatic sync (for future implementation with data fetchers)
+   */
+  startAutoSync(fetchData: () => Promise<{ trades: Trade[]; holdings: PortfolioHolding[] }>) {
+    if (this.syncTimer) {
+      clearInterval(this.syncTimer);
+    }
+
+    this.syncTimer = setInterval(async () => {
+      try {
+        const data = await fetchData();
+        this.updateData(data.trades, data.holdings);
+      } catch (error) {
+        console.error('Auto sync failed:', error);
+      }
+    }, this.syncInterval);
+  }
+
+  /**
+   * Stop auto sync
+   */
+  stopAutoSync() {
+    if (this.syncTimer) {
+      clearInterval(this.syncTimer);
+      this.syncTimer = null;
+    }
+  }
+}
+
+// Global data context instance
+export const dataContext = new DataContextManager();
 
 /**
  * Analyze trading situation with AI
@@ -181,19 +302,22 @@ export async function analyzeWithAI(request: AIAnalysisRequest): Promise<AIAnaly
     const prompt = buildSystemPrompt(request);
     const response = await callGemini(prompt);
 
+    // Strip markdown formatting
+    const cleanResponse = stripMarkdown(response);
+
     // Parse response for structured insights
     const insights = {
-      portfolioImpact: extractSection(response, 'portfolio impact', 'your holdings'),
-      behavioralInsight: extractSection(response, 'behavioral', 'pattern', 'mistake'),
-      riskFactors: extractList(response, 'risk', 'factor', 'watch'),
-      recommendations: extractList(response, 'recommend', 'suggest', 'consider'),
+      portfolioImpact: extractSection(cleanResponse, 'portfolio impact', 'your holdings'),
+      behavioralInsight: extractSection(cleanResponse, 'behavioral', 'pattern', 'mistake'),
+      riskFactors: extractList(cleanResponse, 'risk', 'factor', 'watch'),
+      recommendations: extractList(cleanResponse, 'recommend', 'suggest', 'consider'),
     };
 
-    const warnings = extractWarnings(response);
-    const isUrgent = response.toLowerCase().includes('urgent') || response.toLowerCase().includes('immediately');
+    const warnings = extractWarnings(cleanResponse);
+    const isUrgent = cleanResponse.toLowerCase().includes('urgent') || cleanResponse.toLowerCase().includes('immediately');
 
     return {
-      message: response,
+      message: cleanResponse,
       insights: Object.fromEntries(Object.entries(insights).filter(([_, v]) => v !== null)),
       warnings: warnings.length > 0 ? warnings : undefined,
       isUrgent,
@@ -238,17 +362,97 @@ export async function getRuleViolationGuidance(
 }
 
 /**
- * Analyze news impact on portfolio
+ * Analyze news impact on portfolio with automatic recommendations
  */
 export async function analyzeNewsImpact(
   news: NewsItem[],
   holdings: PortfolioHolding[]
 ): Promise<AIAnalysisResponse> {
-  return analyzeWithAI({
-    context: 'during_market',
-    news,
-    holdings,
-  });
+  // Check if news is relevant to user's holdings
+  const userSymbols = holdings.map(h => h.symbol.toLowerCase());
+
+  // Build prompt with emphasis on actionability
+  const prompt = `You are an AI Co-Trader for PSX. Analyze news and provide actionable insights.
+
+User Holdings: ${holdings.map(h => `${h.symbol}(${h.qty} shares)`).join(', ')}
+
+Recent News:
+${news.slice(0, 3).map(n => `- ${n.title}: ${n.summary}`).join('\n')}
+
+Analyze if any news affects user's holdings. If news is negative for a holding, suggest reviewing position. If positive, note potential opportunity. Be specific about which companies are affected and why.
+
+Response: Ultra-concise (under 100 words), plain text (no markdown), actionable, specific to user's holdings.`;
+
+  try {
+    const response = await callGemini(prompt);
+    const cleanResponse = stripMarkdown(response);
+
+    // Extract action items
+    const actionItems = extractList(cleanResponse, 'sell', 'buy', 'review', 'consider', 'action');
+
+    const isUrgent = cleanResponse.toLowerCase().includes('urgent') ||
+                     cleanResponse.toLowerCase().includes('immediately') ||
+                     cleanResponse.toLowerCase().includes('sell');
+
+    return {
+      message: cleanResponse,
+      insights: {
+        recommendations: actionItems.length > 0 ? actionItems : undefined,
+      },
+      warnings: isUrgent ? [cleanResponse] : undefined,
+      isUrgent,
+    };
+  } catch (error) {
+    console.error('News analysis failed:', error);
+    return {
+      message: 'Unable to analyze news impact at this time.',
+      isUrgent: false,
+    };
+  }
+}
+
+/**
+ * Get automatic news alert for breaking news
+ */
+export async function getNewsAlert(
+  news: NewsItem[],
+  holdings: PortfolioHolding[]
+): Promise<{ message: string; isUrgent: boolean; affectedSymbols: string[] }> {
+  const userSymbols = holdings.map(h => h.symbol.toLowerCase());
+
+  const prompt = `Breaking news analysis for PSX trader.
+
+User Holdings: ${holdings.map(h => `${h.symbol}`).join(', ')}
+
+Breaking News:
+${news.slice(0, 2).map(n => `- ${n.title}: ${n.summary}`).join('\n')}
+
+Determine if this news is URGENT for the user. If news affects any of their holdings significantly, mark as urgent. Identify which specific companies are affected.
+
+Response: Ultra-concise (under 80 words), plain text. Start with URGENT: if urgent, INFO: if not.`;
+
+  try {
+    const response = await callGemini(prompt);
+    const cleanResponse = stripMarkdown(response);
+
+    const isUrgent = cleanResponse.toLowerCase().startsWith('urgent:');
+    const affectedSymbols = holdings
+      .filter(h => cleanResponse.toLowerCase().includes(h.symbol.toLowerCase()))
+      .map(h => h.symbol);
+
+    return {
+      message: cleanResponse,
+      isUrgent,
+      affectedSymbols,
+    };
+  } catch (error) {
+    console.error('News alert failed:', error);
+    return {
+      message: 'Unable to generate news alert.',
+      isUrgent: false,
+      affectedSymbols: [],
+    };
+  }
 }
 
 /**
