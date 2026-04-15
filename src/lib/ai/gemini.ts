@@ -1,28 +1,24 @@
 /**
- * Groq AI Service for PSX Ledger Pro
+ * Gemini AI Service for PSX Ledger Pro
  * Provides decision intelligence and behavioral coaching for PSX traders
- * 
+ *
  * IMPORTANT: This service does NOT provide trading signals.
  * It provides context, behavioral insights, and portfolio-aware analysis.
  */
 
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-const GROQ_MODEL = "llama-3.1-8b-instant";
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const GEMINI_MODEL = "gemini-2.0-flash-exp";
 
-let client: OpenAI | null = null;
+let client: GoogleGenerativeAI | null = null;
 
-function getClient(): OpenAI | null {
-  if (!GROQ_API_KEY) {
+function getClient(): GoogleGenerativeAI | null {
+  if (!GEMINI_API_KEY) {
     return null;
   }
   if (!client) {
-    client = new OpenAI({
-      apiKey: GROQ_API_KEY,
-      baseURL: "https://api.groq.com/openai/v1",
-      dangerouslyAllowBrowser: true,
-    });
+    client = new GoogleGenerativeAI(GEMINI_API_KEY);
   }
   return client;
 }
@@ -89,31 +85,20 @@ export interface AIAnalysisResponse {
 }
 
 /**
- * Call Groq API for AI analysis
+ * Call Gemini API for AI analysis
  */
 async function callGemini(prompt: string): Promise<string> {
   const client = getClient();
   if (!client) {
-    throw new Error('Groq API key not configured. Please set VITE_GROQ_API_KEY environment variable.');
+    throw new Error('Gemini API key not configured. Please set VITE_GEMINI_API_KEY environment variable.');
   }
 
   try {
-    const response = await client.chat.completions.create({
-      model: GROQ_MODEL,
-      messages: [
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 8192,
-      top_p: 0.95,
-    });
-
-    return response.choices[0].message.content || '';
+    const model = client.getGenerativeModel({ model: GEMINI_MODEL });
+    const result = await model.generateContent(prompt);
+    return result.response.text() || '';
   } catch (error) {
-    console.error('Groq API call failed:', error);
+    console.error('Gemini API call failed:', error);
     throw error;
   }
 }
@@ -214,7 +199,7 @@ export async function analyzeWithAI(request: AIAnalysisRequest): Promise<AIAnaly
   } catch (error) {
     console.error('AI analysis failed:', error);
     return {
-      message: 'I apologize, but I\'m having trouble connecting to the AI service right now. Please try again in a moment.',
+      message: 'I apologize, but I\'m having trouble connecting to the Gemini AI service right now. Please try again in a moment.',
       isUrgent: false,
     };
   }
