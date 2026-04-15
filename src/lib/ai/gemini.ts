@@ -6,19 +6,19 @@
  * It provides context, behavioral insights, and portfolio-aware analysis.
  */
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const GEMINI_MODEL = "gemini-3-flash-preview";
 
-let client: GoogleGenerativeAI | null = null;
+let client: GoogleGenAI | null = null;
 
-function getClient(): GoogleGenerativeAI | null {
+function getClient(): GoogleGenAI | null {
   if (!GEMINI_API_KEY) {
     return null;
   }
   if (!client) {
-    client = new GoogleGenerativeAI(GEMINI_API_KEY);
+    client = new GoogleGenAI({});
   }
   return client;
 }
@@ -94,9 +94,11 @@ async function callGemini(prompt: string): Promise<string> {
   }
 
   try {
-    const model = client.getGenerativeModel({ model: GEMINI_MODEL });
-    const result = await model.generateContent(prompt);
-    return result.response.text() || '';
+    const response = await client.models.generateContent({
+      model: GEMINI_MODEL,
+      contents: prompt,
+    });
+    return response.text || '';
   } catch (error) {
     console.error('Gemini API call failed:', error);
     throw error;
