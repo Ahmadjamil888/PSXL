@@ -125,89 +125,63 @@ async function callGemini(prompt: string): Promise<string> {
 function buildSystemPrompt(request: AIAnalysisRequest): string {
   const { trades, holdings, news, behavioralPatterns, context, userMessage } = request;
 
-  let prompt = `You are an AI Co-Trader for PSX (Pakistan Stock Exchange). Your role is DECISION INTELLIGENCE, NOT trading signals.
-
-CRITICAL RULES:
-1. NEVER give direct buy/sell signals like "Buy XYZ now" or "Sell ABC immediately"
-2. NEVER guarantee outcomes or profits
-3. ALWAYS use cautious language: "This may impact...", "Historically, this leads to...", "Consider reviewing..."
-4. Focus on interpretation, personalization, and behavioral correction
-5. You are a smart analyst + disciplined mentor + news interpreter
-
-Your expertise:
-- PSX-specific market dynamics
-- Pakistani economic factors
-- Behavioral finance patterns
-- Risk management principles
-- Market impact analysis
-
+  let prompt = `You are an AI Co-Trader for PSX. Role: DECISION INTELLIGENCE, NOT signals.
+Rules: No buy/sell signals, no guarantees, cautious language only, focus on interpretation and behavioral correction.
 `;
 
   // Add context
   if (context === 'morning') {
-    prompt += `CURRENT CONTEXT: Morning briefing. Provide today's risk factors and what to watch for.\n\n`;
+    prompt += `Context: Morning briefing. Today's risk factors.\n`;
   } else if (context === 'during_market') {
-    prompt += `CURRENT CONTEXT: During market hours. Alert to unusual activity or breaking news.\n\n`;
+    prompt += `Context: Market hours. Alert to unusual activity.\n`;
   } else if (context === 'after_market') {
-    prompt += `CURRENT CONTEXT: After market close. Review performance and behavioral patterns.\n\n`;
+    prompt += `Context: After close. Review performance and patterns.\n`;
   } else if (context === 'rule_violation') {
-    prompt += `CURRENT CONTEXT: Rule violation detected. Provide behavioral correction and guidance.\n\n`;
+    prompt += `Context: Rule violation. Provide behavioral correction.\n`;
   }
 
-  // Add portfolio data
+  // Add portfolio data (limit to top 5)
   if (holdings && holdings.length > 0) {
-    prompt += `USER'S CURRENT PORTFOLIO:\n`;
-    holdings.forEach(h => {
-      prompt += `- ${h.symbol}: ${h.qty} shares @ avg ${h.avgCost}, current ${h.currentPrice}, P/L: ${h.unrealizedPL > 0 ? '+' : ''}${h.unrealizedPL.toFixed(2)}\n`;
+    prompt += `Portfolio: `;
+    holdings.slice(0, 5).forEach(h => {
+      prompt += `${h.symbol}(${h.qty}@${h.avgCost},P/L:${h.unrealizedPL.toFixed(0)}) `;
     });
     prompt += `\n`;
   }
 
-  // Add recent trades
+  // Add recent trades (limit to 5)
   if (trades && trades.length > 0) {
-    prompt += `RECENT TRADES (last 10):\n`;
-    trades.slice(-10).forEach(t => {
-      prompt += `- ${t.date}: ${t.type} ${t.qty} ${t.symbol} @ ${t.rate}`;
-      if (t.pl !== null) prompt += ` (P/L: ${t.pl > 0 ? '+' : ''}${t.pl})`;
-      prompt += `\n`;
+    prompt += `Trades: `;
+    trades.slice(-5).forEach(t => {
+      prompt += `${t.type} ${t.qty} ${t.symbol} @ ${t.rate} `;
     });
     prompt += `\n`;
   }
 
   // Add behavioral patterns
   if (behavioralPatterns) {
-    prompt += `BEHAVIORAL PATTERNS DETECTED:\n`;
-    if (behavioralPatterns.revengeTrading) prompt += `- Revenge trading: YES (trading after losses)\n`;
-    if (behavioralPatterns.overtrading) prompt += `- Overtrading: YES (excessive trading frequency)\n`;
-    if (behavioralPatterns.emotionalDecisions) prompt += `- Emotional decisions: YES\n`;
-    prompt += `- Risk management: ${behavioralPatterns.riskManagement.toUpperCase()}\n`;
-    prompt += `\n`;
+    const patterns = [];
+    if (behavioralPatterns.revengeTrading) patterns.push('revenge trading');
+    if (behavioralPatterns.overtrading) patterns.push('overtrading');
+    if (behavioralPatterns.emotionalDecisions) patterns.push('emotional');
+    if (patterns.length > 0) prompt += `Patterns: ${patterns.join(', ')}. Risk: ${behavioralPatterns.riskManagement}\n`;
   }
 
-  // Add news
+  // Add news (limit to 2)
   if (news && news.length > 0) {
-    prompt += `RELEVANT NEWS:\n`;
-    news.forEach(n => {
-      prompt += `- ${n.title}\n  ${n.summary}\n  Source: ${n.source}, Date: ${n.date}\n`;
-      if (n.sectors) prompt += `  Sectors: ${n.sectors.join(', ')}\n`;
-      if (n.companies) prompt += `  Companies: ${n.companies.join(', ')}\n`;
+    prompt += `News: `;
+    news.slice(0, 2).forEach(n => {
+      prompt += `${n.title} `;
     });
     prompt += `\n`;
   }
 
   // Add user message
   if (userMessage) {
-    prompt += `USER MESSAGE: ${userMessage}\n\n`;
+    prompt += `User: ${userMessage}\n`;
   }
 
-  prompt += `Provide a helpful, personalized response that:
-1. Interprets the situation clearly
-2. Connects news/market events to their portfolio if relevant
-3. Addresses behavioral patterns if they exist
-4. Offers actionable but cautious guidance
-5. Uses the "Why this matters to YOU" approach
-
-Keep responses concise (under 200 words), direct, and mentoring in tone. Avoid jargon where possible.`;
+  prompt += `Response: Concise (under 150 words), mentoring tone, cautious guidance.`;
 
   return prompt;
 }

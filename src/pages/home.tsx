@@ -1293,7 +1293,6 @@ export default function Landing() {
         <FAQ/>
         <CTA/>
       </main>
-      <Ticker/>
     </div>
   );
 }

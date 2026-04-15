@@ -93,7 +93,7 @@ const App = () => (
                   <ChatProvider>
                     <Routes>
                 {/* Public pages */}
-                <Route path="/" element={<Landing />} />
+                <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
                 <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
                 <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
                 <Route path="/privacy" element={<PublicLayout><PrivacyPage /></PublicLayout>} />
