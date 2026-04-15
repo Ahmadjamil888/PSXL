@@ -18,7 +18,7 @@ function getClient(): GoogleGenAI | null {
     return null;
   }
   if (!client) {
-    client = new GoogleGenAI({});
+    client = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   }
   return client;
 }
