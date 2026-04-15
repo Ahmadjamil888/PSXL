@@ -94,17 +94,17 @@ const App = () => (
                     <Routes>
                 {/* Public pages */}
                 <Route path="/" element={<Landing />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/privacy" element={<PrivacyPage />} />
-                <Route path="/terms" element={<TermsPage />} />
-                <Route path="/disclaimer" element={<DisclaimerPage />} />
-                <Route path="/features" element={<FeaturesPage />} />
-                <Route path="/security" element={<SecurityPage />} />
-                <Route path="/careers" element={<CareersPage />} />
-                <Route path="/analytics-info" element={<AnalyticsInfoPage />} />
-                <Route path="/blog" element={<BlogPage />} />
-                <Route path="/blog/:slug" element={<BlogPostPage />} />
+                <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
+                <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
+                <Route path="/privacy" element={<PublicLayout><PrivacyPage /></PublicLayout>} />
+                <Route path="/terms" element={<PublicLayout><TermsPage /></PublicLayout>} />
+                <Route path="/disclaimer" element={<PublicLayout><DisclaimerPage /></PublicLayout>} />
+                <Route path="/features" element={<PublicLayout><FeaturesPage /></PublicLayout>} />
+                <Route path="/security" element={<PublicLayout><SecurityPage /></PublicLayout>} />
+                <Route path="/careers" element={<PublicLayout><CareersPage /></PublicLayout>} />
+                <Route path="/analytics-info" element={<PublicLayout><AnalyticsInfoPage /></PublicLayout>} />
+                <Route path="/blog" element={<PublicLayout><BlogPage /></PublicLayout>} />
+                <Route path="/blog/:slug" element={<PublicLayout><BlogPostPage /></PublicLayout>} />
                 {/* Auth */}
                 <Route path="/auth" element={<AuthRoute />} />
                 <Route path="/auth/callback" element={<AuthPage />} />
