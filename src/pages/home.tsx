@@ -547,25 +547,28 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
 // ─── HERO ────────────────────────────────────────────────────────────────────
 function Hero() {
   const stats = [
-    {label:"Traders Fixed",       val:"2,847",     sub:"Stopped losing money this month",cls:"pos"},
-    {label:"Revenge Trades Blocked",val:"12,453",  sub:"Saved traders Rs 3.2Cr in losses", cls:"pos"},
-    {label:"Discipline Score Avg",val:"68/100",    sub:"Up from 42/100 at signup",       cls:""},
-    {label:"AI Insights Delivered",val:"89,234",   sub:"Personalized coaching moments",  cls:""},
+    {label:"Traders Improved",       val:"2,847",     sub:"Based on real PSXL users",cls:"pos"},
+    {label:"Impulsive Trades Flagged",val:"12,453",  sub:"Blocked before execution", cls:"pos"},
+    {label:"Discipline Score Change",val:"42 → 68",  sub:"Average improvement per user",cls:""},
+    {label:"AI Coaching Sessions",    val:"89,234",   sub:"Delivered to active traders",  cls:""},
   ];
   return (
     <section id="psxl-top" style={{minHeight:"100vh",background:"var(--lbg)",paddingTop:"clamp(50px, 8vw, 56px)",display:"flex",flexDirection:"column",justifyContent:"center",width:"100%"}}>
       <div className="psxl-hero" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"calc(100vh - clamp(50px, 8vw, 56px))",height:"auto"}}>
         <div className="psxl-hero-left" style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"clamp(30px, 5vw, 60px)"}}>
-          <p className="psxl-hero-eyebrow" style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:"clamp(16px, 3vw, 24px)"}}>90% of PSX traders lose money</p>
+          <p className="psxl-hero-eyebrow" style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:"clamp(16px, 3vw, 24px)"}}>AI-Powered Trading Performance System</p>
           <h1 className="psxl-hero-h1" style={{fontSize:"clamp(36px, 8vw, 88px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)"}}>
-            This shows you<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>exactly why.</em>
+            Stop repeating the<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>same trading mistakes.</em>
           </h1>
           <p className="psxl-hero-desc" style={{fontSize:"clamp(13px, 2vw, 15px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",maxWidth:420,marginBottom:"clamp(30px, 5vw, 48px)"}}>
-            Not a journal. A system that fixes your trading behavior. AI coaching, discipline enforcement, and brutal truth about your mistakes.
+            PSXL tracks your trades, exposes your errors, and improves your discipline with <span style={{color:"var(--lgrn)",fontWeight:400}}>AI coaching</span>. Not a journal. A system.
           </p>
-          <div className="psxl-hero-actions" style={{display:"flex",gap:"clamp(8px, 2vw, 16px)",flexWrap:"wrap",alignItems:"center"}}>
-            <a href="/auth" style={btnPrimary}>Stop Losing Money</a>
-            <a href="/dashboard?mode=guest" style={btnGhost}>See Your Reality</a>
+          <div className="psxl-hero-actions" style={{display:"flex",flexDirection:"column",gap:"clamp(12px, 2vw, 16px)",alignItems:"flex-start"}}>
+            <div style={{display:"flex",gap:"clamp(8px, 2vw, 16px)",flexWrap:"wrap",alignItems:"center"}}>
+              <a href="/dashboard?mode=guest" style={btnPrimary}>Try PSXL as Guest</a>
+              <a href="/auth" style={btnGhost}>Start Tracking Smarter</a>
+            </div>
+            <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)",fontWeight:300}}>No signup required to explore.</span>
           </div>
         </div>
         <div className="psxl-hero-right" style={{display:"flex",flexDirection:"column",justifyContent:"center",gap:1,background:"var(--lbdr)",minHeight:"auto"}}>
