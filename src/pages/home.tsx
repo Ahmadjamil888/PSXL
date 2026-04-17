@@ -412,9 +412,35 @@ const SectionDesc = ({ children, maxWidth = 480 }: { children: React.ReactNode; 
   <p style={{ fontSize: "clamp(13px, 2vw, 15px)", fontWeight: 300, lineHeight: 1.7, color: "var(--ltx2)", maxWidth, marginTop: "clamp(12px, 2vw, 24px)" }}>{children}</p>
 );
 
+const FeatureCard = ({ f }: { f: Feature }) => (
+  <div style={{
+    background: "var(--lbg)",
+    padding: "clamp(24px, 4vw, 40px)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "clamp(12px, 2vw, 20px)",
+    height: "100%"
+  }}>
+    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+      <div style={{ width: 48, height: 48, background: "var(--lsrf)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--lgrn)" }}>
+        {f.icon}
+      </div>
+      <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", fontWeight: 500, letterSpacing: "0.1em", color: "var(--ltx3)", textTransform: "uppercase" }}>{f.num}</span>
+    </div>
+    <div>
+      <h3 style={{ fontSize: "clamp(16px, 2.5vw, 20px)", fontWeight: 600, color: "var(--ltx)", marginBottom: "clamp(8px, 1.5vw, 12px)", lineHeight: 1.3 }}>{f.title}</h3>
+      <p style={{ fontSize: "clamp(12px, 1.8vw, 14px)", fontWeight: 300, lineHeight: 1.6, color: "var(--ltx2)" }}>{f.body}</p>
+    </div>
+    <div style={{ marginTop: "auto", paddingTop: "clamp(12px, 2vw, 16px)", borderTop: "1px solid var(--lbdr)" }}>
+      <span style={{ fontSize: "clamp(9px, 1.5vw, 10px)", fontWeight: 500, letterSpacing: "0.1em", color: "var(--lgrn)", textTransform: "uppercase" }}>{f.tag}</span>
+    </div>
+  </div>
+);
+
 // ─── TICKER ──────────────────────────────────────────────────────────────────
 function Ticker() {
   const { items, isLive } = useLiveTicker();
+  // ... (rest of the code remains the same)
   return (
     <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, minHeight: "clamp(28px, 5vw, 36px)", paddingBottom: "env(safe-area-inset-bottom, 0px)", background: "var(--lbg)", borderTop: "1px solid var(--lbdr)", display: "flex", alignItems: "center", overflow: "hidden", zIndex: 50 }}>
       {isLive && (
