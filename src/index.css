@@ -6,108 +6,20 @@
 
 @layer base {
   :root {
-    /* Light theme - Semantic Colors */
+    /* Force Dark Mode Only */
+    /* Semantic Colors */
     --success: #a3c45a;
-    --success-light: rgba(163, 196, 90, 0.12);
+    --success-light: rgba(163, 196, 90, 0.15);
     --danger: #ef4444;
-    --danger-light: rgba(239, 68, 68, 0.12);
-    --warning: #D97706;
-    --warning-light: rgba(217, 119, 6, 0.12);
-    --info: #2563EB;
-    --info-light: rgba(37, 99, 235, 0.12);
+    --danger-light: rgba(239, 68, 68, 0.15);
+    --warning: #F59E0B;
+    --warning-light: rgba(245, 158, 11, 0.15);
+    --info: #3B82F6;
+    --info-light: rgba(59, 130, 246, 0.15);
     --primary: #a3c45a;
     --primary-hover: #8db84a;
     --primary-active: #7aa042;
     
-    /* Light theme colors */
-    --bg-canvas: #ffffff;
-    --bg-card: #ffffff;
-    --bg-card-hover: #f5f5f5;
-    --bg-input: #f5f5f5;
-    --border-default: #e0e0e0;
-    --border-hover: #d0d0d0;
-    --text-primary: #000000;
-    --text-secondary: #555555;
-    --text-tertiary: #999999;
-    --text-disabled: #999999;
-    
-    /* Legacy compatibility - light */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
-    --bg: #ffffff;
-    --bg2: #f5f5f5;
-    --bg3: #eeeeee;
-    --surface: #ffffff;
-    --chrome-bg: #ffffff;
-    --border: #e0e0e0;
-    --border2: #d0d0d0;
-    --text: #000000;
-    --text2: #555555;
-    --text3: #999999;
-    --green: #a3c45a;
-    --red: #ef4444;
-
-    --card: 0 0% 98%;
-    --card-foreground: 0 0% 0%;
-
-    --popover: 0 0% 97%;
-    --popover-foreground: 0 0% 0%;
-
-    --primary: 80 43% 56%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 0%;
-
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 40%;
-
-    --accent: 0 0% 95%;
-    --accent-foreground: 0 0% 0%;
-
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 100%;
-
-    --profit: 80 43% 56%;
-    --profit-foreground: 0 0% 100%;
-    --loss: 0 70% 50%;
-    --loss-foreground: 0 0% 100%;
-
-    --input: 0 0% 92%;
-    --ring: 80 43% 56%;
-
-    --radius: 0.75rem;
-
-    --glass: 0 0% 98% / 0.6;
-    --glass-border: 0 0% 88%;
-    --glass-highlight: 0 0% 0% / 0.05;
-
-    --sidebar-background: 0 0% 99%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 80 43% 56%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 94%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 80 43% 56%;
-
-    --chart-1: 80 43% 56%;
-    --chart-2: 0 0% 40%;
-    --chart-3: 0 0% 60%;
-    --chart-4: 0 0% 20%;
-    --chart-5: 0 70% 50%;
-
-    /* Non–P&L chart series (structure / activity) */
-    --chart-line: #64748b;
-    --chart-line-muted: rgba(100, 116, 139, 0.2);
-    --chart-volume: rgba(15, 23, 42, 0.14);
-    --chart-slice-a: #a3c45a;
-    --chart-slice-b: #cbd5e1;
-    --nav-accent: rgba(15, 23, 42, 0.88);
-  }
-
-  .dark {
-    /* Enhanced dark theme with new design system */
     /* Background Hierarchy */
     --bg-canvas: #0A0A0A;
     --bg-card: #1A1A1A;
@@ -122,38 +34,13 @@
     --text-tertiary: #737373;
     --text-disabled: #525252;
     
-    /* Semantic Colors */
-    --primary: #a3c45a;
-    --primary-hover: #8db84a;
-    --primary-active: #7aa042;
-    --success: #a3c45a;
-    --success-light: rgba(163, 196, 90, 0.15);
-    --danger: #ef4444;
-    --danger-light: rgba(239, 68, 68, 0.15);
-    --warning: #F59E0B;
-    --warning-light: rgba(245, 158, 11, 0.15);
-    --info: #3B82F6;
-    --info-light: rgba(59, 130, 246, 0.15);
-    
     /* Chart Colors */
-    --chart-portfolio: #10B981;
+    --chart-portfolio: #a3c45a;
     --chart-benchmark: #3B82F6;
     --chart-cash: #F59E0B;
     --chart-stocks: #8B5CF6;
     --chart-bonds: #EC4899;
     --chart-commodities: #14B8A6;
-    
-    /* Legacy compatibility - Dark */
-    --bg-base: #0A0A0A;
-    --bg-card: #1A1A1A;
-    --bg-input: #141414;
-    --border-subtle: rgba(255, 255, 255, 0.06);
-    --border-strong: rgba(255, 255, 255, 0.12);
-    --text-primary: #ffffff;
-    --text-muted: #A3A3A3;
-    --text-dim: #737373;
-    --accent: #a3c45a;
-    --accent-hover: #8db84a;
     
     /* Legacy compatibility */
     --background: 0 0% 4%;

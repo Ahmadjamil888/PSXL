@@ -3,7 +3,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LayoutDashboard, BookOpen, BarChart3, LogOut, Settings, User, ChevronLeft, ChevronRight, Brain, Calendar, Wallet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
-import ThemeToggle from "@/components/ThemeToggle";
 import { useState, useEffect } from "react";
 import { useTrades, getTradeStats } from "@/hooks/useTrades";
 import { formatCurrency } from "@/lib/psx";
@@ -146,11 +145,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
 
               {/* Dark Mode Toggle */}
-              <div className="mb-3">
-                <ThemeToggle />
-              </div>
-
-              {/* User Section */}
               <div
                 className="px-3 py-2.5 mb-3 flex items-center gap-3"
                 style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)" }}

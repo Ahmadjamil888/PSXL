@@ -8,7 +8,6 @@ import { GuestProvider, useGuest } from "@/contexts/GuestContext";
 import { AIProvider } from "@/contexts/AIContext";
 import { DisciplineProvider } from "@/contexts/DisciplineContext";
 import { ChatProvider } from "@/contexts/ChatContext";
-import { ThemeProvider } from "@/components/theme-provider";
 import { DynamicFavicon } from "@/components/DynamicFavicon";
 import AppLayout from "@/components/AppLayout";
 import PublicLayout from "@/components/PublicLayout";
@@ -82,17 +81,16 @@ function AuthRoute() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="psx-theme">
-      <DynamicFavicon />
-      <TooltipProvider>
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <GuestProvider>
-              <AIProvider>
-                <DisciplineProvider>
-                  <ChatProvider>
-                    <Routes>
+    <DynamicFavicon />
+    <TooltipProvider>
+      <Sonner />
+      <BrowserRouter>
+        <AuthProvider>
+          <GuestProvider>
+            <AIProvider>
+              <DisciplineProvider>
+                <ChatProvider>
+                  <Routes>
                 {/* Public pages */}
                 <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
                 <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
@@ -126,7 +124,6 @@ const App = () => (
       </AuthProvider>
     </BrowserRouter>
   </TooltipProvider>
-</ThemeProvider>
 </QueryClientProvider>
 );
 

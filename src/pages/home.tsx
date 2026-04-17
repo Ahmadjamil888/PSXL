@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useTheme } from "@/components/theme-provider";
 import { useLiveTicker } from "@/hooks/useLiveTicker";
 import { getSortedPosts, formatDate } from "@/data/blogPosts";
-
-// ─── TYPES ───────────────────────────────────────────────────────────────────
-type Theme = "dark" | "light";
 
 const ff = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
@@ -81,9 +77,9 @@ const IconClock    = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18
 const IconLock     = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="8" width="12" height="8" rx="1"/><path d="M6 8 L6 5 C6 3.3 7.3 2 9 2 C10.7 2 12 3.3 12 5 L12 8"/></svg>);
 const IconInfoSec  = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="9" r="7"/><line x1="9" y1="6" x2="9" y2="9"/><line x1="9" y1="12" x2="9" y2="12.5" strokeWidth="2"/></svg>);
 
-const LogoImg = ({ theme, height = 32 }: { theme: Theme; height?: number }) => (
+const LogoImg = ({ height = 32 }: { height?: number }) => (
   <img
-    src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
+    src="/logo-dark.png"
     alt="PSX Ledger Pro"
     style={{ height: `${height}px`, width: "auto", display: "block" }}
   />
@@ -223,14 +219,7 @@ const SCOPED_CSS = `
     margin: 0;
     padding: 0;
 
-    /* light defaults */
-    --lbg:  #ffffff; --lbg2: #f5f5f5; --lbg3: #eeeeee;
-    --lsrf: #ffffff; --lbdr: rgba(0,0,0,0.08); --lbdr2:rgba(0,0,0,0.16);
-    --ltx:  #000000; --ltx2: #555555; --ltx3: #999999;
-    --lgrn: #a3c45a; --lgrnD:#8db84a; --lred: #dc2626;
-  }
-
-  .dark .psxl-root, [data-theme="dark"] .psxl-root, .psxl-root.dark {
+    /* Force Dark Mode Only */
     --lbg:  #000000; --lbg2: #0a0a0a; --lbg3: #141414;
     --lsrf: #1a1a1a; --lbdr: rgba(255,255,255,0.08); --lbdr2:rgba(255,255,255,0.16);
     --ltx:  #ffffff; --ltx2: #999999; --ltx3: #555555;
@@ -445,7 +434,7 @@ function Ticker() {
 }
 
 // ─── NAV ─────────────────────────────────────────────────────────────────────
-function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
+function Nav() {
   const [open, setOpen] = useState(false);
 
   return (
@@ -462,7 +451,7 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
       
       {/* Logo */}
       <a href="#psxl-top" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-        <LogoImg theme={theme} height={32} />
+        <LogoImg height={32} />
       </a>
 
       {/* Desktop Links */}
@@ -479,18 +468,6 @@ function Nav({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
       {/* Right Side */}
       <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 2vw, 16px)" }}>
         
-        {/* Theme toggle */}
-        <div onClick={onToggle} style={{
-          width: 44, height: 24, background: "var(--lbg3)", border: "1px solid var(--lbdr2)",
-          borderRadius: 12, cursor: "pointer", position: "relative", display: "flex", alignItems: "center", padding: "0 4px"
-        }}>
-          <div style={{
-            width: 16, height: 16, borderRadius: "50%", background: "var(--lgrn)",
-            transform: theme === "dark" ? "translateX(0)" : "translateX(20px)",
-            transition: "transform 0.2s ease"
-          }}/>
-        </div>
-
         {/* Get Started Button - Desktop */}
         <a href="/auth" style={{...btnPrimary, padding: "clamp(10px, 1.5vw, 14px) clamp(16px, 2vw, 24px)", fontSize: "clamp(9px, 1.5vw, 11px)"}} className="psxl-nav-cta">
           Get Started
@@ -1143,7 +1120,7 @@ function Footer({ theme }: { theme: Theme }) {
       <div className="psxl-footer-grid" style={{display:"grid",gridTemplateColumns:"clamp(200px, 25%, 240px) 1fr",gap:"clamp(40px, 6vw, 80px)",paddingBottom:"clamp(30px, 5vw, 48px)",borderBottom:"1px solid var(--lbdr)",marginBottom:"clamp(24px, 4vw, 40px)",width:"100%"}}>
         <div>
           <a href="/" style={{marginBottom:16,display:"flex",alignItems:"center",textDecoration:"none"}}>
-            <LogoImg theme={theme} height={36}/>
+            <LogoImg height={36}/>
           </a>
           <p style={{fontSize:"clamp(11px, 1.6vw, 12px)",fontWeight:300,color:"var(--ltx3)",lineHeight:1.6}}>The institutional-grade trading ledger built exclusively for PSX investors. Record, analyse, and report your equity positions with the clarity of a professional desk.</p>
         </div>
@@ -1307,10 +1284,8 @@ function Blogs() {
 
 // ─── LANDING PAGE ─────────────────────────────────────────────────────────────
 export default function Landing() {
-  const { theme } = useTheme();
-  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
   return (
-    <div className={`psxl-root${isDark ? " dark" : ""}`} style={{fontFamily:ff,overflowX:"hidden",width:"100%",margin:0,padding:0}}>
+    <div className="psxl-root" style={{fontFamily:ff,overflowX:"hidden",width:"100%",margin:0,padding:0}}>
       <style>{SCOPED_CSS}</style>
       <main style={{width:"100%",margin:0,padding:0}}>
         <Hero/>
