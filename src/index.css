@@ -20,30 +20,30 @@
     --primary-active: #166534;
     
     /* Light theme colors */
-    --bg-canvas: #f8f9fa;
+    --bg-canvas: #ffffff;
     --bg-card: #ffffff;
-    --bg-card-hover: #f1f3f4;
-    --bg-input: #f1f3f4;
-    --border-default: rgba(0, 0, 0, 0.12);
-    --border-hover: rgba(0, 0, 0, 0.2);
+    --bg-card-hover: #f8f9fa;
+    --bg-input: #f8f9fa;
+    --border-default: rgba(0, 0, 0, 0.08);
+    --border-hover: rgba(0, 0, 0, 0.15);
     --text-primary: #1a1a1a;
-    --text-secondary: #4b5563;
+    --text-secondary: #374151;
     --text-tertiary: #6b7280;
     --text-disabled: #9ca3af;
     
     /* Legacy compatibility - light */
-    --background: 0 0% 97%;
+    --background: 0 0% 100%;
     --foreground: 0 0% 10%;
     --bg: #ffffff;
-    --bg2: #f5f5f5;
-    --bg3: #eeeeee;
+    --bg2: #f8f9fa;
+    --bg3: #f1f3f4;
     --surface: #ffffff;
     --chrome-bg: #ffffff;
     --border: rgba(0, 0, 0, 0.08);
-    --border2: rgba(0, 0, 0, 0.16);
+    --border2: rgba(0, 0, 0, 0.12);
     --text: #1a1a1a;
-    --text2: #666666;
-    --text3: #999999;
+    --text2: #374151;
+    --text3: #6b7280;
     --green: #16A34A;
     --red: #DC2626;
 
@@ -393,7 +393,7 @@
   
   /* Card styles */
   .card-elevated {
-    background: linear-gradient(135deg, var(--bg-card, #1A1A1A) 0%, #141414 100%);
+    background: var(--bg-card, #1A1A1A);
     border: 1px solid var(--border-default, #2A2A2A);
     border-radius: 12px;
     padding: 24px;
@@ -802,7 +802,7 @@ img {
 }
 
 .dashboard-app .stat-card {
-  background: linear-gradient(135deg, var(--bg-card, #1A1A1A) 0%, #141414 100%);
+  background: var(--bg-card, #1A1A1A);
   border: 1px solid var(--border-default, var(--border));
   border-radius: var(--dash-radius);
   padding: 24px;

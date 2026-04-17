@@ -89,14 +89,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 p-4 space-y-1 overflow-hidden">
+            <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.to;
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all relative"
+                    className="flex items-center gap-3 px-3 py-2.5 text-xs font-medium transition-all relative"
                     style={{
                       color: isActive ? "var(--nav-accent)" : "var(--text2)",
                       background: isActive ? "var(--surface)" : "transparent",
@@ -115,7 +115,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       }
                     }}
                   >
-                    <item.icon className="w-5 h-5 relative z-10" />
+                    <item.icon className="w-4 h-4 relative z-10" />
                     <span className="relative z-10">{item.label}</span>
                     {isActive && (
                       <motion.div
@@ -131,12 +131,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </nav>
 
             {/* Account Balance */}
-            <div className="p-4" style={{ borderTop: "1px solid var(--border)" }}>
+            <div className="p-3" style={{ borderTop: "1px solid var(--border)" }}>
               <div
-                className="px-4 py-3 mb-3 flex items-center gap-3"
+                className="px-3 py-2.5 mb-3 flex items-center gap-3"
                 style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)" }}
               >
-                <Wallet className="w-5 h-5" style={{ color: "var(--green)" }} />
+                <Wallet className="w-4 h-4" style={{ color: "var(--green)" }} />
                 <div className="flex-1">
                   <p className="text-xs" style={{ color: "var(--text-muted)" }}>Account Balance</p>
                   <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
@@ -152,19 +152,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
               {/* User Section */}
               <div
-                className="px-4 py-3 mb-3 flex items-center gap-3"
+                className="px-3 py-2.5 mb-3 flex items-center gap-3"
                 style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)" }}
               >
                 {profilePicture ? (
                   <img
                     src={profilePicture}
                     alt="Profile"
-                    className="w-10 h-10 object-cover"
+                    className="w-8 h-8 object-cover"
                     style={{ borderRadius: "50%", border: "2px solid var(--accent)" }}
                   />
                 ) : (
                   <div
-                    className="w-10 h-10 flex items-center justify-center text-sm font-medium"
+                    className="w-8 h-8 flex items-center justify-center text-xs font-medium"
                     style={{
                       background: "var(--accent)",
                       color: "#000",
@@ -176,19 +176,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 )}
                 <div className="flex-1 min-w-0">
                   <p
-                    className="truncate text-sm font-medium"
+                    className="truncate text-xs font-medium"
                     style={{ color: "var(--text-primary)", fontFamily: "var(--font-main)" }}
                   >
                     {user?.email?.split("@")[0] || "User"}
                   </p>
-                  <p className="truncate text-xs" style={{ color: "var(--text-muted)" }}>
+                  <p className="truncate text-[10px]" style={{ color: "var(--text-muted)" }}>
                     {user?.email || ""}
                   </p>
                 </div>
               </div>
               <button
                 onClick={signOut}
-                className="flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all w-full"
+                className="flex items-center gap-2 px-3 py-2.5 text-xs font-medium transition-all w-full"
                 style={{
                   color: "var(--text-muted)",
                   background: "transparent",
@@ -208,7 +208,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   e.currentTarget.style.borderColor = "var(--border-subtle)";
                 }}
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
                 Sign Out
               </button>
             </div>
