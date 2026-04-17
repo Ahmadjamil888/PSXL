@@ -1108,7 +1108,7 @@ function CTA() {
 }
 
 // ─── FOOTER ──────────────────────────────────────────────────────────────────
-function Footer({ theme }: { theme: Theme }) {
+function Footer() {
   const cols=[
     {title:"Product",   links:[{label:"Features",href:"#psxl-features"},{label:"How It Works",href:"#psxl-how"},{label:"Security",href:"#psxl-security"}]},
     {title:"Resources", links:[{label:"Documentation",href:"/docs"},{label:"CSV Templates",href:"/templates"},{label:"Tax Guide",href:"/tax-guide"},{label:"FAQ",href:"#psxl-faq"}]},
