@@ -11,18 +11,24 @@ const btnPrimary: React.CSSProperties = {
   justifyContent: "center",
   fontFamily: ff,
   fontSize: "clamp(10px, 2vw, 11px)",
-  fontWeight: 500,
+  fontWeight: 600,
   letterSpacing: "0.12em",
   textTransform: "uppercase",
   color: "#000",
   background: "var(--lgrn)",
   border: "none",
-  padding: "clamp(12px, 2vw, 14px) clamp(20px, 4vw, 28px)",
+  padding: "clamp(14px, 2vw, 16px) clamp(24px, 4vw, 32px)",
   textDecoration: "none",
   cursor: "pointer",
   whiteSpace: "nowrap",
   borderRadius: "2px",
   transition: "all 0.2s ease",
+  boxShadow: "0 0 0 rgba(163, 202, 87, 0)",
+};
+
+const btnPrimaryHover: React.CSSProperties = {
+  boxShadow: "0 0 20px rgba(163, 202, 87, 0.35)",
+  transform: "translateY(-1px)",
 };
 
 const btnGhost: React.CSSProperties = {
@@ -36,7 +42,7 @@ const btnGhost: React.CSSProperties = {
   textTransform: "uppercase",
   color: "var(--ltx)",
   background: "transparent",
-  border: "1px solid var(--lbdr2)",
+  border: "1px solid rgba(255,255,255,0.15)",
   padding: "clamp(12px, 2vw, 14px) clamp(20px, 4vw, 28px)",
   textDecoration: "none",
   cursor: "pointer",
@@ -468,8 +474,11 @@ function Nav() {
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
       minHeight: "clamp(50px, 8vw, 56px)", display: "flex", alignItems: "center",
       justifyContent: "space-between",
-      paddingLeft: "max(clamp(12px, 3vw, 20px), env(safe-area-inset-left, 0px))",
-      paddingRight: "max(clamp(12px, 3vw, 20px), env(safe-area-inset-right, 0px))",
+      maxWidth: "1280px",
+      marginLeft: "auto",
+      marginRight: "auto",
+      paddingLeft: "32px",
+      paddingRight: "32px",
       paddingTop: "max(0px, env(safe-area-inset-top, 0px))",
       paddingBottom: 0,
       borderBottom: "1px solid var(--lbdr)", background: "var(--lbg)"
@@ -495,9 +504,7 @@ function Nav() {
       <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 2vw, 16px)" }}>
         
         {/* Get Started Button - Desktop */}
-        <a href="/auth" style={{...btnPrimary, padding: "clamp(10px, 1.5vw, 14px) clamp(16px, 2vw, 24px)", fontSize: "clamp(9px, 1.5vw, 11px)"}} className="psxl-nav-cta">
-          Get Started
-        </a>
+        <a href="/auth" style={{...btnPrimary, "&:hover": btnPrimaryHover}} onMouseEnter={(e) => Object.assign(e.currentTarget.style, btnPrimaryHover)} onMouseLeave={(e) => e.currentTarget.style.boxShadow = "0 0 0 rgba(163, 202, 87, 0)"}>Get Started</a>
 
         {/* Hamburger */}
         <div
@@ -585,7 +592,7 @@ function Hero() {
           marginBottom: "clamp(12px, 2vw, 24px)",
           textAlign: "left"
         }}>
-          The Professional<br/>PSX Trading Ledger
+          Professional Trading Ledger<br/>for PSX Investors
         </h1>
         <p className="psxl-hero-desc" style={{
           fontSize: "clamp(13px, 2vw, 16px)",
@@ -599,11 +606,11 @@ function Hero() {
           Track every trade, calculate P&L automatically, and generate FBR-compliant tax reports. Built for Pakistan Stock Exchange investors.
         </p>
         <div className="psxl-hero-actions" style={{ display: "flex", gap: "clamp(12px, 2vw, 16px)", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-start" }}>
-          <a href="/auth" style={btnPrimary}>Get Started Free</a>
+          <a href="/auth" style={{...btnPrimary, "&:hover": btnPrimaryHover}} onMouseEnter={(e) => Object.assign(e.currentTarget.style, btnPrimaryHover)} onMouseLeave={(e) => e.currentTarget.style.boxShadow = "0 0 0 rgba(163, 202, 87, 0)"}>Get Started Free</a>
           <a href="#psxl-features" style={btnGhost}>View Features</a>
         </div>
         <Divider />
-        <div style={{ display: "flex", gap: "clamp(16px, 3vw, 24px)", flexWrap: "wrap", justifyContent: "flex-start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(16px, 3vw, 24px)", width: "100%" }}>
           {stats.map((s, i) => (
             <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4, textAlign: "left" }}>
               <span style={{ fontSize: "clamp(20px, 4vw, 32px)", fontWeight: 700, color: "var(--lgrn)", lineHeight: 1 }}>{s.val}</span>
@@ -615,11 +622,12 @@ function Hero() {
 
       {/* Right */}
       <div className="psxl-hero-right" style={{
-        background: "var(--lsrf)",
+        background: "radial-gradient(circle at center, rgba(163, 202, 87, 0.08), transparent 60%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "clamp(20px, 4vw, 40px)"
+        padding: "clamp(20px, 4vw, 40px)",
+        position: "relative"
       }}>
         <div style={{
           width: "100%",
@@ -628,8 +636,28 @@ function Hero() {
           border: "1px solid var(--lbdr)",
           borderRadius: "12px",
           padding: "clamp(20px, 3vw, 32px)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.3)"
+          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+          animation: "psxl-float 6s ease-in-out infinite",
+          position: "relative"
         }}>
+          {/* Floating Profit Badge */}
+          <div style={{
+            position: "absolute",
+            top: "-12px",
+            right: "-12px",
+            background: "rgba(163, 202, 87, 0.15)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(163, 202, 87, 0.3)",
+            borderRadius: "8px",
+            padding: "8px 12px",
+            fontSize: "clamp(10px, 1.5vw, 11px)",
+            fontWeight: 600,
+            color: "var(--lgrn)",
+            letterSpacing: "0.05em"
+          }}>
+            +18.4% THIS MONTH
+          </div>
+
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "clamp(16px, 2.5vw, 24px)" }}>
             <div style={{ width: 40, height: 40, background: "var(--lgrn)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <IconCalendar />
