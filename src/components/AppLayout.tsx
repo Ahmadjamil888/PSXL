@@ -1,17 +1,20 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LayoutDashboard, BookOpen, BarChart3, LogOut, Building, Settings, User, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, BookOpen, BarChart3, LogOut, Settings, User, ChevronLeft, ChevronRight, Brain, Calendar, Wallet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useState, useEffect } from "react";
+import { useTrades, getTradeStats } from "@/hooks/useTrades";
+import { formatCurrency } from "@/lib/psx";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/journal", icon: BookOpen, label: "Journal" },
-  { to: "/companies", icon: Building, label: "Companies" },
-  { to: "/analytics", icon: BarChart3, label: "Analytics" },
+  { to: "/performance", icon: BarChart3, label: "Performance" },
+  { to: "/psychology", icon: Brain, label: "Psychology" },
+  { to: "/calendar", icon: Calendar, label: "Calendar" },
   { to: "/settings", icon: Settings, label: "Settings" },
-  { to: "/profile", icon: User, label: "Profile" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -19,6 +22,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const { data: trades = [] } = useTrades();
+  const stats = getTradeStats(trades);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -125,8 +130,27 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               })}
             </nav>
 
-            {/* User Section */}
+            {/* Account Balance */}
             <div className="p-4" style={{ borderTop: "1px solid var(--border)" }}>
+              <div
+                className="px-4 py-3 mb-3 flex items-center gap-3"
+                style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)" }}
+              >
+                <Wallet className="w-5 h-5" style={{ color: "var(--green)" }} />
+                <div className="flex-1">
+                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>Account Balance</p>
+                  <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                    {formatCurrency(stats.totalPnL)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Dark Mode Toggle */}
+              <div className="mb-3">
+                <ThemeToggle />
+              </div>
+
+              {/* User Section */}
               <div
                 className="px-4 py-3 mb-3 flex items-center gap-3"
                 style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)" }}

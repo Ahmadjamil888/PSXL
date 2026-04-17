@@ -553,30 +553,58 @@ function Hero() {
     {label:"AI Coaching Sessions",    val:"89,234",   sub:"Delivered to active traders",  cls:""},
   ];
   return (
-    <section id="psxl-top" style={{minHeight:"100vh",background:"var(--lbg)",paddingTop:"clamp(50px, 8vw, 56px)",display:"flex",flexDirection:"column",justifyContent:"center",width:"100%"}}>
-      <div className="psxl-hero" style={{display:"grid",gridTemplateColumns:"1fr 1fr",minHeight:"calc(100vh - clamp(50px, 8vw, 56px))",height:"auto"}}>
-        <div className="psxl-hero-left" style={{display:"flex",flexDirection:"column",justifyContent:"center",padding:"clamp(30px, 5vw, 60px)"}}>
-          <p className="psxl-hero-eyebrow" style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:500,letterSpacing:"0.2em",textTransform:"uppercase",color:"var(--lgrn)",marginBottom:"clamp(16px, 3vw, 24px)"}}>AI-Powered Trading Performance System</p>
-          <h1 className="psxl-hero-h1" style={{fontSize:"clamp(36px, 8vw, 88px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)"}}>
-            Stop repeating the<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>same trading mistakes.</em>
-          </h1>
-          <p className="psxl-hero-desc" style={{fontSize:"clamp(13px, 2vw, 15px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",maxWidth:420,marginBottom:"clamp(30px, 5vw, 48px)"}}>
-            PSXL tracks your trades, exposes your errors, and improves your discipline with <span style={{color:"var(--lgrn)",fontWeight:400}}>AI coaching</span>. Not a journal. A system.
-          </p>
-          <div className="psxl-hero-actions" style={{display:"flex",flexDirection:"column",gap:"clamp(12px, 2vw, 16px)",alignItems:"flex-start"}}>
-            <div style={{display:"flex",gap:"clamp(8px, 2vw, 16px)",flexWrap:"wrap",alignItems:"center"}}>
-              <a href="/dashboard?mode=guest" style={btnPrimary}>Try PSXL as Guest</a>
-              <a href="/auth" style={btnGhost}>Start Tracking Smarter</a>
-            </div>
-            <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)",fontWeight:300}}>No signup required to explore.</span>
-          </div>
+    <section id="psxl-top" style={{
+      minHeight: "clamp(500px, 70vh, 700px)",
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 0,
+      alignItems: "center",
+      background: "var(--lbg)",
+      position: "relative"
+    }}>
+      {/* Left */}
+      <div className="psxl-hero-left" style={{
+        padding: "clamp(40px, 6vw, 80px) clamp(20px, 4vw, 40px)",
+        borderRight: "1px solid var(--lbdr)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        textAlign: "left"
+      }}>
+        <SectionLabel style={{ textAlign: "left" }}>PSX Ledger Pro</SectionLabel>
+        <h1 className="psxl-hero-h1" style={{
+          fontSize: "clamp(36px, 7vw, 72px)",
+          fontWeight: 700,
+          letterSpacing: -2,
+          lineHeight: 1.05,
+          color: "var(--ltx)",
+          marginTop: "clamp(12px, 2vw, 24px)",
+          marginBottom: "clamp(12px, 2vw, 24px)",
+          textAlign: "left"
+        }}>
+          The Professional<br/>PSX Trading Ledger
+        </h1>
+        <p className="psxl-hero-desc" style={{
+          fontSize: "clamp(13px, 2vw, 16px)",
+          fontWeight: 300,
+          lineHeight: 1.7,
+          color: "var(--ltx2)",
+          maxWidth: 480,
+          marginBottom: "clamp(20px, 4vw, 32px)",
+          textAlign: "left"
+        }}>
+          Track every trade, calculate P&L automatically, and generate FBR-compliant tax reports. Built for Pakistan Stock Exchange investors.
+        </p>
+        <div className="psxl-hero-actions" style={{ display: "flex", gap: "clamp(12px, 2vw, 16px)", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-start" }}>
+          <a href="/auth" style={btnPrimary}>Get Started Free</a>
+          <a href="#psxl-features" style={btnGhost}>View Features</a>
         </div>
-        <div className="psxl-hero-right" style={{display:"flex",flexDirection:"column",justifyContent:"center",gap:1,background:"var(--lbdr)",minHeight:"auto"}}>
-          {stats.map((s,i)=>(
-            <div key={i} style={{background:"var(--lbg)",padding:"clamp(16px, 2.5vw, 28px) clamp(16px, 2.5vw, 32px)",display:"flex",flexDirection:"column",gap:6,borderBottom:i<stats.length-1?"1px solid var(--lbdr)":"none"}}>
-              <span style={{fontSize:"clamp(9px, 1.5vw, 10px)",fontWeight:400,letterSpacing:"0.15em",textTransform:"uppercase",color:"var(--ltx3)"}}>{s.label}</span>
-              <span style={{fontSize:"clamp(24px, 4vw, 36px)",fontWeight:700,letterSpacing:-1,color:s.cls==="pos"?"var(--lgrn)":"var(--ltx)"}}>{s.val}</span>
-              <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)",fontWeight:300}}>{s.sub}</span>
+        <Divider />
+        <div style={{ display: "flex", gap: "clamp(16px, 3vw, 24px)", flexWrap: "wrap", justifyContent: "flex-start" }}>
+          {stats.map((s, i) => (
+            <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4, textAlign: "left" }}>
+              <span style={{ fontSize: "clamp(20px, 4vw, 32px)", fontWeight: 700, color: "var(--lgrn)", lineHeight: 1 }}>{s.val}</span>
+              <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx3)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.label}</span>
             </div>
           ))}
         </div>

@@ -19,6 +19,14 @@ export default function TradeForm() {
   const [fees, setFees] = useState("");
   const [note, setNote] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  // Behavioral fields
+  const [emotion, setEmotion] = useState<"calm" | "fear" | "greedy" | "revenge" | null>(null);
+  const [reason, setReason] = useState<"breakout" | "dip_buy" | "news" | "tip" | null>(null);
+  const [ruleFollowed, setRuleFollowed] = useState<boolean | null>(null);
+  const [mistakeTag, setMistakeTag] = useState<"overtrading" | "late_entry" | "early_exit" | "revenge_trade" | null>(null);
+  // Advanced optional fields
+  const [stopLoss, setStopLoss] = useState("");
+  const [target, setTarget] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -76,6 +84,8 @@ export default function TradeForm() {
     setSymbol(""); setSelectedName(""); setSide("buy");
     setQuantity(""); setEntryPrice(""); setExitPrice("");
     setFees(""); setNote(""); setSuggestions([]); setShowSuggestions(false);
+    setEmotion(null); setReason(null); setRuleFollowed(null); setMistakeTag(null);
+    setStopLoss(""); setTarget("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -88,6 +98,14 @@ export default function TradeForm() {
       exit_price: exitPrice ? parseFloat(exitPrice) : null,
       fees: fees ? parseFloat(fees) : 0,
       note: note || undefined,
+      // Behavioral fields
+      emotion,
+      reason,
+      rule_followed: ruleFollowed,
+      mistake_tag: mistakeTag,
+      // Advanced fields
+      stop_loss: stopLoss ? parseFloat(stopLoss) : null,
+      target: target ? parseFloat(target) : null,
     };
     try {
       await addTrade.mutateAsync(trade);
@@ -266,6 +284,146 @@ export default function TradeForm() {
                         placeholder={f.ph} className="input-field" style={{ fontFamily: "monospace", width: "100%" }} step={f.step} />
                     </div>
                   ))}
+                </div>
+
+                {/* Behavioral Fields - Optional */}
+                <div style={{ paddingTop: "16px", borderTop: "1px solid var(--border)" }}>
+                  <p style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>Behavioral (Optional)</p>
+                  
+                  {/* Emotion */}
+                  <div style={{ marginBottom: "12px" }}>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Emotion before trade</label>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      {["calm", "fear", "greedy", "revenge"].map(e => (
+                        <button
+                          key={e}
+                          type="button"
+                          onClick={() => setEmotion(emotion === e ? null : e as any)}
+                          style={{
+                            padding: "6px 12px",
+                            fontSize: "11px",
+                            background: emotion === e ? "var(--accent)" : "transparent",
+                            color: emotion === e ? "#000" : "var(--text2)",
+                            border: "1px solid var(--border)",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          {e}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Reason */}
+                  <div style={{ marginBottom: "12px" }}>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Reason</label>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      {["breakout", "dip_buy", "news", "tip"].map(r => (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => setReason(reason === r ? null : r as any)}
+                          style={{
+                            padding: "6px 12px",
+                            fontSize: "11px",
+                            background: reason === r ? "var(--accent)" : "transparent",
+                            color: reason === r ? "#000" : "var(--text2)",
+                            border: "1px solid var(--border)",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          {r.replace("_", " ")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Rule Followed */}
+                  <div style={{ marginBottom: "12px" }}>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Rule followed?</label>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {[true, false].map(r => (
+                        <button
+                          key={String(r)}
+                          type="button"
+                          onClick={() => setRuleFollowed(ruleFollowed === r ? null : r)}
+                          style={{
+                            flex: 1,
+                            padding: "8px",
+                            fontSize: "12px",
+                            background: ruleFollowed === r ? (r ? "var(--green)" : "var(--red)") : "transparent",
+                            color: ruleFollowed === r ? "#000" : "var(--text2)",
+                            border: "1px solid var(--border)",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {r ? "Yes" : "No"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mistake Tag */}
+                  <div style={{ marginBottom: "12px" }}>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Mistake tag</label>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                      {["overtrading", "late_entry", "early_exit", "revenge_trade"].map(m => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => setMistakeTag(mistakeTag === m ? null : m as any)}
+                          style={{
+                            padding: "6px 12px",
+                            fontSize: "11px",
+                            background: mistakeTag === m ? "var(--red)" : "transparent",
+                            color: mistakeTag === m ? "#000" : "var(--text2)",
+                            border: "1px solid var(--border)",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          {m.replace("_", " ")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Advanced Fields - Optional */}
+                <div style={{ paddingTop: "16px", borderTop: "1px solid var(--border)" }}>
+                  <p style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>Advanced (Optional)</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Stop Loss ₨</label>
+                      <input
+                        type="number"
+                        value={stopLoss}
+                        onChange={e => setStopLoss(e.target.value)}
+                        placeholder="240.00"
+                        className="input-field"
+                        style={{ fontFamily: "monospace", width: "100%" }}
+                        step="0.01"
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Target ₨</label>
+                      <input
+                        type="number"
+                        value={target}
+                        onChange={e => setTarget(e.target.value)}
+                        placeholder="270.00"
+                        className="input-field"
+                        style={{ fontFamily: "monospace", width: "100%" }}
+                        step="0.01"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <button type="submit" className="btn-primary" style={{ width: "100%" }} disabled={addTrade.isPending}>

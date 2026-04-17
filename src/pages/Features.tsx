@@ -5,8 +5,8 @@ import PublicLayout from "@/components/PublicLayout";
 const fade = (delay = 0) => ({ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true }, transition: { duration: 0.5, delay } });
 
 const Section = ({ children, alt = false }: { children: React.ReactNode; alt?: boolean }) => (
-  <section style={{ background: alt ? "var(--bg2)" : "var(--bg)", padding: "clamp(48px, 8vw, 80px) clamp(16px, 5vw, 40px)" }}>
-    <div style={{ maxWidth: "1000px", margin: "0 auto" }}>{children}</div>
+  <section style={{ background: alt ? "var(--bg2)" : "var(--bg)", padding: "clamp(48px, 8vw, 96px) clamp(20px, 5vw, 48px)" }}>
+    <div style={{ maxWidth: "1200px", margin: "0 auto", textAlign: "center" }}>{children}</div>
   </section>
 );
 
@@ -67,16 +67,16 @@ export default function FeaturesPage() {
     <PublicLayout>
       {/* Hero */}
       <Section>
-        <motion.div {...fade()}>
-          <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: "12px" }}>Platform</p>
-          <h1 style={{ fontSize: "clamp(32px, 6vw, 64px)", fontWeight: 700, letterSpacing: "-2px", lineHeight: 1.0, color: "var(--text)", marginBottom: "20px" }}>
+        <motion.div {...fade()} style={{ textAlign: "center" }}>
+          <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--green)", marginBottom: "16px" }}>Platform</p>
+          <h1 style={{ fontSize: "clamp(36px, 6vw, 72px)", fontWeight: 700, letterSpacing: "-2px", lineHeight: 1.05, color: "var(--text)", marginBottom: "24px", textAlign: "center" }}>
             Everything a PSX trader needs.<br />
             <span style={{ color: "var(--green)" }}>Nothing they don't.</span>
           </h1>
-          <p style={{ fontSize: "15px", fontWeight: 300, lineHeight: 1.75, color: "var(--text2)", maxWidth: "560px", marginBottom: "28px" }}>
+          <p style={{ fontSize: "16px", fontWeight: 300, lineHeight: 1.8, color: "var(--text2)", maxWidth: "640px", margin: "0 auto 32px auto", textAlign: "center" }}>
             PSX Ledger Pro is built from the ground up for Pakistan Stock Exchange investors. Every feature addresses a real need — from FBR tax compliance to KSE sector mapping.
           </p>
-          <a href="/auth" className="btn-primary" style={{ textDecoration: "none", borderRadius: "4px", padding: "14px 28px", display: "inline-block" }}>
+          <a href="/auth" className="btn-primary" style={{ textDecoration: "none", borderRadius: "6px", padding: "16px 32px", display: "inline-block" }}>
             Start for Free
           </a>
         </motion.div>
@@ -84,24 +84,26 @@ export default function FeaturesPage() {
 
       {/* Feature grid */}
       <Section alt>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "24px", maxWidth: "1200px", margin: "0 auto", textAlign: "left" }}>
           {features.map((f, i) => (
-            <motion.div key={i} {...fade(i * 0.05)} style={{ background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px", padding: "28px", display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text3)", fontFamily: "monospace" }}>{f.num}</span>
-                  <f.icon size={18} style={{ color: "var(--green)" }} />
+            <motion.div key={i} {...fade(i * 0.05)} style={{ background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "16px", padding: "32px", display: "flex", flexDirection: "column", gap: "20px", transition: "border-color 0.2s, transform 0.2s, box-shadow 0.2s" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--green)"; e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.1)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                  <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text3)", fontFamily: "monospace" }}>{f.num}</span>
+                  <f.icon size={20} style={{ color: "var(--green)" }} />
                 </div>
                 <Tag>{f.tag}</Tag>
               </div>
               <div>
-                <h3 style={{ fontSize: "15px", fontWeight: 600, color: "var(--text)", marginBottom: "8px" }}>{f.title}</h3>
-                <p style={{ fontSize: "13px", fontWeight: 300, color: "var(--text2)", lineHeight: 1.65 }}>{f.desc}</p>
+                <h3 style={{ fontSize: "18px", fontWeight: 600, color: "var(--text)", marginBottom: "10px", lineHeight: 1.3 }}>{f.title}</h3>
+                <p style={{ fontSize: "14px", fontWeight: 300, color: "var(--text2)", lineHeight: 1.7 }}>{f.desc}</p>
               </div>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "6px" }}>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
                 {f.details.map((d, j) => (
-                  <li key={j} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "var(--text2)" }}>
-                    <span style={{ width: "4px", height: "4px", borderRadius: "50%", background: "var(--green)", flexShrink: 0 }} />
+                  <li key={j} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: "var(--text2)", lineHeight: 1.6 }}>
+                    <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--green)", flexShrink: 0 }} />
                     {d}
                   </li>
                 ))}
@@ -114,9 +116,9 @@ export default function FeaturesPage() {
       {/* CTA */}
       <Section>
         <motion.div {...fade()} style={{ textAlign: "center" }}>
-          <h2 style={{ fontSize: "clamp(24px, 4vw, 40px)", fontWeight: 700, letterSpacing: "-1px", color: "var(--text)", marginBottom: "16px" }}>Ready to get started?</h2>
-          <p style={{ fontSize: "15px", fontWeight: 300, color: "var(--text2)", marginBottom: "28px" }}>Free to use. No credit card required.</p>
-          <a href="/auth" className="btn-primary" style={{ textDecoration: "none", borderRadius: "4px", padding: "14px 32px", display: "inline-block" }}>Create Free Account</a>
+          <h2 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, letterSpacing: "-1.5px", color: "var(--text)", marginBottom: "16px", textAlign: "center" }}>Ready to get started?</h2>
+          <p style={{ fontSize: "16px", fontWeight: 300, color: "var(--text2)", marginBottom: "32px", textAlign: "center" }}>Free to use. No credit card required.</p>
+          <a href="/auth" className="btn-primary" style={{ textDecoration: "none", borderRadius: "6px", padding: "16px 36px", display: "inline-block" }}>Create Free Account</a>
         </motion.div>
       </Section>
     </PublicLayout>

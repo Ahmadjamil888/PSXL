@@ -27,51 +27,51 @@ export default function BlogPostPage() {
   return (
     <PublicLayout>
       {/* Hero */}
-      <section style={{ background: "var(--bg)", padding: "clamp(16px, 3vw, 28px) clamp(16px, 4vw, 48px)" }}>
-        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+      <section style={{ background: "var(--bg)", padding: "clamp(40px, 6vw, 80px) clamp(20px, 5vw, 48px)" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             {/* Back link */}
             <Link to="/blog" style={{
               display: "inline-flex", alignItems: "center", gap: "6px",
-              fontSize: "12px", fontWeight: 500, color: "var(--text2)",
+              fontSize: "13px", fontWeight: 500, color: "var(--text2)",
               textDecoration: "none", marginBottom: "24px",
               transition: "color 0.2s",
             }}
               onMouseEnter={e => (e.currentTarget.style.color = "var(--text)")}
               onMouseLeave={e => (e.currentTarget.style.color = "var(--text2)")}
             >
-              <ArrowLeft size={13} /> Back to Blog
+              <ArrowLeft size={14} /> Back to Blog
             </Link>
 
             {/* Category */}
             <span style={{
-              display: "inline-flex", alignItems: "center", gap: "5px",
-              fontSize: "10px", fontWeight: 600, letterSpacing: "0.12em",
+              display: "inline-flex", alignItems: "center", gap: "6px",
+              fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em",
               textTransform: "uppercase", color: "var(--green)",
-              background: "rgba(163,196,90,0.1)", padding: "4px 10px",
-              borderRadius: "4px", marginBottom: "16px",
+              background: "rgba(163,196,90,0.1)", padding: "6px 14px",
+              borderRadius: "6px", marginBottom: "20px",
             }}>
-              <Tag size={10} />
+              <Tag size={11} />
               {post.category}
             </span>
 
             {/* Title */}
             <h1 style={{
-              fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700,
-              letterSpacing: "-1px", color: "var(--text)", lineHeight: 1.2,
-              marginBottom: "12px",
+              fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 700,
+              letterSpacing: "-1.5px", color: "var(--text)", lineHeight: 1.15,
+              marginBottom: "20px",
               textAlign: "center"
             }}>
               {post.title}
             </h1>
 
             {/* Meta */}
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", justifyContent: "center", paddingBottom: "16px", borderBottom: "1px solid var(--border)" }}>
-              <span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text2)" }}>
-                <Calendar size={12} /> {formatDate(post.date)}
+            <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap", justifyContent: "center", paddingBottom: "24px", borderBottom: "1px solid var(--border)" }}>
+              <span style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "var(--text2)" }}>
+                <Calendar size={14} /> {formatDate(post.date)}
               </span>
-              <span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text2)" }}>
-                <User size={12} /> {post.author}
+              <span style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "var(--text2)" }}>
+                <User size={14} /> {post.author}
               </span>
             </div>
           </motion.div>
@@ -79,8 +79,8 @@ export default function BlogPostPage() {
       </section>
 
       {/* Content */}
-      <section style={{ background: "var(--bg2)", padding: "clamp(20px, 3vw, 32px) clamp(16px, 4vw, 48px)" }}>
-        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+      <section style={{ background: "var(--bg2)", padding: "clamp(40px, 6vw, 80px) clamp(20px, 5vw, 48px)" }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
           {content ? (
             <motion.div
               initial={{ opacity: 0 }}
@@ -88,9 +88,9 @@ export default function BlogPostPage() {
               transition={{ duration: 0.4 }}
               className="blog-prose"
               style={{
-                textAlign: "justify",
-                lineHeight: 1.8,
-                fontSize: "16px",
+                textAlign: "left",
+                lineHeight: 1.9,
+                fontSize: "17px",
                 color: "var(--text)"
               }}
             >
@@ -98,7 +98,7 @@ export default function BlogPostPage() {
                 remarkPlugins={[remarkGfm]}
                 components={{
                   p: ({ children }) => (
-                    <p style={{ textAlign: "justify", marginBottom: "1.5em", lineHeight: 1.8 }}>
+                    <p style={{ textAlign: "left", marginBottom: "1.75em", lineHeight: 1.9, maxWidth: "100%" }}>
                       {children}
                     </p>
                   ),
@@ -107,17 +107,17 @@ export default function BlogPostPage() {
                       width: "100%", 
                       display: "flex", 
                       justifyContent: "center",
-                      margin: "2em 0"
+                      margin: "2.5em 0"
                     }}>
                       <img 
                         src={src} 
                         alt={alt} 
                         style={{ 
-                          maxWidth: "90%", 
+                          maxWidth: "100%", 
                           width: "auto",
                           height: "auto",
                           borderRadius: "12px",
-                          boxShadow: "0 4px 20px rgba(0,0,0,0.2)"
+                          boxShadow: "0 8px 30px rgba(0,0,0,0.12)"
                         }} 
                       />
                     </div>
@@ -148,7 +148,7 @@ export default function BlogPostPage() {
                     </ol>
                   ),
                   li: ({ children }) => (
-                    <li style={{ marginBottom: "0.5em", textAlign: "justify" }}>
+                    <li style={{ marginBottom: "0.75em", textAlign: "left", lineHeight: 1.8 }}>
                       {children}
                     </li>
                   ),
@@ -176,21 +176,21 @@ export default function BlogPostPage() {
 
       {/* Prev / Next navigation */}
       {(prevPost || nextPost) && (
-        <section style={{ background: "var(--bg)", padding: "clamp(20px, 3vw, 32px) clamp(16px, 4vw, 48px)" }}>
-          <div style={{ maxWidth: "1400px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+        <section style={{ background: "var(--bg)", padding: "clamp(40px, 6vw, 80px) clamp(20px, 5vw, 48px)" }}>
+          <div style={{ maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
             {prevPost ? (
               <Link to={`/blog/${prevPost.slug}`} style={{ textDecoration: "none" }}>
                 <div style={{
                   background: "var(--surface)", border: "1px solid var(--border)",
-                  borderRadius: "10px", padding: "20px", transition: "border-color 0.2s",
+                  borderRadius: "12px", padding: "24px", transition: "border-color 0.2s, box-shadow 0.2s",
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--green)")}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--border)")}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--green)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; }}
                 >
-                  <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text2)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "5px" }}>
-                    <ArrowLeft size={10} /> Previous
+                  <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text2)", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
+                    <ArrowLeft size={12} /> Previous
                   </p>
-                  <p style={{ fontSize: "13px", fontWeight: 500, color: "var(--text)", lineHeight: 1.4 }}>{prevPost.title}</p>
+                  <p style={{ fontSize: "14px", fontWeight: 500, color: "var(--text)", lineHeight: 1.4 }}>{prevPost.title}</p>
                 </div>
               </Link>
             ) : <div />}
@@ -199,15 +199,15 @@ export default function BlogPostPage() {
               <Link to={`/blog/${nextPost.slug}`} style={{ textDecoration: "none" }}>
                 <div style={{
                   background: "var(--surface)", border: "1px solid var(--border)",
-                  borderRadius: "10px", padding: "20px", textAlign: "right", transition: "border-color 0.2s",
+                  borderRadius: "12px", padding: "24px", textAlign: "right", transition: "border-color 0.2s, box-shadow 0.2s",
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--green)")}
-                  onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--border)")}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--green)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; }}
                 >
-                  <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text2)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "5px", justifyContent: "flex-end" }}>
-                    Next <ArrowRight size={10} />
+                  <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text2)", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px", justifyContent: "flex-end" }}>
+                    Next <ArrowRight size={12} />
                   </p>
-                  <p style={{ fontSize: "13px", fontWeight: 500, color: "var(--text)", lineHeight: 1.4 }}>{nextPost.title}</p>
+                  <p style={{ fontSize: "14px", fontWeight: 500, color: "var(--text)", lineHeight: 1.4 }}>{nextPost.title}</p>
                 </div>
               </Link>
             ) : <div />}

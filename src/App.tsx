@@ -30,6 +30,7 @@ import BlogPostPage from "@/pages/BlogPost";
 import Dashboard from "@/pages/Dashboard";
 import Journal from "@/pages/Journal";
 import Analytics from "@/pages/Analytics";
+import Psychology from "@/pages/Psychology";
 import Companies from "@/pages/Companies";
 import Settings from "@/pages/Settings";
 import Profile from "@/pages/Profile";
@@ -111,7 +112,8 @@ const App = () => (
                 {/* App — accessible to both authed users and guests */}
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
-                <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                <Route path="/performance" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                <Route path="/psychology" element={<ProtectedRoute><Psychology /></ProtectedRoute>} />
                 <Route path="/companies" element={<ProtectedRoute><Companies /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

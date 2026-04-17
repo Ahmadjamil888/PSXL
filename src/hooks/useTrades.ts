@@ -17,6 +17,14 @@ export interface Trade {
   note: string | null;
   created_at: string;
   updated_at: string;
+  // Behavioral fields
+  emotion: "calm" | "fear" | "greedy" | "revenge" | null;
+  reason: "breakout" | "dip_buy" | "news" | "tip" | null;
+  rule_followed: boolean | null;
+  mistake_tag: "overtrading" | "late_entry" | "early_exit" | "revenge_trade" | null;
+  // Advanced optional fields
+  stop_loss: number | null;
+  target: number | null;
 }
 
 export interface TradeInput {
@@ -28,6 +36,14 @@ export interface TradeInput {
   fees?: number;
   note?: string;
   date?: string;
+  // Behavioral fields (optional)
+  emotion?: "calm" | "fear" | "greedy" | "revenge" | null;
+  reason?: "breakout" | "dip_buy" | "news" | "tip" | null;
+  rule_followed?: boolean | null;
+  mistake_tag?: "overtrading" | "late_entry" | "early_exit" | "revenge_trade" | null;
+  // Advanced optional fields
+  stop_loss?: number | null;
+  target?: number | null;
 }
 
 export function useTrades() {
@@ -87,6 +103,14 @@ export function useAddTrade() {
           fees: trade.fees ?? 0,
           note: trade.note ?? null,
           date: trade.date ?? new Date().toISOString().split("T")[0],
+          // Behavioral fields
+          emotion: trade.emotion ?? null,
+          reason: trade.reason ?? null,
+          rule_followed: trade.rule_followed ?? null,
+          mistake_tag: trade.mistake_tag ?? null,
+          // Advanced fields
+          stop_loss: trade.stop_loss ?? null,
+          target: trade.target ?? null,
         })
         .select()
         .single();
