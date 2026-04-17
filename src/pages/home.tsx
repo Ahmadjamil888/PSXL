@@ -586,22 +586,71 @@ function Hero() {
           ))}
         </div>
       </div>
-    </section>
-  );
-}
 
-// ─── FEATURES ────────────────────────────────────────────────────────────────
-function FeatureCard({f}: {f:Feature}) {
-  const [hov,setHov]=useState(false);
-  return (
-    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:hov?"var(--lbg3)":"var(--lbg2)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:16,transition:"background .2s",height:"100%"}}>
-      <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:500,letterSpacing:"0.15em",color:"var(--ltx3)"}}>{f.num}</span>
-      <div style={{color:"var(--lgrn)"}}>{f.icon}</div>
-      <h3 style={{fontSize:"clamp(16px, 2.5vw, 18px)",fontWeight:600,letterSpacing:-0.5,color:"var(--ltx)",lineHeight:1.2}}>{f.title}</h3>
-      <p style={{fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)"}}>{f.body}</p>
-      <span style={{display:"inline-block",fontSize:"clamp(9px, 1.5vw, 10px)",letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--lgrn)",border:"1px solid var(--lgrnD)",padding:"3px 10px",marginTop:"auto",width:"fit-content"}}>{f.tag}</span>
-    </div>
+      {/* Right */}
+      <div className="psxl-hero-right" style={{
+        background: "var(--lsrf)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "clamp(20px, 4vw, 40px)"
+      }}>
+        <div style={{
+          width: "100%",
+          maxWidth: "400px",
+          background: "var(--lbg3)",
+          border: "1px solid var(--lbdr)",
+          borderRadius: "12px",
+          padding: "clamp(20px, 3vw, 32px)",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.3)"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "clamp(16px, 2.5vw, 24px)" }}>
+            <div style={{ width: 40, height: 40, background: "var(--lgrn)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <IconCalendar />
+            </div>
+            <div>
+              <div style={{ fontSize: "clamp(10px, 1.5vw, 11px)", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ltx3)" }}>Live Demo</div>
+              <div style={{ fontSize: "clamp(14px, 2vw, 16px)", fontWeight: 600, color: "var(--ltx)" }}>Trade Ledger</div>
+            </div>
+          </div>
+          
+          <div style={{ background: "var(--lbg2)", borderRadius: "8px", padding: "clamp(12px, 2vw, 16px)", marginBottom: "clamp(12px, 2vw, 16px)" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "clamp(9px, 1.5vw, 11px)" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--lbdr)" }}>
+                  <th style={{ textAlign: "left", padding: "8px 4px", color: "var(--ltx3)", fontWeight: 500, letterSpacing: "0.05em" }}>Symbol</th>
+                  <th style={{ textAlign: "right", padding: "8px 4px", color: "var(--ltx3)", fontWeight: 500, letterSpacing: "0.05em" }}>P&L</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { sym: "LUCK", pl: "+₨12,450", pos: true },
+                  { sym: "OGDC", pl: "+₨8,230", pos: true },
+                  { sym: "HBL", pl: "-₨1,820", pos: false },
+                  { sym: "SYS", pl: "+₨5,240", pos: true },
+                ].map((t, i) => (
+                  <tr key={i} style={{ borderBottom: i < 3 ? "1px solid var(--lbdr2)" : "none" }}>
+                    <td style={{ padding: "8px 4px", color: "var(--ltx)", fontWeight: 500 }}>{t.sym}</td>
+                    <td style={{ padding: "8px 4px", textAlign: "right", color: t.pos ? "var(--lgrn)" : "var(--lred)", fontWeight: 600 }}>{t.pl}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <div style={{ fontSize: "clamp(9px, 1.5vw, 10px)", color: "var(--ltx3)", marginBottom: 4 }}>Total P&L</div>
+              <div style={{ fontSize: "clamp(18px, 3vw, 22px)", fontWeight: 700, color: "var(--lgrn)" }}>+₨24,100</div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: "clamp(9px, 1.5vw, 10px)", color: "var(--ltx3)", marginBottom: 4 }}>Win Rate</div>
+              <div style={{ fontSize: "clamp(18px, 3vw, 22px)", fontWeight: 700, color: "var(--lgrn)" }}>75%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

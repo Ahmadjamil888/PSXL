@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LayoutDashboard, BookOpen, BarChart3, LogOut, Settings, User, ChevronLeft, ChevronRight, Brain, Calendar, Wallet } from "lucide-react";
+import { LayoutDashboard, BookOpen, BarChart3, LogOut, Settings, User, ChevronLeft, ChevronRight, Brain, Wallet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
 import { useState, useEffect } from "react";
@@ -12,7 +12,6 @@ const navItems = [
   { to: "/journal", icon: BookOpen, label: "Journal" },
   { to: "/performance", icon: BarChart3, label: "Performance" },
   { to: "/psychology", icon: Brain, label: "Psychology" },
-  { to: "/calendar", icon: Calendar, label: "Calendar" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ];
 
