@@ -601,7 +601,7 @@ function Hero() {
           marginBottom: "clamp(12px, 2vw, 24px)",
           textAlign: "left"
         }}>
-          Professional Trading Ledger<br/>for PSX Investors
+          Trading Ledger<br/>for PSX Investors
         </h1>
         <p className="psxl-hero-desc" style={{
           fontSize: "clamp(13px, 2vw, 16px)",
