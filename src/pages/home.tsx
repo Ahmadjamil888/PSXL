@@ -284,22 +284,31 @@ const SCOPED_CSS = `
       grid-template-columns: 1fr !important;
       height: auto !important;
       min-height: auto !important;
+      display: flex !important;
+      flex-direction: column !important;
     }
 
     .psxl-hero-left {
-      padding: clamp(20px, 5vw, 40px) !important;
+      padding: clamp(24px, 5vw, 48px) clamp(20px, 4vw, 32px) !important;
       border-right: none !important;
       border-bottom: 1px solid var(--lbdr) !important;
       order: 1 !important;
+      width: 100% !important;
     }
 
     .psxl-hero-right {
       order: 2 !important;
-      padding: 0 !important;
+      padding: clamp(24px, 5vw, 48px) clamp(20px, 4vw, 32px) !important;
+      width: 100% !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
     }
 
     .psxl-hero-right > div {
-      padding: clamp(16px, 4vw, 28px) !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
     }
 
     .psxl-table {
