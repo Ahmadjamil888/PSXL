@@ -212,7 +212,173 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <style>
+        .seo-shell {
+          font-family: "DM Sans", sans-serif;
+          color: #f5f5f5;
+          background: #050505;
+          min-height: 100vh;
+        }
+
+        .seo-shell a {
+          color: #b9df63;
+          text-decoration: none;
+        }
+
+        .seo-shell a:hover {
+          text-decoration: underline;
+        }
+
+        .seo-shell__wrap {
+          max-width: 1120px;
+          margin: 0 auto;
+          padding: 24px;
+        }
+
+        .seo-shell__nav,
+        .seo-shell__footer {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .seo-shell__links {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+
+        .seo-shell__hero {
+          padding: 64px 0 40px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .seo-shell__hero h1 {
+          font-size: clamp(2.25rem, 7vw, 4.5rem);
+          line-height: 1;
+          margin: 0 0 16px;
+        }
+
+        .seo-shell__grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 16px;
+          padding: 32px 0;
+        }
+
+        .seo-shell__card {
+          background: #111111;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 16px;
+          padding: 20px;
+        }
+
+        .seo-shell__section {
+          padding: 24px 0;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .seo-shell__muted {
+          color: #b7b7b7;
+          line-height: 1.7;
+        }
+      </style>
+      <div class="seo-shell">
+        <div class="seo-shell__wrap">
+          <header class="seo-shell__nav">
+            <strong>PSXL</strong>
+            <nav class="seo-shell__links" aria-label="Primary">
+              <a href="/">Home</a>
+              <a href="/features">Features</a>
+              <a href="/blog">Blog</a>
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
+              <a href="/privacy">Privacy</a>
+              <a href="/terms">Terms</a>
+            </nav>
+          </header>
+
+          <main class="seo-shell__hero">
+            <p>Pakistan Stock Exchange Trading Ledger</p>
+            <h1>Track PSX trades with a ledger built for Pakistan investors.</h1>
+            <p class="seo-shell__muted">
+              PSXL helps investors record trades, monitor portfolio performance, review behavior,
+              export reports, and keep a reliable history of Pakistan Stock Exchange activity.
+            </p>
+            <p class="seo-shell__links">
+              <a href="/auth">Create an account</a>
+              <a href="/dashboard?mode=guest">Try guest mode</a>
+              <a href="/blog/psx-trading-guide-beginners">Read the beginner guide</a>
+            </p>
+          </main>
+
+          <section class="seo-shell__grid" aria-label="Key features">
+            <article class="seo-shell__card">
+              <h2>Trade Ledger</h2>
+              <p class="seo-shell__muted">Record buy and sell activity with quantity, price, charges, and settlement details.</p>
+            </article>
+            <article class="seo-shell__card">
+              <h2>Portfolio Analytics</h2>
+              <p class="seo-shell__muted">Review realized and unrealized P&amp;L, sector exposure, and portfolio concentration.</p>
+            </article>
+            <article class="seo-shell__card">
+              <h2>Tax Reporting</h2>
+              <p class="seo-shell__muted">Prepare exports and summaries for capital gains, dividend tracking, and record keeping.</p>
+            </article>
+            <article class="seo-shell__card">
+              <h2>Investor Education</h2>
+              <p class="seo-shell__muted">Browse PSX guides covering beginner investing, market indices, diversification, and tax topics.</p>
+            </article>
+          </section>
+
+          <section class="seo-shell__section">
+            <h2>Popular resources</h2>
+            <div class="seo-shell__links">
+              <a href="/blog">All articles</a>
+              <a href="/blog/understanding-psx-market-indices">PSX market indices explained</a>
+              <a href="/blog/tax-implications-psx-trading">PSX tax guide</a>
+              <a href="/disclaimer">Financial disclaimer</a>
+            </div>
+          </section>
+
+          <section class="seo-shell__section">
+            <h2>Company and legal</h2>
+            <p class="seo-shell__muted">
+              PSXL is a portfolio ledger and record-keeping tool. It does not provide investment advice and is not affiliated with the Pakistan Stock Exchange.
+            </p>
+            <div class="seo-shell__links">
+              <a href="/about">About Us</a>
+              <a href="/contact">Contact Us</a>
+              <a href="/privacy">Privacy Policy</a>
+              <a href="/terms">Terms of Service</a>
+              <a href="/disclaimer">Disclaimer</a>
+            </div>
+          </section>
+
+          <footer class="seo-shell__footer seo-shell__section">
+            <p class="seo-shell__muted">© 2026 PSXL. All rights reserved.</p>
+            <div class="seo-shell__links">
+              <a href="/security">Security</a>
+              <a href="/analytics-info">Analytics</a>
+              <a href="/blog">Blog</a>
+            </div>
+          </footer>
+        </div>
+      </div>
+      <noscript>
+        <div style="padding:16px;font-family:Arial,sans-serif">
+          JavaScript is required for the interactive app, but you can still access the main content:
+          <a href="/about">About</a>,
+          <a href="/blog">Blog</a>,
+          <a href="/contact">Contact</a>,
+          <a href="/privacy">Privacy</a>,
+          <a href="/terms">Terms</a>.
+        </div>
+      </noscript>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
