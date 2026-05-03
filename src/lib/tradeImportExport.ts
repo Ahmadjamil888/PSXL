@@ -13,6 +13,12 @@ export function exportTradesToCSV(trades: Trade[], filename = "trades.csv") {
     exit_price: t.exit_price ?? "",
     fees: t.fees ?? 0,
     note: t.note ?? "",
+    entry_note: t.entry_note ?? "",
+    exit_note: t.exit_note ?? "",
+    entry_tags: t.entry_tags?.join(", ") ?? "",
+    exit_tags: t.exit_tags?.join(", ") ?? "",
+    entry_chart_image: t.entry_chart_image ?? "",
+    exit_chart_image: t.exit_chart_image ?? "",
   }));
 
   const csv = Papa.unparse(rows);
@@ -44,6 +50,12 @@ export function parseCSV(file: File): Promise<ImportResult> {
           const exit_price = row.exit_price ?? row["Exit Price"] ?? row.exit ?? row.Exit;
           const fees = Number(row.fees ?? row.Fees ?? 0);
           const note = String(row.note ?? row.Note ?? "").trim();
+          const entry_note = String(row.entry_note ?? row["Entry Note"] ?? "").trim();
+          const exit_note = String(row.exit_note ?? row["Exit Note"] ?? "").trim();
+          const entry_tags = String(row.entry_tags ?? row["Entry Tags"] ?? "").trim();
+          const exit_tags = String(row.exit_tags ?? row["Exit Tags"] ?? "").trim();
+          const entry_chart_image = String(row.entry_chart_image ?? row["Entry Chart Image"] ?? "").trim();
+          const exit_chart_image = String(row.exit_chart_image ?? row["Exit Chart Image"] ?? "").trim();
           const date = String(row.date ?? row.Date ?? "").trim();
 
           if (!symbol) { errors.push(`Row ${lineNum}: missing symbol`); return; }
@@ -59,6 +71,12 @@ export function parseCSV(file: File): Promise<ImportResult> {
             exit_price: exit_price && String(exit_price).trim() !== "" ? Number(exit_price) : null,
             fees: isNaN(fees) ? 0 : fees,
             note: note || undefined,
+            entry_note: entry_note || undefined,
+            exit_note: exit_note || undefined,
+            entry_tags: entry_tags ? splitTags(entry_tags) : undefined,
+            exit_tags: exit_tags ? splitTags(exit_tags) : undefined,
+            entry_chart_image: entry_chart_image || undefined,
+            exit_chart_image: exit_chart_image || undefined,
             date: date || undefined,
           });
         });
@@ -140,4 +158,11 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+function splitTags(value: string): string[] {
+  return value
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
 }

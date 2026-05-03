@@ -15,6 +15,12 @@ export interface Trade {
   exit_price: number | null;
   fees: number | null;
   note: string | null;
+  entry_note: string | null;
+  exit_note: string | null;
+  entry_tags: string[] | null;
+  exit_tags: string[] | null;
+  entry_chart_image: string | null;
+  exit_chart_image: string | null;
   created_at: string;
   updated_at: string;
   // Behavioral fields
@@ -35,6 +41,12 @@ export interface TradeInput {
   exit_price?: number | null;
   fees?: number;
   note?: string;
+  entry_note?: string;
+  exit_note?: string;
+  entry_tags?: string[];
+  exit_tags?: string[];
+  entry_chart_image?: string | null;
+  exit_chart_image?: string | null;
   date?: string;
   // Behavioral fields (optional)
   emotion?: "calm" | "fear" | "greedy" | "revenge" | null;
@@ -102,6 +114,12 @@ export function useAddTrade() {
           exit_price: trade.exit_price ?? null,
           fees: trade.fees ?? 0,
           note: trade.note ?? null,
+          entry_note: trade.entry_note ?? null,
+          exit_note: trade.exit_note ?? null,
+          entry_tags: trade.entry_tags ?? null,
+          exit_tags: trade.exit_tags ?? null,
+          entry_chart_image: trade.entry_chart_image ?? null,
+          exit_chart_image: trade.exit_chart_image ?? null,
           date: trade.date ?? new Date().toISOString().split("T")[0],
           // Behavioral fields
           emotion: trade.emotion ?? null,

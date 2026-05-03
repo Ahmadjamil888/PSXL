@@ -124,14 +124,26 @@ export type Database = {
           account_id: string | null
           created_at: string
           date: string
+          entry_chart_image: string | null
+          entry_note: string | null
+          entry_tags: string[] | null
           entry_price: number
+          exit_chart_image: string | null
+          exit_note: string | null
+          exit_tags: string[] | null
           exit_price: number | null
           fees: number | null
           id: string
+          mistake_tag: string | null
           note: string | null
+          emotion: string | null
           quantity: number
+          reason: string | null
+          rule_followed: boolean | null
           side: string
+          stop_loss: number | null
           symbol: string
+          target: number | null
           updated_at: string
           user_id: string
         }
@@ -139,14 +151,26 @@ export type Database = {
           account_id?: string | null
           created_at?: string
           date?: string
+          entry_chart_image?: string | null
+          entry_note?: string | null
+          entry_tags?: string[] | null
           entry_price: number
+          exit_chart_image?: string | null
+          exit_note?: string | null
+          exit_tags?: string[] | null
           exit_price?: number | null
           fees?: number | null
           id?: string
+          mistake_tag?: string | null
           note?: string | null
+          emotion?: string | null
           quantity: number
+          reason?: string | null
+          rule_followed?: boolean | null
           side: string
+          stop_loss?: number | null
           symbol: string
+          target?: number | null
           updated_at?: string
           user_id: string
         }
@@ -154,14 +178,26 @@ export type Database = {
           account_id?: string | null
           created_at?: string
           date?: string
+          entry_chart_image?: string | null
+          entry_note?: string | null
+          entry_tags?: string[] | null
           entry_price?: number
+          exit_chart_image?: string | null
+          exit_note?: string | null
+          exit_tags?: string[] | null
           exit_price?: number | null
           fees?: number | null
           id?: string
+          mistake_tag?: string | null
           note?: string | null
+          emotion?: string | null
           quantity?: number
+          reason?: string | null
+          rule_followed?: boolean | null
           side?: string
+          stop_loss?: number | null
           symbol?: string
+          target?: number | null
           updated_at?: string
           user_id?: string
         }

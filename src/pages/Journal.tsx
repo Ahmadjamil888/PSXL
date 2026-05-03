@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { useTrades, calcPnL, calcPnLPercent, useDeleteTrade, useAddTrade } from "@/hooks/useTrades";
+import { useRef, useState, type CSSProperties, type ChangeEvent } from "react";
+import { useTrades, calcPnL, calcPnLPercent, useDeleteTrade, useAddTrade, type Trade } from "@/hooks/useTrades";
 import { formatCurrency, formatPercent } from "@/lib/psx";
 import TradeForm from "@/components/TradeForm";
 import { exportTradesToCSV, parseCSV, parsePDF } from "@/lib/tradeImportExport";
@@ -8,18 +8,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
 const COLORS = {
-  success: 'var(--success, #22C55E)',
-  successLight: 'var(--success-light, rgba(34, 197, 94, 0.15))',
-  danger: 'var(--danger, #EF4444)',
-  dangerLight: 'var(--danger-light, rgba(239, 68, 68, 0.15))',
-  primary: 'var(--primary, #10B981)',
-  textPrimary: 'var(--text-primary, #FFFFFF)',
-  textSecondary: 'var(--text-secondary, #A3A3A3)',
-  textTertiary: 'var(--text-tertiary, #737373)',
-  border: 'var(--border-default, #2A2A2A)',
-  borderHover: 'var(--border-hover, #3A3A3A)',
-  bgCard: 'var(--bg-card, #1A1A1A)',
-  bgInput: 'var(--bg-input, #141414)',
+  success: "var(--success, #22C55E)",
+  successLight: "var(--success-light, rgba(34, 197, 94, 0.15))",
+  danger: "var(--danger, #EF4444)",
+  dangerLight: "var(--danger-light, rgba(239, 68, 68, 0.15))",
+  primary: "var(--primary, #10B981)",
+  textPrimary: "var(--text-primary, #FFFFFF)",
+  textSecondary: "var(--text-secondary, #A3A3A3)",
+  textTertiary: "var(--text-tertiary, #737373)",
+  border: "var(--border-default, #2A2A2A)",
+  borderHover: "var(--border-hover, #3A3A3A)",
+  bgCard: "var(--bg-card, #1A1A1A)",
+  bgInput: "var(--bg-input, #141414)",
+};
+
+const tagStyle: CSSProperties = {
+  fontSize: "11px",
+  color: "var(--text2)",
+  border: "1px solid var(--border)",
+  borderRadius: "999px",
+  padding: "4px 8px",
 };
 
 type SideFilter = "all" | "buy" | "sell";
@@ -31,7 +39,6 @@ export default function Journal() {
   const addTrade = useAddTrade();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Filters
   const [search, setSearch] = useState("");
   const [sideFilter, setSideFilter] = useState<SideFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -44,12 +51,22 @@ export default function Journal() {
   const [maxPnl, setMaxPnl] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Import state
   const [importing, setImporting] = useState(false);
   const [importPreview, setImportPreview] = useState<{ trades: any[]; errors: string[] } | null>(null);
 
   const filtered = trades.filter((t) => {
-    if (search && !t.symbol.includes(search.toUpperCase()) && !t.note?.toLowerCase().includes(search.toLowerCase())) return false;
+    if (search) {
+      const query = search.toLowerCase();
+      const searchable = [
+        t.symbol,
+        t.note ?? "",
+        t.entry_note ?? "",
+        t.exit_note ?? "",
+        ...(t.entry_tags ?? []),
+        ...(t.exit_tags ?? []),
+      ].join(" ").toLowerCase();
+      if (!searchable.includes(query)) return false;
+    }
     if (sideFilter !== "all" && t.side !== sideFilter) return false;
     if (statusFilter === "open" && t.exit_price != null) return false;
     if (statusFilter === "closed" && t.exit_price == null) return false;
@@ -103,18 +120,13 @@ export default function Journal() {
     toast.success(`Exported ${toExport.length} trades`);
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = "";
     setImporting(true);
     try {
-      let result;
-      if (file.name.endsWith(".pdf")) {
-        result = await parsePDF(file);
-      } else {
-        result = await parseCSV(file);
-      }
+      const result = file.name.endsWith(".pdf") ? await parsePDF(file) : await parseCSV(file);
       setImportPreview(result);
     } catch (err: any) {
       toast.error(err.message || "Failed to parse file");
@@ -127,6 +139,7 @@ export default function Journal() {
     if (!importPreview) return;
     let success = 0;
     let fail = 0;
+
     for (const t of importPreview.trades) {
       try {
         await addTrade.mutateAsync(t);
@@ -135,6 +148,7 @@ export default function Journal() {
         fail++;
       }
     }
+
     toast.success(`Imported ${success} trades${fail > 0 ? `, ${fail} failed` : ""}`);
     setImportPreview(null);
   };
@@ -149,15 +163,13 @@ export default function Journal() {
 
   return (
     <div className="dashboard-app space-y-5" style={{ color: "var(--text)" }}>
-      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="dash-page-kicker">Log</p>
           <h1 className="dash-page-title">Trade Journal</h1>
-          <p className="dash-page-desc">{trades.length} trades logged — search, filter, and review.</p>
+          <p className="dash-page-desc">{trades.length} trades logged - search, filter, and review.</p>
         </div>
         <div className="flex flex-wrap gap-2 shrink-0 items-center">
-          {/* Import */}
           <input
             ref={fileInputRef}
             type="file"
@@ -172,9 +184,8 @@ export default function Journal() {
             style={{ display: "flex", alignItems: "center", gap: "6px", minHeight: "40px", padding: "0 14px", fontSize: "13px" }}
           >
             <Upload className="w-4 h-4" />
-            {importing ? "Parsing…" : "Import"}
+            {importing ? "Parsing..." : "Import"}
           </button>
-          {/* Export */}
           <button
             onClick={handleExport}
             className="btn-secondary"
@@ -187,7 +198,6 @@ export default function Journal() {
         </div>
       </div>
 
-      {/* Import Preview Modal */}
       <AnimatePresence>
         {importPreview && (
           <motion.div
@@ -204,13 +214,18 @@ export default function Journal() {
             >
               <div className="flex items-center justify-between mb-4">
                 <h2 style={{ fontSize: "16px", fontWeight: 700, color: COLORS.textPrimary }}>Import Preview</h2>
-                <button onClick={() => setImportPreview(null)} style={{ background: "none", border: "none", cursor: "pointer", color: COLORS.textSecondary, padding: "4px", borderRadius: "6px", transition: "all 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                <button
+                  onClick={() => setImportPreview(null)}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: COLORS.textSecondary, padding: "4px", borderRadius: "6px", transition: "all 0.2s" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {importPreview.errors.length > 0 && (
-                <div style={{ background: COLORS.dangerLight, border: `1px solid rgba(239,68,68,0.3)`, borderRadius: "8px", padding: "12px", marginBottom: "16px" }}>
+                <div style={{ background: COLORS.dangerLight, border: "1px solid rgba(239,68,68,0.3)", borderRadius: "8px", padding: "12px", marginBottom: "16px" }}>
                   <p style={{ fontSize: "12px", fontWeight: 600, color: COLORS.danger, marginBottom: "6px" }}>Errors ({importPreview.errors.length})</p>
                   {importPreview.errors.map((e, i) => (
                     <p key={i} style={{ fontSize: "12px", color: COLORS.danger, opacity: 0.9 }}>{e}</p>
@@ -226,12 +241,12 @@ export default function Journal() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "20px" }}>
                     {importPreview.trades.slice(0, 10).map((t, i) => (
                       <div key={i} style={{ background: "var(--bg2)", borderRadius: "6px", padding: "8px 12px", fontSize: "12px", color: "var(--text2)", fontFamily: "monospace" }}>
-                        {t.date || "—"} · {t.symbol} · {t.side.toUpperCase()} · {t.quantity} × ₨{t.entry_price}
-                        {t.exit_price ? ` → ₨${t.exit_price}` : ""}
+                        {t.date || "-"} · {t.symbol} · {t.side.toUpperCase()} · {t.quantity} x Rs.{t.entry_price}
+                        {t.exit_price ? ` -> Rs.${t.exit_price}` : ""}
                       </div>
                     ))}
                     {importPreview.trades.length > 10 && (
-                      <p style={{ fontSize: "12px", color: "var(--text3)", textAlign: "center" }}>…and {importPreview.trades.length - 10} more</p>
+                      <p style={{ fontSize: "12px", color: "var(--text3)", textAlign: "center" }}>...and {importPreview.trades.length - 10} more</p>
                     )}
                   </div>
                   <div style={{ display: "flex", gap: "8px" }}>
@@ -254,7 +269,6 @@ export default function Journal() {
         )}
       </AnimatePresence>
 
-      {/* Search + Quick Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: "var(--text3)" }} />
@@ -262,7 +276,7 @@ export default function Journal() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by symbol or note…"
+            placeholder="Search by symbol, notes, or tags..."
             className="input-field w-full"
             style={{ paddingLeft: "40px", minHeight: "44px" }}
           />
@@ -301,7 +315,6 @@ export default function Journal() {
               </button>
             );
           })}
-          {/* Advanced filters toggle */}
           <button
             type="button"
             onClick={() => setShowFilters((v) => !v)}
@@ -334,7 +347,6 @@ export default function Journal() {
         </div>
       </div>
 
-      {/* Advanced Filters Panel */}
       <AnimatePresence>
         {showFilters && (
           <motion.div
@@ -354,7 +366,6 @@ export default function Journal() {
                 gap: "12px",
               }}
             >
-              {/* Status */}
               <div>
                 <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Status</label>
                 <select
@@ -369,7 +380,6 @@ export default function Journal() {
                 </select>
               </div>
 
-              {/* Symbol */}
               <div>
                 <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Symbol</label>
                 <input
@@ -382,7 +392,6 @@ export default function Journal() {
                 />
               </div>
 
-              {/* Date From */}
               <div>
                 <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Date From</label>
                 <input
@@ -394,7 +403,6 @@ export default function Journal() {
                 />
               </div>
 
-              {/* Date To */}
               <div>
                 <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Date To</label>
                 <input
@@ -406,7 +414,6 @@ export default function Journal() {
                 />
               </div>
 
-              {/* Min Qty */}
               <div>
                 <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Min Qty</label>
                 <input
@@ -419,22 +426,20 @@ export default function Journal() {
                 />
               </div>
 
-              {/* Max Qty */}
               <div>
                 <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Max Qty</label>
                 <input
                   type="number"
                   value={maxQty}
                   onChange={(e) => setMaxQty(e.target.value)}
-                  placeholder="∞"
+                  placeholder="infinity"
                   className="input-field w-full"
                   style={{ minHeight: "38px", fontSize: "13px" }}
                 />
               </div>
 
-              {/* Min P&L */}
               <div>
-                <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Min P&L (₨)</label>
+                <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Min P&L (Rs.)</label>
                 <input
                   type="number"
                   value={minPnl}
@@ -445,9 +450,8 @@ export default function Journal() {
                 />
               </div>
 
-              {/* Max P&L */}
               <div>
-                <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Max P&L (₨)</label>
+                <label style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "6px" }}>Max P&L (Rs.)</label>
                 <input
                   type="number"
                   value={maxPnl}
@@ -458,7 +462,6 @@ export default function Journal() {
                 />
               </div>
 
-              {/* Clear */}
               {activeFilterCount > 0 && (
                 <div style={{ display: "flex", alignItems: "flex-end" }}>
                   <button
@@ -476,19 +479,19 @@ export default function Journal() {
         )}
       </AnimatePresence>
 
-      {/* Results count */}
       {filtered.length !== trades.length && (
         <p style={{ fontSize: "13px", color: COLORS.textTertiary }}>
           Showing {filtered.length} of {trades.length} trades
         </p>
       )}
 
-      {/* Trade List */}
       {filtered.length > 0 ? (
         <div className="flex flex-col gap-3">
           {filtered.map((trade, i) => {
             const pnl = calcPnL(trade);
             const pnlPct = calcPnLPercent(trade);
+            const summary = buildTradeMetaSummary(trade);
+
             return (
               <motion.div
                 key={trade.id}
@@ -537,10 +540,40 @@ export default function Journal() {
                       </span>
                     </div>
                     <p className="mt-1 text-[13px] leading-relaxed" style={{ color: COLORS.textSecondary }}>
-                      {trade.quantity.toLocaleString()} × ₨{trade.entry_price}
-                      {trade.exit_price ? ` → ₨${trade.exit_price}` : " (Open)"}
-                      {trade.note && ` · ${trade.note}`}
+                      {trade.quantity.toLocaleString()} x Rs.{trade.entry_price}
+                      {trade.exit_price ? ` -> Rs.${trade.exit_price}` : " (Open)"}
+                      {summary && ` · ${summary}`}
                     </p>
+                    {(trade.entry_tags?.length || trade.exit_tags?.length || trade.entry_chart_image || trade.exit_chart_image) && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {trade.entry_tags?.map((tag) => (
+                          <span key={`entry-${trade.id}-${tag}`} style={tagStyle}>Entry: {tag}</span>
+                        ))}
+                        {trade.exit_tags?.map((tag) => (
+                          <span key={`exit-${trade.id}-${tag}`} style={tagStyle}>Exit: {tag}</span>
+                        ))}
+                        {trade.entry_chart_image && (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ minHeight: "30px", padding: "0 10px", fontSize: "11px" }}
+                            onClick={() => window.open(trade.entry_chart_image!, "_blank", "noopener,noreferrer")}
+                          >
+                            Entry Chart
+                          </button>
+                        )}
+                        {trade.exit_chart_image && (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ minHeight: "30px", padding: "0 10px", fontSize: "11px" }}
+                            onClick={() => window.open(trade.exit_chart_image!, "_blank", "noopener,noreferrer")}
+                          >
+                            Exit Chart
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center justify-between gap-4 border-t sm:border-0 sm:pl-4" style={{ borderColor: COLORS.border, paddingTop: "12px" }}>
@@ -549,8 +582,8 @@ export default function Journal() {
                       <p className="font-mono text-sm font-bold tabular-nums" style={{ color: pnl >= 0 ? COLORS.success : COLORS.danger }}>
                         {pnl >= 0 ? "+" : ""}{formatCurrency(pnl)}
                       </p>
-                      <p className="text-[11px] tabular-nums" style={{ color: pnlPct! >= 0 ? COLORS.success : COLORS.danger }}>
-                        {pnlPct! >= 0 ? "+" : ""}{formatPercent(pnlPct!)}
+                      <p className="text-[11px] tabular-nums" style={{ color: (pnlPct ?? 0) >= 0 ? COLORS.success : COLORS.danger }}>
+                        {(pnlPct ?? 0) >= 0 ? "+" : ""}{formatPercent(pnlPct ?? 0)}
                       </p>
                     </div>
                   ) : (
@@ -594,4 +627,14 @@ export default function Journal() {
       )}
     </div>
   );
+}
+
+function buildTradeMetaSummary(trade: Trade) {
+  const parts = [
+    trade.note,
+    trade.entry_note ? `Entry note: ${trade.entry_note}` : null,
+    trade.exit_note ? `Exit note: ${trade.exit_note}` : null,
+  ].filter(Boolean);
+
+  return parts.join(" | ");
 }

@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import "@/styles/landing.css";
 
 interface Suggestion { symbol: string; name: string; sector?: string; }
+const ACCEPTED_IMAGE_TYPES = "image/*";
 
 export default function TradeForm() {
   const [open, setOpen] = useState(false);
@@ -18,6 +19,12 @@ export default function TradeForm() {
   const [exitPrice, setExitPrice] = useState("");
   const [fees, setFees] = useState("");
   const [note, setNote] = useState("");
+  const [entryNote, setEntryNote] = useState("");
+  const [exitNote, setExitNote] = useState("");
+  const [entryTags, setEntryTags] = useState("");
+  const [exitTags, setExitTags] = useState("");
+  const [entryChartImage, setEntryChartImage] = useState<string | null>(null);
+  const [exitChartImage, setExitChartImage] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   // Behavioral fields
   const [emotion, setEmotion] = useState<"calm" | "fear" | "greedy" | "revenge" | null>(null);
@@ -84,12 +91,31 @@ export default function TradeForm() {
     setSymbol(""); setSelectedName(""); setSide("buy");
     setQuantity(""); setEntryPrice(""); setExitPrice("");
     setFees(""); setNote(""); setSuggestions([]); setShowSuggestions(false);
+    setEntryNote(""); setExitNote(""); setEntryTags(""); setExitTags("");
+    setEntryChartImage(null); setExitChartImage(null);
     setEmotion(null); setReason(null); setRuleFollowed(null); setMistakeTag(null);
     setStopLoss(""); setTarget("");
   };
 
+  const handleImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: (value: string | null) => void,
+  ) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      setter(dataUrl);
+    } catch {
+      toast.error("Failed to read chart image");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const parsedEntryTags = parseTags(entryTags);
+    const parsedExitTags = parseTags(exitTags);
     const trade: TradeInput = {
       symbol: symbol.toUpperCase(),
       side,
@@ -97,7 +123,13 @@ export default function TradeForm() {
       entry_price: parseFloat(entryPrice),
       exit_price: exitPrice ? parseFloat(exitPrice) : null,
       fees: fees ? parseFloat(fees) : 0,
-      note: note || undefined,
+      note: note.trim() || undefined,
+      entry_note: entryNote.trim() || undefined,
+      exit_note: exitNote.trim() || undefined,
+      entry_tags: parsedEntryTags.length > 0 ? parsedEntryTags : undefined,
+      exit_tags: parsedExitTags.length > 0 ? parsedExitTags : undefined,
+      entry_chart_image: entryChartImage,
+      exit_chart_image: exitChartImage,
       // Behavioral fields
       emotion,
       reason,
@@ -276,7 +308,7 @@ export default function TradeForm() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
                     { label: "Fees (optional)", val: fees, set: setFees, type: "number", ph: "0", step: "0.01" },
-                    { label: "Note (optional)", val: note, set: setNote, type: "text", ph: "Breakout trade", step: undefined },
+                    { label: "Note (optional)", val: note, set: setNote, type: "text", ph: "General trade note", step: undefined },
                   ].map(f => (
                     <div key={f.label}>
                       <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>{f.label}</label>
@@ -284,6 +316,102 @@ export default function TradeForm() {
                         placeholder={f.ph} className="input-field" style={{ fontFamily: "monospace", width: "100%" }} step={f.step} />
                     </div>
                   ))}
+                </div>
+
+                {/* Entry / Exit Notes, Tags, Charts */}
+                <div style={{ paddingTop: "16px", borderTop: "1px solid var(--border)" }}>
+                  <p style={{ fontSize: "11px", fontWeight: 600, color: "var(--text3)", marginBottom: "12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>Entry / Exit Journal (Optional)</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Entry note</label>
+                      <textarea
+                        value={entryNote}
+                        onChange={e => setEntryNote(e.target.value)}
+                        placeholder="Why did you buy / enter?"
+                        className="input-field"
+                        style={{ width: "100%", minHeight: "84px", resize: "vertical" }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Exit note</label>
+                      <textarea
+                        value={exitNote}
+                        onChange={e => setExitNote(e.target.value)}
+                        placeholder="Why did you sell / exit?"
+                        className="input-field"
+                        style={{ width: "100%", minHeight: "84px", resize: "vertical" }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ marginTop: "12px" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Entry tags</label>
+                      <input
+                        type="text"
+                        value={entryTags}
+                        onChange={e => setEntryTags(e.target.value)}
+                        placeholder="breakout, support, A+ setup"
+                        className="input-field"
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Exit tags</label>
+                      <input
+                        type="text"
+                        value={exitTags}
+                        onChange={e => setExitTags(e.target.value)}
+                        placeholder="target hit, panic sell, trailing stop"
+                        className="input-field"
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ marginTop: "12px" }}>
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Entry chart pic</label>
+                      <input
+                        type="file"
+                        accept={ACCEPTED_IMAGE_TYPES}
+                        className="input-field"
+                        style={{ width: "100%" }}
+                        onChange={(e) => handleImageChange(e, setEntryChartImage)}
+                      />
+                      {entryChartImage && (
+                        <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                          <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={() => window.open(entryChartImage, "_blank", "noopener,noreferrer")}>
+                            View Entry Chart
+                          </button>
+                          <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={() => setEntryChartImage(null)}>
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>Exit chart pic</label>
+                      <input
+                        type="file"
+                        accept={ACCEPTED_IMAGE_TYPES}
+                        className="input-field"
+                        style={{ width: "100%" }}
+                        onChange={(e) => handleImageChange(e, setExitChartImage)}
+                      />
+                      {exitChartImage && (
+                        <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                          <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={() => window.open(exitChartImage, "_blank", "noopener,noreferrer")}>
+                            View Exit Chart
+                          </button>
+                          <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={() => setExitChartImage(null)}>
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Behavioral Fields - Optional */}
@@ -436,4 +564,20 @@ export default function TradeForm() {
       </AnimatePresence>
     </>
   );
+}
+
+function parseTags(value: string): string[] {
+  return value
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
 }

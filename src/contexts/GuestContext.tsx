@@ -68,8 +68,20 @@ export function GuestProvider({ children }: { children: ReactNode }) {
       exit_price: input.exit_price ?? null,
       fees: input.fees ?? 0,
       note: input.note ?? null,
+      entry_note: input.entry_note ?? null,
+      exit_note: input.exit_note ?? null,
+      entry_tags: input.entry_tags ?? null,
+      exit_tags: input.exit_tags ?? null,
+      entry_chart_image: input.entry_chart_image ?? null,
+      exit_chart_image: input.exit_chart_image ?? null,
       created_at: now,
       updated_at: now,
+      emotion: input.emotion ?? null,
+      reason: input.reason ?? null,
+      rule_followed: input.rule_followed ?? null,
+      mistake_tag: input.mistake_tag ?? null,
+      stop_loss: input.stop_loss ?? null,
+      target: input.target ?? null,
     };
     setGuestTrades(prev => [trade, ...prev]);
     return trade;
@@ -107,6 +119,18 @@ export function getGuestTradesForMigration(): TradeInput[] {
       symbol: t.symbol, side: t.side, quantity: t.quantity,
       entry_price: t.entry_price, exit_price: t.exit_price,
       fees: t.fees ?? 0, note: t.note ?? undefined, date: t.date,
+      entry_note: t.entry_note ?? undefined,
+      exit_note: t.exit_note ?? undefined,
+      entry_tags: t.entry_tags ?? undefined,
+      exit_tags: t.exit_tags ?? undefined,
+      entry_chart_image: t.entry_chart_image ?? undefined,
+      exit_chart_image: t.exit_chart_image ?? undefined,
+      emotion: t.emotion ?? undefined,
+      reason: t.reason ?? undefined,
+      rule_followed: t.rule_followed ?? undefined,
+      mistake_tag: t.mistake_tag ?? undefined,
+      stop_loss: t.stop_loss ?? undefined,
+      target: t.target ?? undefined,
     }));
   } catch { return []; }
 }
