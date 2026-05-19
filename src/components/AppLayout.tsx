@@ -45,7 +45,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const sidebarWidth = sidebarOpen ? 296 : 0;
+  const sidebarWidth = sidebarOpen ? 256 : 0;
 
   return (
     <div className="brand-shell min-h-screen text-white">
@@ -53,42 +53,42 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {sidebarOpen && (
           <motion.aside
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 296, opacity: 1 }}
+            animate={{ width: 256, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.26, ease: "easeInOut" }}
-            className="fixed left-0 top-0 z-50 flex h-screen flex-col overflow-hidden border-r border-white/8 bg-[rgba(7,7,7,0.88)] px-4 py-4 backdrop-blur-2xl"
+            className="fixed left-0 top-0 z-50 flex h-screen flex-col overflow-hidden border-r border-white/8 bg-[rgba(7,7,7,0.92)] px-3 py-3 backdrop-blur-2xl"
           >
-            <div className="brand-panel-soft flex items-center justify-between rounded-[24px] px-4 py-4">
-              <Logo height={28} />
+            <div className="brand-panel-soft flex items-center justify-between rounded-[20px] px-3 py-3">
+              <Logo height={24} />
               <button
                 type="button"
                 onClick={() => setSidebarOpen(false)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/8 bg-white/[0.03] text-white/56 transition-colors hover:text-white"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/8 bg-white/[0.03] text-white/56 transition-colors hover:text-white"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="brand-panel mt-4 flex items-center gap-3 px-4 py-4">
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
-                <Sparkles className="h-5 w-5" />
+            <div className="brand-panel mt-3 flex items-center gap-3 px-3 py-3">
+              <div className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
+                <Sparkles className="h-4 w-4" />
               </div>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
                   PSXL
                 </p>
-                <p className="text-sm text-white/58">Trade with cleaner signal</p>
+                <p className="text-xs text-white/58">Trade with cleaner signal</p>
               </div>
             </div>
 
-            <nav className="mt-5 flex-1 space-y-2 overflow-y-auto">
+            <nav className="mt-4 flex-1 space-y-1.5">
               {navItems.map((item) => {
                 const active = location.pathname === item.to;
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    className={`group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all ${
+                    className={`group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[13px] font-medium transition-all ${
                       active
                         ? "border border-[var(--brand-border)] bg-[var(--brand-soft)] text-white"
                         : "border border-transparent text-white/58 hover:border-white/8 hover:bg-white/[0.03] hover:text-white"
@@ -105,44 +105,44 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               })}
             </nav>
 
-            <div className="space-y-3">
-              <div className="brand-panel rounded-[24px] px-4 py-4">
+            <div className="space-y-2.5 pt-2">
+              <div className="brand-panel rounded-[20px] px-3 py-3">
                 <div className="flex items-center gap-3">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
+                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
                     <Wallet className="h-4 w-4" />
                   </div>
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/38">
                       Account Balance
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-white">
+                    <p className="mt-1 text-[13px] font-semibold text-white">
                       {formatCurrency(stats.totalPnL)}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="brand-panel rounded-[24px] px-4 py-4">
+              <div className="brand-panel rounded-[20px] px-3 py-3">
                 <div className="flex items-center gap-3">
                   {profilePicture ? (
                     <img
                       src={profilePicture}
                       alt="Profile"
-                      className="h-11 w-11 rounded-full border border-white/10 object-cover"
+                      className="h-10 w-10 rounded-full border border-white/10 object-cover"
                     />
                   ) : (
-                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-soft)] text-sm font-bold text-[var(--brand)]">
+                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--brand-soft)] text-sm font-bold text-[var(--brand)]">
                       {user?.email?.charAt(0).toUpperCase() || "U"}
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-white">
+                    <p className="truncate text-[13px] font-semibold text-white">
                       {user?.email?.split("@")[0] || "User"}
                     </p>
                     <p className="truncate text-xs text-white/46">{user?.email || ""}</p>
                   </div>
                 </div>
-                <button onClick={signOut} className="btn-secondary mt-4 w-full">
+                <button onClick={signOut} className="btn-secondary mt-3 w-full text-[11px]">
                   <LogOut className="h-4 w-4" />
                   Sign Out
                 </button>

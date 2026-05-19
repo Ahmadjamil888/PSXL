@@ -1,97 +1,94 @@
-import { ChevronRight } from "lucide-react";
-import { motion } from "motion/react";
+import { ArrowRight, Check, ChevronRight, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
 const HERO_VIDEO_URL =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260505_101331_74f9b798-3f00-4e86-8a01-377aa16ffeaa.mp4";
 
-type LogoCard = {
-  src: string;
-  alt: string;
-  gradient: {
-    from: string;
-    to: string;
-  };
-};
+const stats = [
+  { value: "10s", label: "to log a trade" },
+  { value: "24/7", label: "journal access" },
+  { value: "1", label: "single trader workflow" },
+  { value: "0 fluff", label: "only useful signal" },
+];
 
-const logos: LogoCard[] = [
+const painPoints = [
+  "Trades get logged late, so the context disappears.",
+  "Performance numbers exist, but the reason behind them does not.",
+  "Discipline breaks long before P&L makes the problem obvious.",
+];
+
+const featureCards = [
   {
-    src: "https://svgl.app/procure.svg",
-    alt: "Procure",
-    gradient: { from: "#60a5fa", to: "#2563eb" },
+    title: "Clean Trade Journal",
+    copy: "Capture entries, exits, notes, screenshots, and rationale without turning the process into admin work.",
   },
   {
-    src: "https://svgl.app/shopify.svg",
-    alt: "Shopify",
-    gradient: { from: "#facc15", to: "#f59e0b" },
+    title: "Reality-First Dashboard",
+    copy: "See win rate, equity drift, position behavior, and repeat mistakes in a layout built for fast review.",
   },
   {
-    src: "https://svgl.app/blender.svg",
-    alt: "Blender",
-    gradient: { from: "#7dd3fc", to: "#2563eb" },
+    title: "Psychology Tracking",
+    copy: "Tag emotional states and recurring discipline failures so your review loop is tied to behavior, not just outcome.",
   },
   {
-    src: "https://svgl.app/figma.svg",
-    alt: "Figma",
-    gradient: { from: "#c084fc", to: "#7c3aed" },
-  },
-  {
-    src: "https://svgl.app/spotify.svg",
-    alt: "Spotify",
-    gradient: { from: "#fb7185", to: "#ef4444" },
-  },
-  {
-    src: "https://svgl.app/lottielab.svg",
-    alt: "Lottielab",
-    gradient: { from: "#facc15", to: "#84cc16" },
-  },
-  {
-    src: "https://svgl.app/google-cloud.svg",
-    alt: "Google Cloud",
-    gradient: { from: "#93c5fd", to: "#38bdf8" },
-  },
-  {
-    src: "https://svgl.app/bing.svg",
-    alt: "Bing",
-    gradient: { from: "#67e8f9", to: "#14b8a6" },
+    title: "Guest Demo Access",
+    copy: "Let new users inspect the product before signup and understand the workflow in a few minutes.",
   },
 ];
 
-const marqueeItems = [...logos, ...logos];
+const workflow = [
+  { step: "01", title: "Record", copy: "Log the trade the moment it happens with the details that usually get lost later." },
+  { step: "02", title: "Review", copy: "Break down outcomes, execution quality, and whether the idea matched the plan." },
+  { step: "03", title: "Correct", copy: "Spot patterns early and tighten the rules before bad behavior compounds." },
+];
 
-function MarqueeScroller() {
+const proofCards = [
+  {
+    title: "Execution over decoration",
+    copy: "A sharper layout, darker surfaces, and high-contrast panels keep attention on action, not empty chrome.",
+  },
+  {
+    title: "Built for PSX traders",
+    copy: "The product language and flow stay focused on traders who need a local, practical tracking workspace.",
+  },
+  {
+    title: "Structured for daily use",
+    copy: "The system is designed around repetition: log, evaluate, improve, repeat without friction.",
+  },
+];
+
+const faqs = [
+  {
+    q: "Who is PSXL for?",
+    a: "Independent Pakistan Stock Exchange traders who want a cleaner journal and more honest performance review.",
+  },
+  {
+    q: "Is this a broker or signal platform?",
+    a: "No. It is a tracking and review product for your own process, decisions, and execution quality.",
+  },
+  {
+    q: "Can someone try it before signing up?",
+    a: "Yes. The guest dashboard mode lets users inspect the product before creating an account.",
+  },
+];
+
+function SectionIntro({
+  kicker,
+  title,
+  copy,
+}: {
+  kicker: string;
+  title: string;
+  copy: string;
+}) {
   return (
-    <div
-      className="mt-10 overflow-hidden"
-      style={{
-        maskImage:
-          "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
-        WebkitMaskImage:
-          "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
-      }}
-    >
-      <div className="marquee-track flex w-max items-center gap-4 py-2 hover:[animation-play-state:paused]">
-        {marqueeItems.map((logo, index) => (
-          <div
-            key={`${logo.alt}-${index}`}
-            className="group relative h-24 w-40 shrink-0 flex items-center justify-center rounded-full bg-white border border-slate-200/60 shadow-sm hover:border-slate-300 transition-all overflow-hidden"
-          >
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 scale-[1.5] opacity-0 transition-all duration-500 group-hover:scale-100 group-hover:opacity-100"
-              style={{
-                background: `radial-gradient(circle at top, ${logo.gradient.from}, ${logo.gradient.to})`,
-              }}
-            />
-            <img
-              src={logo.src}
-              alt={logo.alt}
-              className="relative z-10 h-8 w-auto transition-all duration-300 group-hover:brightness-0 group-hover:invert"
-              loading="lazy"
-            />
-          </div>
-        ))}
-      </div>
+    <div className="max-w-[720px]">
+      <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--brand)]">{kicker}</p>
+      <h2 className="mt-4 font-display text-[34px] font-medium leading-[0.98] tracking-[-0.05em] text-white md:text-[48px]">
+        {title}
+      </h2>
+      <p className="mt-5 max-w-[62ch] text-sm leading-7 text-white/62 md:text-[15px]">{copy}</p>
     </div>
   );
 }
@@ -100,87 +97,241 @@ export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="px-4 py-8 md:px-8 md:py-12">
-      <div className="mx-auto flex max-w-[1440px] flex-col">
-        <section className="relative w-full max-w-[1400px] mx-auto rounded-[48px] bg-white border border-slate-200/50 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.03)] overflow-hidden h-[600px] flex flex-col">
-          <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden select-none">
+    <div className="px-4 py-6 md:px-6 md:py-8">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-6">
+        <section className="relative overflow-hidden rounded-[36px] border border-white/10 bg-black shadow-[0_36px_120px_rgba(0,0,0,0.34)]">
+          <div className="absolute inset-0">
             <video
               src={HERO_VIDEO_URL}
               autoPlay
               loop
               muted
               playsInline
-              className="w-full h-full object-cover scale-105 transition-transform duration-1000"
+              className="h-full w-full object-cover opacity-24"
             />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(159,232,112,0.22),transparent_28%),linear-gradient(135deg,rgba(0,0,0,0.16),rgba(0,0,0,0.88))]" />
           </div>
 
-          <div className="relative z-20 flex-1 px-8 md:px-16 pt-12 md:pt-16 flex flex-col items-start">
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-[620px]"
-            >
-              <h1 className="font-display text-[42px] font-medium leading-[0.98] tracking-[-0.04em] text-[#0a1b33] md:text-[56px]">
-                Foundation of the
-                <br />
-                new digital epoch
-              </h1>
-              <p className="mt-6 max-w-[540px] font-sans text-[14px] leading-6 text-slate-500 md:text-[15px]">
-                Designing products, powering ecosystems and laying the foundation
-                of a decentralized web for enterprises, builders and communities
-                alike.
-              </p>
-              <div className="mt-8">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate("/contact")}
-                  className="rounded-full bg-[#0a152d] px-6 py-3 font-sans text-sm font-medium text-white shadow-[0_10px_30px_rgba(10,21,45,0.18)]"
-                >
-                  Contact Us
-                </motion.button>
-              </div>
-            </motion.div>
-          </div>
+          <div className="relative z-10 grid gap-10 px-6 pb-8 pt-10 md:px-10 md:pb-10 md:pt-14 lg:grid-cols-[minmax(0,1.15fr)_360px] lg:px-14">
+            <div className="max-w-[760px]">
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Trading journal for disciplined review
+                </div>
 
-          <div
-            className="absolute bottom-10 left-1/2 z-30 -translate-x-1/2"
-            style={{ maxWidth: "calc(100% - 2rem)" }}
-          >
-            <motion.nav
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.65, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center bg-white/90 backdrop-blur-2xl px-1.5 py-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-slate-200/40"
-            >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-100 bg-white text-sm text-[#0a1b33] shadow-sm">
-                ✦
+                <h1 className="mt-7 max-w-[11ch] font-display text-[44px] font-medium leading-[0.92] tracking-[-0.06em] text-white md:text-[72px]">
+                  Track every trade without losing the truth behind it.
+                </h1>
+
+                <p className="mt-6 max-w-[58ch] text-[15px] leading-7 text-white/66 md:text-[17px]">
+                  PSXL gives PSX traders a cleaner journal, a harder performance read,
+                  and a calmer workflow for reviewing what actually happened.
+                </p>
+
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <button onClick={() => navigate("/auth")} className="btn-primary">
+                    Start Tracking
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                  <Link to="/dashboard?mode=guest" className="btn-secondary">
+                    Explore Demo
+                  </Link>
+                </div>
+              </motion.div>
+            </div>
+
+            <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+              <div className="flex items-center justify-between border-b border-white/8 pb-4">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">Today</p>
+                  <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Review Faster</p>
+                </div>
+                <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
               </div>
-              <Link
-                to="/features"
-                className="px-4 py-2 text-[12px] font-semibold text-slate-500 transition-colors hover:text-[#0a1b33]"
-              >
-                Products
-              </Link>
-              <a
-                href="/docs"
-                className="px-4 py-2 text-[12px] font-semibold text-slate-500 transition-colors hover:text-[#0a1b33]"
-              >
-                Docs
-              </a>
-              <Link
-                to="/contact"
-                className="ml-1 flex items-center gap-1.5 bg-white px-5 py-2 rounded-full text-[12px] font-semibold text-[#0a1b33] border border-slate-200/60 shadow-sm hover:border-slate-300 transition-all"
-              >
-                Get in touch
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Link>
-            </motion.nav>
+
+              <div className="space-y-3 py-5">
+                {[
+                  "Log entries and exits with notes",
+                  "See behavior and P&L in one place",
+                  "Keep the dashboard readable at a glance",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-3 rounded-2xl border border-white/8 bg-black/40 px-4 py-3 text-sm text-white/76"
+                  >
+                    <Check className="h-4 w-4 text-[var(--brand)]" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-[22px] border border-white/8 bg-black px-4 py-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/42">Why it works</p>
+                <p className="mt-3 text-sm leading-7 text-white/64">
+                  The landing experience now stays in the same dark visual system as the rest of the product, so the center panel no longer breaks contrast.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
-        <MarqueeScroller />
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {stats.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-6 py-6 shadow-[0_24px_70px_rgba(0,0,0,0.22)]"
+            >
+              <p className="font-display text-[34px] font-medium tracking-[-0.05em] text-white">{item.value}</p>
+              <p className="mt-2 text-sm text-white/54">{item.label}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-6 py-10 md:px-10 md:py-14">
+          <SectionIntro
+            kicker="Section 3"
+            title="Most traders do not have a logging problem. They have a recall problem."
+            copy="The issue is not whether trades are recorded at all. It is whether the context, emotion, and reasoning survive long enough to be reviewed honestly."
+          />
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            {painPoints.map((item) => (
+              <div key={item} className="rounded-[28px] border border-white/8 bg-black/40 px-5 py-5">
+                <p className="text-sm leading-7 text-white/68">{item}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-[36px] border border-white/8 bg-black px-6 py-10 md:px-10 md:py-14">
+          <SectionIntro
+            kicker="Section 4"
+            title="Core tools built around daily review instead of generic finance clutter."
+            copy="The product flow stays narrow on purpose. Every block is there to reduce friction between taking a trade and learning from it."
+          />
+
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            {featureCards.map((card) => (
+              <div
+                key={card.title}
+                className="rounded-[30px] border border-white/8 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)]"
+              >
+                <p className="text-lg font-semibold tracking-[-0.03em] text-white">{card.title}</p>
+                <p className="mt-3 text-sm leading-7 text-white/62">{card.copy}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-[36px] border border-white/8 bg-[linear-gradient(135deg,rgba(159,232,112,0.08),rgba(255,255,255,0.02))] px-6 py-10 md:px-10 md:py-14">
+          <SectionIntro
+            kicker="Section 5"
+            title="A three-step review loop that stays usable even on busy trading days."
+            copy="The workflow is intentionally compressed so it can become habit instead of aspiration."
+          />
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            {workflow.map((item) => (
+              <div key={item.step} className="rounded-[30px] border border-white/10 bg-black/50 p-6">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">{item.step}</p>
+                <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">{item.title}</p>
+                <p className="mt-3 text-sm leading-7 text-white/64">{item.copy}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-6 py-10 md:px-10 md:py-14">
+          <SectionIntro
+            kicker="Section 6"
+            title="The product is designed to surface what needs action, not impress with density."
+            copy="Landing, dashboard, and panel hierarchy now align more tightly so the public experience feels connected to the app itself."
+          />
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="rounded-[32px] border border-white/8 bg-black p-5">
+              <div className="grid gap-4 md:grid-cols-3">
+                {[
+                  { label: "Sidebar", value: "Fixed", sub: "always visible on desktop" },
+                  { label: "Tabs", value: "Smaller", sub: "reduced padding and width" },
+                  { label: "Contrast", value: "Sharper", sub: "dark center section restored" },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/42">{item.label}</p>
+                    <p className="mt-3 font-display text-[28px] font-medium tracking-[-0.04em] text-white">{item.value}</p>
+                    <p className="mt-2 text-xs leading-6 text-white/56">{item.sub}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[32px] border border-white/8 bg-white/[0.03] p-6">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">Interface Direction</p>
+              <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">
+                One dark visual system from the top of the site to the dashboard shell.
+              </p>
+              <p className="mt-4 text-sm leading-7 text-white/62">
+                That removes the abrupt white block in the middle of the landing page and keeps the brand tone coherent.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-[36px] border border-white/8 bg-black px-6 py-10 md:px-10 md:py-14">
+          <SectionIntro
+            kicker="Section 7"
+            title="A simple product story with enough proof to earn the next click."
+            copy="The goal here is not fake enterprise theater. It is a direct explanation of why the product fits a trader who values structure."
+          />
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            {proofCards.map((card) => (
+              <div key={card.title} className="rounded-[28px] border border-white/8 bg-white/[0.03] p-6">
+                <ShieldCheck className="h-5 w-5 text-[var(--brand)]" />
+                <p className="mt-4 text-lg font-semibold tracking-[-0.03em] text-white">{card.title}</p>
+                <p className="mt-3 text-sm leading-7 text-white/62">{card.copy}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-[36px] border border-white/8 bg-[linear-gradient(135deg,rgba(255,255,255,0.04),rgba(159,232,112,0.06))] px-6 py-10 md:px-10 md:py-14">
+          <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+            <div>
+              <SectionIntro
+                kicker="Section 8"
+                title="Start with the demo, then move into a real trading workflow."
+                copy="The page ends with direct next steps instead of decorative filler."
+              />
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link to="/dashboard?mode=guest" className="btn-secondary">
+                  Open Demo
+                </Link>
+                <Link to="/auth" className="btn-primary">
+                  Create Account
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {faqs.map((item) => (
+                <div key={item.q} className="rounded-[28px] border border-white/8 bg-black/45 p-5">
+                  <p className="text-base font-semibold tracking-[-0.02em] text-white">{item.q}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/62">{item.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
