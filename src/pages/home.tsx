@@ -1,26 +1,13 @@
 import { useState } from "react";
 import {
-  Aperture,
   ArrowRight,
   ArrowUpRight,
-  Box,
-  Brush,
-  Camera,
   Check,
   ChevronDown,
   ChevronUp,
-  Chrome,
-  Framer,
-  Figma,
-  Layers,
-  Palette,
-  PenTool,
-  ShieldCheck,
   Sparkle,
   Sparkles,
   TrendingUp,
-  Type,
-  Wand2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -35,41 +22,11 @@ const stats = [
   { value: "0 fluff", label: "only useful signal" },
 ];
 
-const painPoints = [
-  "Trades get logged late, so the context disappears.",
-  "Performance numbers exist, but the reason behind them does not.",
-  "Discipline breaks long before P&L makes the problem obvious.",
-];
-
-const workflow = [
-  { step: "01", title: "Record", copy: "Log the trade the moment it happens with the details that usually get lost later." },
-  { step: "02", title: "Review", copy: "Break down outcomes, execution quality, and whether the idea matched the plan." },
-  { step: "03", title: "Correct", copy: "Spot patterns early and tighten the rules before bad behavior compounds." },
-];
-
-const proofCards = [
-  {
-    title: "Execution over decoration",
-    copy: "A darker system, tighter hierarchy, and stronger contrast keep attention on actions and decisions.",
-  },
-  {
-    title: "Built for PSX traders",
-    copy: "The product language and flow stay focused on traders who need a local, practical tracking workspace.",
-  },
-  {
-    title: "Structured for daily use",
-    copy: "The system is designed around repetition: log, evaluate, improve, repeat without friction.",
-  },
-];
-
 const traderTimeline = [
   ["2026-Now", "AI Account Review", "Sharper post-market reads"],
   ["2025-2026", "Reality Dashboard", "Behavior-first portfolio pressure"],
   ["2024-2025", "Trade Journal Core", "Faster logging and cleaner recall"],
 ];
-
-const studioToolsRowOne = [Figma, Framer, Palette, PenTool, Layers, Type, Aperture, Chrome];
-const studioToolsRowTwo = [Camera, Brush, Box, Wand2, Figma, Framer, Type, Layers];
 
 const supportFaqs = [
   {
@@ -96,26 +53,6 @@ const supportFaqs = [
 
 const sectionShell =
   "relative flex min-h-[100dvh] flex-col justify-between overflow-hidden rounded-[36px] border border-white/8 px-6 py-8 shadow-[0_36px_110px_rgba(0,0,0,0.24)] md:px-10 md:py-10 lg:px-14 lg:py-14";
-
-function SectionIntro({
-  kicker,
-  title,
-  copy,
-}: {
-  kicker: string;
-  title: string;
-  copy: string;
-}) {
-  return (
-    <div className="max-w-[760px]">
-      <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--brand)]">{kicker}</p>
-      <h2 className="mt-4 font-display text-[36px] font-medium leading-[0.95] tracking-[-0.05em] text-white md:text-[52px]">
-        {title}
-      </h2>
-      <p className="mt-5 max-w-[64ch] text-sm leading-7 text-white/62 md:text-[15px]">{copy}</p>
-    </div>
-  );
-}
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -229,39 +166,6 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className={`${sectionShell} bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]`}>
-          <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-            <SectionIntro
-              kicker="Section 2"
-              title="Most traders do not have a logging problem. They have a recall problem."
-              copy="The issue is not whether trades are recorded at all. It is whether the context, emotion, and reasoning survive long enough to be reviewed honestly."
-            />
-
-            <div className="grid gap-4">
-              {painPoints.map((item, index) => (
-                <div key={item} className="rounded-[28px] border border-white/8 bg-black/40 px-5 py-5">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Pressure {index + 1}</p>
-                  <p className="mt-3 text-sm leading-7 text-white/68">{item}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-10 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-[32px] border border-white/8 bg-black p-6">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/42">System gap</p>
-              <p className="mt-4 max-w-[28ch] text-2xl font-semibold tracking-[-0.04em] text-white">
-                If the note, chart, and reasoning vanish, the review becomes fiction.
-              </p>
-            </div>
-            <div className="rounded-[32px] border border-white/8 bg-white/[0.03] p-6">
-              <p className="text-sm leading-7 text-white/62">
-                PSXL is aimed at preserving the part of the trade that usually disappears first: why you entered, what you saw, what rule you ignored, and whether that pattern keeps repeating.
-              </p>
-            </div>
-          </div>
-        </section>
-
         <section className="px-4 sm:px-6 md:px-10 lg:px-14 py-6 sm:py-8 md:py-10 lg:min-h-[100dvh]">
           <div className="mx-auto flex max-w-[1440px] flex-col gap-6">
             <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,3fr)_auto] lg:gap-10">
@@ -368,26 +272,9 @@ export default function Landing() {
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.1),rgba(0,0,0,0.76))]" />
                   <div className="relative z-10 flex h-full flex-col justify-between p-5 md:p-6">
                     <SectionLabel>Daily Software</SectionLabel>
-                    <div className="space-y-3 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-                      <div className="overflow-hidden">
-                        <div className="flex w-max animate-marquee-left gap-3">
-                          {[...studioToolsRowOne, ...studioToolsRowOne].map((Icon, index) => (
-                            <div key={`row-one-${index}`} className="liquid-glass flex h-14 w-14 items-center justify-center rounded-xl md:h-16 md:w-16">
-                              <Icon className="h-5 w-5 text-white/82 md:h-6 md:w-6" strokeWidth={1.5} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="overflow-hidden">
-                        <div className="flex w-max animate-marquee-right gap-3">
-                          {[...studioToolsRowTwo, ...studioToolsRowTwo].map((Icon, index) => (
-                            <div key={`row-two-${index}`} className="liquid-glass flex h-14 w-14 items-center justify-center rounded-xl md:h-16 md:w-16">
-                              <Icon className="h-5 w-5 text-white/82 md:h-6 md:w-6" strokeWidth={1.5} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                    <p className="max-w-[28ch] text-sm leading-7 text-white/72">
+                      The product stays built around quick logging, honest review, and a calmer workflow that does not bury the signal.
+                    </p>
                   </div>
                 </div>
 
@@ -415,89 +302,6 @@ export default function Landing() {
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-
-        <section className={`${sectionShell} bg-[linear-gradient(135deg,rgba(159,232,112,0.08),rgba(255,255,255,0.02))]`}>
-          <SectionIntro
-            kicker="Section 4"
-            title="A three-step review loop that stays usable even on busy trading days."
-            copy="The workflow is intentionally compressed so it can become habit instead of aspiration."
-          />
-
-          <div className="mt-10 grid flex-1 gap-4 lg:grid-cols-3">
-            {workflow.map((item) => (
-              <div key={item.step} className="flex min-h-[280px] flex-col justify-between rounded-[30px] border border-white/10 bg-black/50 p-6">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">{item.step}</p>
-                  <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">{item.title}</p>
-                  <p className="mt-3 text-sm leading-7 text-white/64">{item.copy}</p>
-                </div>
-                <p className="text-xs uppercase tracking-[0.16em] text-white/34">Built for repetition, not ceremony</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className={`${sectionShell} bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]`}>
-          <SectionIntro
-            kicker="Section 5"
-            title="Gemini can read the account, not just the chat box."
-            copy="Trade history, holdings, behavior tags, and concentration now feed the account review so the product can point out what stands out before it becomes expensive."
-          />
-
-          <div className="mt-10 grid flex-1 gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-[32px] border border-white/8 bg-black p-5">
-              <div className="grid gap-4 md:grid-cols-3">
-                {[
-                  { label: "Trades", value: "Synced", sub: "Supabase-backed account context" },
-                  { label: "Holdings", value: "Mapped", sub: "open positions and concentration" },
-                  { label: "Co-Trader", value: "Sharper", sub: "points out issues and next action" },
-                ].map((item) => (
-                  <div key={item.label} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/42">{item.label}</p>
-                    <p className="mt-3 font-display text-[28px] font-medium tracking-[-0.04em] text-white">{item.value}</p>
-                    <p className="mt-2 text-xs leading-6 text-white/56">{item.sub}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between rounded-[32px] border border-white/8 bg-white/[0.03] p-6">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">Account Review</p>
-                <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">
-                  The AI now looks into the user account data and points out what needs attention.
-                </p>
-                <p className="mt-4 text-sm leading-7 text-white/62">
-                  That includes trades fetched from Supabase, current holdings, rule breaks, recurring mistakes, and whether one position is carrying too much weight.
-                </p>
-              </div>
-              <div className="mt-8 rounded-[24px] border border-white/8 bg-black/40 p-4 text-sm leading-7 text-white/60">
-                Output stays on analysis and process correction. It does not switch into trade signals.
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className={`${sectionShell} bg-black`}>
-          <SectionIntro
-            kicker="Section 6"
-            title="A simple product story with enough proof to earn the next click."
-            copy="The goal here is not fake enterprise theater. It is a direct explanation of why the product fits a trader who values structure."
-          />
-
-          <div className="mt-10 grid flex-1 gap-4 lg:grid-cols-3">
-            {proofCards.map((card) => (
-              <div key={card.title} className="flex min-h-[260px] flex-col justify-between rounded-[28px] border border-white/8 bg-white/[0.03] p-6">
-                <div>
-                  <ShieldCheck className="h-5 w-5 text-[var(--brand)]" />
-                  <p className="mt-4 text-lg font-semibold tracking-[-0.03em] text-white">{card.title}</p>
-                  <p className="mt-3 text-sm leading-7 text-white/62">{card.copy}</p>
-                </div>
-                <div className="mt-6 h-px w-full bg-white/8" />
-              </div>
-            ))}
           </div>
         </section>
 
