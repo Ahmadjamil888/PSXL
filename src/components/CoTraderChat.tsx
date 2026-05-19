@@ -2,8 +2,15 @@ import { useState, useRef, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatContext';
 import { Send, X, Minimize2, Maximize2, Bot, User, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { AIAnalysisRequest } from '@/lib/ai/gemini';
 
-export default function CoTraderChat() {
+const QUICK_PROMPTS = [
+  "What is the biggest problem in my account?",
+  "Which habit is hurting my results most?",
+  "What should I review before my next trade?",
+];
+
+export default function CoTraderChat({ context }: { context?: Partial<AIAnalysisRequest> }) {
   const { messages, isLoading, sendMessage, clearChat } = useChat();
   const [input, setInput] = useState('');
   const [isMinimized, setIsMinimized] = useState(false);
@@ -24,7 +31,7 @@ export default function CoTraderChat() {
 
     const message = input.trim();
     setInput('');
-    await sendMessage(message);
+    await sendMessage(message, context);
   };
 
   if (!isOpen) {
@@ -90,7 +97,20 @@ export default function CoTraderChat() {
                 <div className="text-center py-8">
                   <Bot className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
                   <p className="text-gray-400 text-sm mb-2">Hi, I'm your AI Co-Trader</p>
-                  <p className="text-gray-500 text-xs">Ask me about your portfolio, trading patterns, or get behavioral coaching.</p>
+                  <p className="text-gray-500 text-xs">I can read your trades, holdings, and behavior tags to point out account risks.</p>
+                  <div className="mt-4 flex flex-wrap justify-center gap-2">
+                    {QUICK_PROMPTS.map((prompt) => (
+                      <button
+                        key={prompt}
+                        type="button"
+                        onClick={() => void sendMessage(prompt, context)}
+                        disabled={isLoading}
+                        className="rounded-full border border-[#2f2f2f] bg-[#1d1d1d] px-3 py-2 text-[11px] text-gray-300 transition-colors hover:border-emerald-500/40 hover:text-white disabled:opacity-60"
+                      >
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 

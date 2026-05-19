@@ -2,6 +2,7 @@ import { useTrades, getTradeStats, calcPnL, computeHoldings } from "@/hooks/useT
 import { formatCurrency, formatPercent } from "@/lib/psx";
 import TradeForm from "@/components/TradeForm";
 import CoTraderChat from "@/components/CoTraderChat";
+import AccountInsightPanel from "@/components/AccountInsightPanel";
 import { BarChart3, HelpCircle, Filter, X, TrendingUp, Package, AlertTriangle, Target, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -9,6 +10,7 @@ import {
   BarChart, Bar, Cell, CartesianGrid, PieChart, Pie, Legend, RadialBarChart, RadialBar
 } from "recharts";
 import { useState, useMemo } from "react";
+import { buildAccountSnapshot, buildBehavioralPatterns, toAIHoldings, toAITrades } from "@/lib/ai/accountContext";
 
 // ── Semantic color palette ───────────────────────────────────────────────────
 const COLORS = {
@@ -73,6 +75,13 @@ export default function Dashboard() {
   const { data: trades = [], isLoading } = useTrades();
   const stats = getTradeStats(trades);
   const holdings = useMemo(() => computeHoldings(trades), [trades]);
+  const aiContext = useMemo(() => ({
+    context: "after_market" as const,
+    trades: toAITrades(trades),
+    holdings: toAIHoldings(holdings),
+    accountSnapshot: buildAccountSnapshot(trades),
+    behavioralPatterns: buildBehavioralPatterns(trades),
+  }), [trades, holdings]);
 
   const totalCostBasis = holdings.reduce((s, h) => s + h.costBasis, 0);
   const totalMarketValue = holdings.reduce((s, h) => s + h.marketValue, 0);
@@ -175,6 +184,8 @@ export default function Dashboard() {
           </div>
         </div>
       </motion.div>
+
+      <AccountInsightPanel trades={trades} />
 
       {/* Stat cards */}
       <div className="stat-grid">
@@ -876,7 +887,7 @@ export default function Dashboard() {
         )}
       </motion.div>
       
-      <CoTraderChat />
+      <CoTraderChat context={aiContext} />
     </div>
   );
 }

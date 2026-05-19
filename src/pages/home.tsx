@@ -32,8 +32,8 @@ const featureCards = [
     copy: "Tag emotional states and recurring discipline failures so your review loop is tied to behavior, not just outcome.",
   },
   {
-    title: "Guest Demo Access",
-    copy: "Let new users inspect the product before signup and understand the workflow in a few minutes.",
+    title: "Gemini Account Read",
+    copy: "Let the AI look across trades, holdings, and behavior tags to point out what deserves attention now.",
   },
 ];
 
@@ -46,7 +46,7 @@ const workflow = [
 const proofCards = [
   {
     title: "Execution over decoration",
-    copy: "A sharper layout, darker surfaces, and high-contrast panels keep attention on action, not empty chrome.",
+    copy: "A darker system, tighter hierarchy, and stronger contrast keep attention on actions and decisions.",
   },
   {
     title: "Built for PSX traders",
@@ -73,6 +73,9 @@ const faqs = [
   },
 ];
 
+const sectionShell =
+  "relative flex min-h-[100dvh] flex-col justify-between overflow-hidden rounded-[36px] border border-white/8 px-6 py-8 shadow-[0_36px_110px_rgba(0,0,0,0.24)] md:px-10 md:py-10 lg:px-14 lg:py-14";
+
 function SectionIntro({
   kicker,
   title,
@@ -83,12 +86,12 @@ function SectionIntro({
   copy: string;
 }) {
   return (
-    <div className="max-w-[720px]">
+    <div className="max-w-[760px]">
       <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--brand)]">{kicker}</p>
-      <h2 className="mt-4 font-display text-[34px] font-medium leading-[0.98] tracking-[-0.05em] text-white md:text-[48px]">
+      <h2 className="mt-4 font-display text-[36px] font-medium leading-[0.95] tracking-[-0.05em] text-white md:text-[52px]">
         {title}
       </h2>
-      <p className="mt-5 max-w-[62ch] text-sm leading-7 text-white/62 md:text-[15px]">{copy}</p>
+      <p className="mt-5 max-w-[64ch] text-sm leading-7 text-white/62 md:text-[15px]">{copy}</p>
     </div>
   );
 }
@@ -99,7 +102,7 @@ export default function Landing() {
   return (
     <div className="px-4 py-6 md:px-6 md:py-8">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-6">
-        <section className="relative overflow-hidden rounded-[36px] border border-white/10 bg-black shadow-[0_36px_120px_rgba(0,0,0,0.34)]">
+        <section className={`${sectionShell} border-white/10 bg-black`}>
           <div className="absolute inset-0">
             <video
               src={HERO_VIDEO_URL}
@@ -112,8 +115,8 @@ export default function Landing() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(159,232,112,0.22),transparent_28%),linear-gradient(135deg,rgba(0,0,0,0.16),rgba(0,0,0,0.88))]" />
           </div>
 
-          <div className="relative z-10 grid gap-10 px-6 pb-8 pt-10 md:px-10 md:pb-10 md:pt-14 lg:grid-cols-[minmax(0,1.15fr)_360px] lg:px-14">
-            <div className="max-w-[760px]">
+          <div className="relative z-10 grid min-h-full gap-10 lg:grid-cols-[minmax(0,1.08fr)_360px] lg:items-between">
+            <div className="flex flex-col justify-between">
               <motion.div
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -143,9 +146,21 @@ export default function Landing() {
                   </Link>
                 </div>
               </motion.div>
+
+              <div className="mt-10 grid gap-4 md:grid-cols-4">
+                {stats.map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] px-5 py-5 shadow-[0_24px_70px_rgba(0,0,0,0.18)]"
+                  >
+                    <p className="font-display text-[30px] font-medium tracking-[-0.05em] text-white md:text-[34px]">{item.value}</p>
+                    <p className="mt-2 text-sm text-white/54">{item.label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+            <div className="flex flex-col justify-between rounded-[28px] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
               <div className="flex items-center justify-between border-b border-white/8 pb-4">
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">Today</p>
@@ -160,7 +175,7 @@ export default function Landing() {
                 {[
                   "Log entries and exits with notes",
                   "See behavior and P&L in one place",
-                  "Keep the dashboard readable at a glance",
+                  "Let Gemini point out account pressure",
                 ].map((item) => (
                   <div
                     key={item}
@@ -175,93 +190,104 @@ export default function Landing() {
               <div className="rounded-[22px] border border-white/8 bg-black px-4 py-4">
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/42">Why it works</p>
                 <p className="mt-3 text-sm leading-7 text-white/64">
-                  The landing experience now stays in the same dark visual system as the rest of the product, so the center panel no longer breaks contrast.
+                  The landing experience now uses full-height sections and keeps the same dark visual system as the product, so the page feels deliberate instead of clipped.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {stats.map((item) => (
-            <div
-              key={item.label}
-              className="rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-6 py-6 shadow-[0_24px_70px_rgba(0,0,0,0.22)]"
-            >
-              <p className="font-display text-[34px] font-medium tracking-[-0.05em] text-white">{item.value}</p>
-              <p className="mt-2 text-sm text-white/54">{item.label}</p>
+        <section className={`${sectionShell} bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]`}>
+          <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+            <SectionIntro
+              kicker="Section 2"
+              title="Most traders do not have a logging problem. They have a recall problem."
+              copy="The issue is not whether trades are recorded at all. It is whether the context, emotion, and reasoning survive long enough to be reviewed honestly."
+            />
+
+            <div className="grid gap-4">
+              {painPoints.map((item, index) => (
+                <div key={item} className="rounded-[28px] border border-white/8 bg-black/40 px-5 py-5">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Pressure {index + 1}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/68">{item}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </section>
+          </div>
 
-        <section className="rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-6 py-10 md:px-10 md:py-14">
-          <SectionIntro
-            kicker="Section 3"
-            title="Most traders do not have a logging problem. They have a recall problem."
-            copy="The issue is not whether trades are recorded at all. It is whether the context, emotion, and reasoning survive long enough to be reviewed honestly."
-          />
-
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
-            {painPoints.map((item) => (
-              <div key={item} className="rounded-[28px] border border-white/8 bg-black/40 px-5 py-5">
-                <p className="text-sm leading-7 text-white/68">{item}</p>
-              </div>
-            ))}
+          <div className="mt-10 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="rounded-[32px] border border-white/8 bg-black p-6">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/42">System gap</p>
+              <p className="mt-4 max-w-[28ch] text-2xl font-semibold tracking-[-0.04em] text-white">
+                If the note, chart, and reasoning vanish, the review becomes fiction.
+              </p>
+            </div>
+            <div className="rounded-[32px] border border-white/8 bg-white/[0.03] p-6">
+              <p className="text-sm leading-7 text-white/62">
+                PSXL is aimed at preserving the part of the trade that usually disappears first: why you entered, what you saw, what rule you ignored, and whether that pattern keeps repeating.
+              </p>
+            </div>
           </div>
         </section>
 
-        <section className="rounded-[36px] border border-white/8 bg-black px-6 py-10 md:px-10 md:py-14">
+        <section className={`${sectionShell} bg-black`}>
           <SectionIntro
-            kicker="Section 4"
+            kicker="Section 3"
             title="Core tools built around daily review instead of generic finance clutter."
             copy="The product flow stays narrow on purpose. Every block is there to reduce friction between taking a trade and learning from it."
           />
 
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <div className="mt-10 grid flex-1 gap-4 md:grid-cols-2">
             {featureCards.map((card) => (
               <div
                 key={card.title}
-                className="rounded-[30px] border border-white/8 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)]"
+                className="flex min-h-[220px] flex-col justify-between rounded-[30px] border border-white/8 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)]"
               >
-                <p className="text-lg font-semibold tracking-[-0.03em] text-white">{card.title}</p>
-                <p className="mt-3 text-sm leading-7 text-white/62">{card.copy}</p>
+                <div>
+                  <p className="text-lg font-semibold tracking-[-0.03em] text-white">{card.title}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/62">{card.copy}</p>
+                </div>
+                <div className="mt-6 h-px w-full bg-white/8" />
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-[36px] border border-white/8 bg-[linear-gradient(135deg,rgba(159,232,112,0.08),rgba(255,255,255,0.02))] px-6 py-10 md:px-10 md:py-14">
+        <section className={`${sectionShell} bg-[linear-gradient(135deg,rgba(159,232,112,0.08),rgba(255,255,255,0.02))]`}>
           <SectionIntro
-            kicker="Section 5"
+            kicker="Section 4"
             title="A three-step review loop that stays usable even on busy trading days."
             copy="The workflow is intentionally compressed so it can become habit instead of aspiration."
           />
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+          <div className="mt-10 grid flex-1 gap-4 lg:grid-cols-3">
             {workflow.map((item) => (
-              <div key={item.step} className="rounded-[30px] border border-white/10 bg-black/50 p-6">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">{item.step}</p>
-                <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">{item.title}</p>
-                <p className="mt-3 text-sm leading-7 text-white/64">{item.copy}</p>
+              <div key={item.step} className="flex min-h-[280px] flex-col justify-between rounded-[30px] border border-white/10 bg-black/50 p-6">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">{item.step}</p>
+                  <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">{item.title}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/64">{item.copy}</p>
+                </div>
+                <p className="text-xs uppercase tracking-[0.16em] text-white/34">Built for repetition, not ceremony</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-6 py-10 md:px-10 md:py-14">
+        <section className={`${sectionShell} bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]`}>
           <SectionIntro
-            kicker="Section 6"
-            title="The product is designed to surface what needs action, not impress with density."
-            copy="Landing, dashboard, and panel hierarchy now align more tightly so the public experience feels connected to the app itself."
+            kicker="Section 5"
+            title="Gemini can read the account, not just the chat box."
+            copy="Trade history, holdings, behavior tags, and concentration now feed the account review so the product can point out what stands out before it becomes expensive."
           />
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="mt-10 grid flex-1 gap-4 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="rounded-[32px] border border-white/8 bg-black p-5">
               <div className="grid gap-4 md:grid-cols-3">
                 {[
-                  { label: "Sidebar", value: "Fixed", sub: "always visible on desktop" },
-                  { label: "Tabs", value: "Smaller", sub: "reduced padding and width" },
-                  { label: "Contrast", value: "Sharper", sub: "dark center section restored" },
+                  { label: "Trades", value: "Synced", sub: "Supabase-backed account context" },
+                  { label: "Holdings", value: "Mapped", sub: "open positions and concentration" },
+                  { label: "Co-Trader", value: "Sharper", sub: "points out issues and next action" },
                 ].map((item) => (
                   <div key={item.label} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/42">{item.label}</p>
@@ -272,41 +298,49 @@ export default function Landing() {
               </div>
             </div>
 
-            <div className="rounded-[32px] border border-white/8 bg-white/[0.03] p-6">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">Interface Direction</p>
-              <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">
-                One dark visual system from the top of the site to the dashboard shell.
-              </p>
-              <p className="mt-4 text-sm leading-7 text-white/62">
-                That removes the abrupt white block in the middle of the landing page and keeps the brand tone coherent.
-              </p>
+            <div className="flex flex-col justify-between rounded-[32px] border border-white/8 bg-white/[0.03] p-6">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">Account Review</p>
+                <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">
+                  The AI now looks into the user account data and points out what needs attention.
+                </p>
+                <p className="mt-4 text-sm leading-7 text-white/62">
+                  That includes trades fetched from Supabase, current holdings, rule breaks, recurring mistakes, and whether one position is carrying too much weight.
+                </p>
+              </div>
+              <div className="mt-8 rounded-[24px] border border-white/8 bg-black/40 p-4 text-sm leading-7 text-white/60">
+                Output stays on analysis and process correction. It does not switch into trade signals.
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="rounded-[36px] border border-white/8 bg-black px-6 py-10 md:px-10 md:py-14">
+        <section className={`${sectionShell} bg-black`}>
           <SectionIntro
-            kicker="Section 7"
+            kicker="Section 6"
             title="A simple product story with enough proof to earn the next click."
             copy="The goal here is not fake enterprise theater. It is a direct explanation of why the product fits a trader who values structure."
           />
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+          <div className="mt-10 grid flex-1 gap-4 lg:grid-cols-3">
             {proofCards.map((card) => (
-              <div key={card.title} className="rounded-[28px] border border-white/8 bg-white/[0.03] p-6">
-                <ShieldCheck className="h-5 w-5 text-[var(--brand)]" />
-                <p className="mt-4 text-lg font-semibold tracking-[-0.03em] text-white">{card.title}</p>
-                <p className="mt-3 text-sm leading-7 text-white/62">{card.copy}</p>
+              <div key={card.title} className="flex min-h-[260px] flex-col justify-between rounded-[28px] border border-white/8 bg-white/[0.03] p-6">
+                <div>
+                  <ShieldCheck className="h-5 w-5 text-[var(--brand)]" />
+                  <p className="mt-4 text-lg font-semibold tracking-[-0.03em] text-white">{card.title}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/62">{card.copy}</p>
+                </div>
+                <div className="mt-6 h-px w-full bg-white/8" />
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-[36px] border border-white/8 bg-[linear-gradient(135deg,rgba(255,255,255,0.04),rgba(159,232,112,0.06))] px-6 py-10 md:px-10 md:py-14">
-          <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-            <div>
+        <section className={`${sectionShell} bg-[linear-gradient(135deg,rgba(255,255,255,0.04),rgba(159,232,112,0.06))]`}>
+          <div className="grid flex-1 gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+            <div className="flex h-full flex-col justify-between">
               <SectionIntro
-                kicker="Section 8"
+                kicker="Section 7"
                 title="Start with the demo, then move into a real trading workflow."
                 copy="The page ends with direct next steps instead of decorative filler."
               />
@@ -322,7 +356,7 @@ export default function Landing() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid gap-4">
               {faqs.map((item) => (
                 <div key={item.q} className="rounded-[28px] border border-white/8 bg-black/45 p-5">
                   <p className="text-base font-semibold tracking-[-0.02em] text-white">{item.q}</p>

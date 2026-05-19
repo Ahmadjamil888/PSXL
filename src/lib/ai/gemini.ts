@@ -63,6 +63,20 @@ export interface AIAnalysisRequest {
   trades?: Trade[];
   holdings?: PortfolioHolding[];
   news?: NewsItem[];
+  accountSnapshot?: {
+    totalTrades: number;
+    closedTrades: number;
+    openPositions: number;
+    winRate: number;
+    realizedPnL: number;
+    unrealizedPnL?: number;
+    concentrationSymbol?: string;
+    concentrationPct?: number;
+    bestSymbol?: string;
+    worstSymbol?: string;
+    recurringMistakes?: string[];
+    disciplineFlags?: string[];
+  };
   behavioralPatterns?: {
     revengeTrading: boolean;
     overtrading: boolean;
@@ -154,7 +168,7 @@ export async function analyzeWithAIStreaming(
  * This ensures the AI acts as a decision intelligence system, NOT a signal provider
  */
 function buildSystemPrompt(request: AIAnalysisRequest): string {
-  const { trades, holdings, news, behavioralPatterns, context, userMessage } = request;
+  const { trades, holdings, news, accountSnapshot, behavioralPatterns, context, userMessage } = request;
 
   let prompt = `You are an AI Co-Trader for PSX. Role: DECISION INTELLIGENCE, NOT signals.
 Rules: No buy/sell signals, no guarantees, cautious language only, focus on interpretation and behavioral correction.
@@ -189,6 +203,30 @@ Rules: No buy/sell signals, no guarantees, cautious language only, focus on inte
     prompt += `\n`;
   }
 
+  if (accountSnapshot) {
+    prompt += `Account Snapshot: trades=${accountSnapshot.totalTrades}, closed=${accountSnapshot.closedTrades}, open_positions=${accountSnapshot.openPositions}, win_rate=${accountSnapshot.winRate.toFixed(1)}%, realized_pnl=${accountSnapshot.realizedPnL.toFixed(0)}`;
+    if (typeof accountSnapshot.unrealizedPnL === 'number') {
+      prompt += `, unrealized_pnl=${accountSnapshot.unrealizedPnL.toFixed(0)}`;
+    }
+    if (accountSnapshot.concentrationSymbol && typeof accountSnapshot.concentrationPct === 'number') {
+      prompt += `, top_position=${accountSnapshot.concentrationSymbol}(${accountSnapshot.concentrationPct.toFixed(1)}%)`;
+    }
+    if (accountSnapshot.bestSymbol) {
+      prompt += `, best_symbol=${accountSnapshot.bestSymbol}`;
+    }
+    if (accountSnapshot.worstSymbol) {
+      prompt += `, worst_symbol=${accountSnapshot.worstSymbol}`;
+    }
+    prompt += `\n`;
+
+    if (accountSnapshot.recurringMistakes?.length) {
+      prompt += `Recurring mistakes: ${accountSnapshot.recurringMistakes.join(', ')}\n`;
+    }
+    if (accountSnapshot.disciplineFlags?.length) {
+      prompt += `Discipline flags: ${accountSnapshot.disciplineFlags.join(', ')}\n`;
+    }
+  }
+
   // Add behavioral patterns
   if (behavioralPatterns) {
     const patterns = [];
@@ -212,7 +250,7 @@ Rules: No buy/sell signals, no guarantees, cautious language only, focus on inte
     prompt += `User: ${userMessage}\n`;
   }
 
-  prompt += `Response: Ultra-concise (under 100 words), plain text (no markdown), mentoring tone, cautious guidance. No bold formatting.`;
+  prompt += `Response: Ultra-concise (under 130 words), plain text (no markdown), mentoring tone, cautious guidance. Point out the biggest issue in the account, why it matters, and one practical next action. No bold formatting.`;
 
   return prompt;
 }
