@@ -5,6 +5,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@property --c5-x1 { syntax: '<percentage>'; inherits: false; initial-value: 10%; }
+@property --c5-y1 { syntax: '<percentage>'; inherits: false; initial-value: 10%; }
+@property --c5-x2 { syntax: '<percentage>'; inherits: false; initial-value: 90%; }
+@property --c5-y2 { syntax: '<percentage>'; inherits: false; initial-value: 10%; }
+@property --c5-x3 { syntax: '<percentage>'; inherits: false; initial-value: 10%; }
+@property --c5-y3 { syntax: '<percentage>'; inherits: false; initial-value: 90%; }
+@property --c5-x4 { syntax: '<percentage>'; inherits: false; initial-value: 90%; }
+@property --c5-y4 { syntax: '<percentage>'; inherits: false; initial-value: 90%; }
+@property --c5-x5 { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
+@property --c5-y5 { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
+@property --c5-s1 { syntax: '<percentage>'; inherits: false; initial-value: 55%; }
+@property --c5-s2 { syntax: '<percentage>'; inherits: false; initial-value: 55%; }
+@property --c5-s3 { syntax: '<percentage>'; inherits: false; initial-value: 55%; }
+@property --c5-s4 { syntax: '<percentage>'; inherits: false; initial-value: 55%; }
+@property --c5-s5 { syntax: '<percentage>'; inherits: false; initial-value: 65%; }
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -451,5 +467,150 @@
 
   .glow-loss {
     box-shadow: 0 0 0 1px rgba(255, 110, 98, 0.12), 0 18px 40px rgba(255, 110, 98, 0.08);
+  }
+
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .liquid-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.45) 0%,
+      rgba(255,255,255,0.15) 20%,
+      rgba(255,255,255,0) 40%,
+      rgba(255,255,255,0) 60%,
+      rgba(255,255,255,0.15) 80%,
+      rgba(255,255,255,0.45) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .noise-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.55;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240px 240px;
+  }
+
+  .animate-marquee-left {
+    animation: marquee-left 22s linear infinite;
+  }
+
+  .animate-marquee-right {
+    animation: marquee-right 26s linear infinite;
+  }
+
+  .c5-animated-gradient {
+    background-color: #ff8e53;
+    background-image:
+      radial-gradient(circle at var(--c5-x1) var(--c5-y1), #fff1aa 0px, transparent var(--c5-s1)),
+      radial-gradient(circle at var(--c5-x2) var(--c5-y2), #ff4b2b 0px, transparent var(--c5-s2)),
+      radial-gradient(circle at var(--c5-x3) var(--c5-y3), #8aff8a 0px, transparent var(--c5-s3)),
+      radial-gradient(circle at var(--c5-x4) var(--c5-y4), #ffd000 0px, transparent var(--c5-s4)),
+      radial-gradient(circle at var(--c5-x5) var(--c5-y5), #ff1493 0px, transparent var(--c5-s5));
+    animation:
+      c5-blob1 5s ease-in-out infinite,
+      c5-blob2 6s ease-in-out infinite,
+      c5-blob3 5.5s ease-in-out infinite,
+      c5-blob4 6.5s ease-in-out infinite,
+      c5-blob5 4s ease-in-out infinite,
+      c5-size1 3.5s ease-in-out infinite,
+      c5-size2 4.2s ease-in-out infinite,
+      c5-size3 3.8s ease-in-out infinite,
+      c5-size4 4.6s ease-in-out infinite,
+      c5-size5 3s ease-in-out infinite;
+  }
+}
+
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes c5-blob1 {
+  0%,100% { --c5-x1: 5%; --c5-y1: 5%; }
+  25% { --c5-x1: 45%; --c5-y1: 20%; }
+  50% { --c5-x1: 30%; --c5-y1: 55%; }
+  75% { --c5-x1: 0%; --c5-y1: 30%; }
+}
+
+@keyframes c5-blob2 {
+  0%,100% { --c5-x2: 95%; --c5-y2: 5%; }
+  33% { --c5-x2: 55%; --c5-y2: 35%; }
+  66% { --c5-x2: 80%; --c5-y2: 65%; }
+}
+
+@keyframes c5-blob3 {
+  0%,100% { --c5-x3: 5%; --c5-y3: 95%; }
+  40% { --c5-x3: 45%; --c5-y3: 65%; }
+  70% { --c5-x3: 25%; --c5-y3: 100%; }
+}
+
+@keyframes c5-blob4 {
+  0%,100% { --c5-x4: 95%; --c5-y4: 95%; }
+  30% { --c5-x4: 60%; --c5-y4: 70%; }
+  60% { --c5-x4: 100%; --c5-y4: 50%; }
+}
+
+@keyframes c5-blob5 {
+  0%,100% { --c5-x5: 50%; --c5-y5: 50%; }
+  25% { --c5-x5: 70%; --c5-y5: 30%; }
+  50% { --c5-x5: 40%; --c5-y5: 70%; }
+  75% { --c5-x5: 30%; --c5-y5: 40%; }
+}
+
+@keyframes c5-size1 {
+  0%,100% { --c5-s1: 45%; }
+  50% { --c5-s1: 80%; }
+}
+
+@keyframes c5-size2 {
+  0%,100% { --c5-s2: 45%; }
+  50% { --c5-s2: 85%; }
+}
+
+@keyframes c5-size3 {
+  0%,100% { --c5-s3: 45%; }
+  50% { --c5-s3: 78%; }
+}
+
+@keyframes c5-size4 {
+  0%,100% { --c5-s4: 45%; }
+  50% { --c5-s4: 82%; }
+}
+
+@keyframes c5-size5 {
+  0%,100% { --c5-s5: 50%; }
+  50% { --c5-s5: 85%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c5-animated-gradient,
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation: none;
   }
 }
