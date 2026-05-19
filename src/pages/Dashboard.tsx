@@ -2,7 +2,7 @@ import { useTrades, getTradeStats, calcPnL, computeHoldings } from "@/hooks/useT
 import { formatCurrency, formatPercent } from "@/lib/psx";
 import TradeForm from "@/components/TradeForm";
 import CoTraderChat from "@/components/CoTraderChat";
-import AccountInsightPanel from "@/components/AccountInsightPanel";
+import ThemeToggle from "@/components/ThemeToggle";
 import { BarChart3, HelpCircle, Filter, X, TrendingUp, Package, AlertTriangle, Target, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -42,7 +42,7 @@ const COLORS = {
 const TT = {
   contentStyle: {
     backgroundColor: 'var(--bg-card, #262626)',
-    border: '1px solid var(--border-hover, #3A3A3A)',
+    border: '1px solid var(--border, #3A3A3A)',
     borderRadius: '8px',
     color: 'var(--text-primary, #FFFFFF)',
     fontSize: '12px',
@@ -153,9 +153,18 @@ export default function Dashboard() {
           <h1 className="dash-page-title">Dashboard</h1>
           <p className="dash-page-desc">Uncomfortable truths about your trading behavior.</p>
         </div>
-        <div className="w-full sm:w-auto sm:shrink-0" style={{ position: "relative" }}>
-          <TradeForm />
-          <span style={{ position: "absolute", top: "-4px", right: "-4px", width: "8px", height: "8px", borderRadius: "50%", background: "var(--green)", animation: "pulse 2s infinite" }} />
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:shrink-0 sm:items-end">
+          <div className="flex items-center gap-3 rounded-full border px-4 py-2" style={{ borderColor: "var(--border)", background: "var(--bg-card)" }}>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--text-tertiary)" }}>Dashboard Theme</p>
+              <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Switch light and dark</p>
+            </div>
+            <ThemeToggle />
+          </div>
+          <div className="w-full sm:w-auto" style={{ position: "relative" }}>
+            <TradeForm />
+            <span style={{ position: "absolute", top: "-4px", right: "-4px", width: "8px", height: "8px", borderRadius: "50%", background: "var(--green)", animation: "pulse 2s infinite" }} />
+          </div>
         </div>
       </div>
 
@@ -170,10 +179,10 @@ export default function Dashboard() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 20px' }}>
           <AlertTriangle className="w-5 h-5 text-red-500" />
           <div style={{ flex: 1 }}>
-            <p style={{ fontSize: '14px', fontWeight: 600, color: '#FFFFFF', marginBottom: '4px' }}>
+            <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)', marginBottom: '4px' }}>
               Brutal Reality Check
             </p>
-            <p style={{ fontSize: '12px', color: '#A3A3A3' }}>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
               {stats.totalPnL < 0 
                 ? `You've lost ${formatCurrency(Math.abs(stats.totalPnL))}. 90% of traders lose money. What makes you different?`
                 : stats.winRate < 50
@@ -185,12 +194,10 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
-      <AccountInsightPanel trades={trades} />
-
       {/* Stat cards */}
       <div className="stat-grid">
         <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
-          <span className="stat-label" style={{ color: "var(--text2)" }}>Portfolio P&L</span>
+          <span className="stat-label" style={{ color: "var(--text-secondary)" }}>Portfolio P&L</span>
           <span className={`stat-val ${stats.totalPnL >= 0 ? "pos" : "neg"}`}
             style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", wordBreak: "break-all", lineHeight: 1.2 }}>
             {formatCurrency(stats.totalPnL)}
@@ -204,7 +211,7 @@ export default function Dashboard() {
           )}
         </div>
         <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
-          <span className="stat-label" style={{ color: "var(--text2)" }}>Today's Profit</span>
+          <span className="stat-label" style={{ color: "var(--text-secondary)" }}>Today's Profit</span>
           <span className={`stat-val ${stats.todayPnL >= 0 ? "pos" : stats.todayPnL < 0 ? "neg" : ""}`}
             style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", wordBreak: "break-all", lineHeight: 1.2 }}>
             {formatCurrency(stats.todayPnL)}
@@ -217,7 +224,7 @@ export default function Dashboard() {
           )}
         </div>
         <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
-          <span className="stat-label" style={{ color: "var(--text2)" }}>Win Rate <HelpCircle className="w-3 h-3 ml-1 inline-block" style={{ color: "var(--text3)" }} /></span>
+          <span className="stat-label" style={{ color: "var(--text-secondary)" }}>Win Rate <HelpCircle className="w-3 h-3 ml-1 inline-block" style={{ color: "var(--text-tertiary)" }} /></span>
           <span className="stat-val" style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", lineHeight: 1.2 }}>{stats.winRate.toFixed(1)}%</span>
           <span className="stat-sub">{stats.wins}W / {stats.losses}L</span>
           {stats.winRate < 50 && (
@@ -228,11 +235,11 @@ export default function Dashboard() {
           )}
         </div>
         <div className="stat-card" style={{ padding: "20px 22px", overflow: "hidden" }}>
-          <span className="stat-label" style={{ color: "var(--text2)" }}>Total Trades</span>
+          <span className="stat-label" style={{ color: "var(--text-secondary)" }}>Total Trades</span>
           <span className="stat-val" style={{ fontSize: "clamp(1.1rem, 3.5vw, 2rem)", lineHeight: 1.2 }}>{stats.totalTrades}</span>
           <span className="stat-sub">{formatCurrency(stats.totalVolume)} volume</span>
           {stats.totalTrades > 50 && (
-            <span style={{ fontSize: "10px", color: "#A3A3A3", marginTop: "4px" }}>
+            <span style={{ fontSize: "10px", color: "var(--text-secondary)", marginTop: "4px" }}>
               Overtrading?
             </span>
           )}
@@ -243,8 +250,8 @@ export default function Dashboard() {
       {holdings.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-            <Package size={14} style={{ color: "var(--text3)" }} />
-            <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text3)" }}>Open Holdings</span>
+            <Package size={14} style={{ color: "var(--text-tertiary)" }} />
+            <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--text-tertiary)" }}>Open Holdings</span>
           </div>
           {/* Holdings summary stat row */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "20px" }}>
@@ -271,7 +278,7 @@ export default function Dashboard() {
             <div className="table-scroll" style={{ overflowX: "auto" }}>
               <table style={{ fontSize: "14px", minWidth: "700px", width: "100%" }}>
                 <thead>
-                  <tr style={{ borderBottom: "2px solid #2A2A2A" }}>
+                  <tr style={{ borderBottom: "2px solid var(--border)" }}>
                     {["Symbol", "Qty", "Avg Cost", "Cost Basis", "Mkt Value*", "Unrealized P&L", "Alloc %"].map((h, i) => (
                       <th
                         key={h}
@@ -282,7 +289,7 @@ export default function Dashboard() {
                           fontWeight: 600,
                           letterSpacing: "0.05em",
                           textTransform: "uppercase",
-                          color: "#737373"
+                          color: "var(--text-tertiary)"
                         }}
                       >
                         {h}
@@ -297,12 +304,12 @@ export default function Dashboard() {
                       style={{
                         transition: "background 0.15s ease",
                         cursor: "default",
-                        borderBottom: "1px solid #1F1F1F"
+                        borderBottom: "1px solid var(--border)"
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "#1F1F1F")}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-card-hover)")}
                       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                     >
-                      <td style={{ padding: "14px 16px", fontWeight: 600, color: "#FFFFFF" }}>
+                      <td style={{ padding: "14px 16px", fontWeight: 600, color: "var(--text)" }}>
                         <span
                           style={{
                             display: "inline-block",
@@ -315,16 +322,16 @@ export default function Dashboard() {
                         />
                         {h.symbol}
                       </td>
-                      <td style={{ padding: "14px 16px", fontFamily: "'JetBrains Mono', monospace", color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>
+                      <td style={{ padding: "14px 16px", fontFamily: "'JetBrains Mono', monospace", color: "var(--text)", fontVariantNumeric: "tabular-nums" }}>
                         {h.quantity.toLocaleString()}
                       </td>
-                      <td style={{ padding: "14px 16px", fontFamily: "'JetBrains Mono', monospace", color: "#A3A3A3", fontVariantNumeric: "tabular-nums" }}>
+                      <td style={{ padding: "14px 16px", fontFamily: "'JetBrains Mono', monospace", color: "var(--text-secondary)", fontVariantNumeric: "tabular-nums" }}>
                         ₨{h.avgCost.toFixed(2)}
                       </td>
-                      <td style={{ padding: "14px 16px", fontFamily: "'JetBrains Mono', monospace", color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>
+                      <td style={{ padding: "14px 16px", fontFamily: "'JetBrains Mono', monospace", color: "var(--text)", fontVariantNumeric: "tabular-nums" }}>
                         {formatCurrency(h.costBasis)}
                       </td>
-                      <td style={{ padding: "14px 16px", fontFamily: "'JetBrains Mono', monospace", color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>
+                      <td style={{ padding: "14px 16px", fontFamily: "'JetBrains Mono', monospace", color: "var(--text)", fontVariantNumeric: "tabular-nums" }}>
                         {formatCurrency(h.marketValue)}
                       </td>
                       <td style={{ padding: "14px 16px", textAlign: "right" }}>
@@ -339,13 +346,13 @@ export default function Dashboard() {
                           {h.unrealizedPnL >= 0 ? "+" : ""}{formatCurrency(h.unrealizedPnL)}
                         </span>
                         <br />
-                        <span style={{ fontSize: "11px", fontWeight: 400, color: "#737373" }}>
+                        <span style={{ fontSize: "11px", fontWeight: 400, color: "var(--text-tertiary)" }}>
                           {formatPercent(h.unrealizedPct)}
                         </span>
                       </td>
                       <td style={{ padding: "14px 16px", textAlign: "right" }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px" }}>
-                          <div style={{ width: "48px", height: "4px", background: "#1F1F1F", borderRadius: "2px", overflow: "hidden" }}>
+                          <div style={{ width: "48px", height: "4px", background: "var(--border)", borderRadius: "2px", overflow: "hidden" }}>
                             <div
                               style={{
                                 width: `${Math.min(h.allocation, 100)}%`,
@@ -355,7 +362,7 @@ export default function Dashboard() {
                               }}
                             />
                           </div>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--text)", fontVariantNumeric: "tabular-nums" }}>
                             {h.allocation.toFixed(1)}%
                           </span>
                         </div>
@@ -365,8 +372,8 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
-            <div style={{ padding: "10px 16px", borderTop: "1px solid #2A2A2A", background: "#141414" }}>
-              <p style={{ fontSize: "11px", color: "#737373" }}>* Market value uses last known trade price as proxy. No live market feed.</p>
+            <div style={{ padding: "10px 16px", borderTop: "1px solid var(--border)", background: "var(--bg-card-hover)" }}>
+              <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>* Market value uses last known trade price as proxy. No live market feed.</p>
             </div>
           </div>
         </motion.div>
@@ -420,7 +427,7 @@ export default function Dashboard() {
               <div
                 key={i}
                 style={{
-                  background: 'rgba(0, 0, 0, 0.3)',
+                  background: 'var(--surface)',
                   border: '1px solid rgba(239, 68, 68, 0.2)',
                   borderRadius: '8px',
                   padding: '16px'
@@ -428,14 +435,14 @@ export default function Dashboard() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   {insight.icon}
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#A3A3A3', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     {insight.title}
                   </span>
                 </div>
-                <p style={{ fontSize: '18px', fontWeight: 700, color: '#FFFFFF', marginBottom: '8px' }}>
+                <p style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text)', marginBottom: '8px' }}>
                   {insight.value}
                 </p>
-                <p style={{ fontSize: '12px', color: '#A3A3A3', lineHeight: '1.5' }}>
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
                   {insight.desc}
                 </p>
               </div>
@@ -457,18 +464,18 @@ export default function Dashboard() {
                       <stop offset="100%" stopColor={equityStroke} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" opacity={0.5} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
                   <XAxis
                     dataKey="date"
-                    tick={{ fill: "#737373", fontSize: 11 }}
+                    tick={{ fill: "var(--text-tertiary)", fontSize: 11 }}
                     tickLine={false}
-                    axisLine={{ stroke: "#2A2A2A" }}
+                    axisLine={{ stroke: "var(--border)" }}
                     interval="preserveStartEnd"
                   />
                   <YAxis
-                    tick={{ fill: "#737373", fontSize: 11 }}
+                    tick={{ fill: "var(--text-tertiary)", fontSize: 11 }}
                     tickLine={false}
-                    axisLine={{ stroke: "#2A2A2A" }}
+                    axisLine={{ stroke: "var(--border)" }}
                     tickFormatter={(v) => `₨${(v / 1000).toFixed(0)}k`}
                     domain={["auto", "auto"]}
                     tickCount={6}
@@ -486,7 +493,7 @@ export default function Dashboard() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[200px] flex items-center justify-center" style={{ color: "#A3A3A3", fontSize: "14px" }}>
+              <div className="h-[200px] flex items-center justify-center" style={{ color: "var(--text-secondary)", fontSize: "14px" }}>
                 Log trades to see your equity curve
               </div>
             )}
@@ -498,17 +505,17 @@ export default function Dashboard() {
             {stats.dailyPnL.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={stats.dailyPnL}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" opacity={0.5} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
                   <XAxis
                     dataKey="date"
-                    tick={{ fill: "#737373", fontSize: 11 }}
+                    tick={{ fill: "var(--text-tertiary)", fontSize: 11 }}
                     tickLine={false}
-                    axisLine={{ stroke: "#2A2A2A" }}
+                    axisLine={{ stroke: "var(--border)" }}
                   />
                   <YAxis
-                    tick={{ fill: "#737373", fontSize: 11 }}
+                    tick={{ fill: "var(--text-tertiary)", fontSize: 11 }}
                     tickLine={false}
-                    axisLine={{ stroke: "#2A2A2A" }}
+                    axisLine={{ stroke: "var(--border)" }}
                     tickFormatter={(v) => `₨${(v / 1000).toFixed(0)}k`}
                     tickCount={6}
                   />
@@ -521,7 +528,7 @@ export default function Dashboard() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[200px] flex items-center justify-center" style={{ color: "#A3A3A3", fontSize: "14px" }}>
+              <div className="h-[200px] flex items-center justify-center" style={{ color: "var(--text-secondary)", fontSize: "14px" }}>
                 Log trades to see daily P&L
               </div>
             )}
@@ -553,11 +560,11 @@ export default function Dashboard() {
                   <Legend
                     iconType="circle"
                     iconSize={8}
-                    formatter={(v) => <span style={{ color: "#A3A3A3", fontSize: "10px" }}>{v}</span>}
+                    formatter={(v) => <span style={{ color: "var(--text-secondary)", fontSize: "10px" }}>{v}</span>}
                   />
                 </PieChart>
               </ResponsiveContainer>
-            ) : <div className="h-full flex items-center justify-center" style={{ color: "#A3A3A3", fontSize: "13px" }}>No open positions</div>}
+            ) : <div className="h-full flex items-center justify-center" style={{ color: "var(--text-secondary)", fontSize: "13px" }}>No open positions</div>}
           </div>
         </Card>
 
@@ -583,11 +590,11 @@ export default function Dashboard() {
                   <Legend
                     iconType="circle"
                     iconSize={8}
-                    formatter={(v) => <span style={{ color: "#A3A3A3", fontSize: "10px" }}>{v}</span>}
+                    formatter={(v) => <span style={{ color: "var(--text-secondary)", fontSize: "10px" }}>{v}</span>}
                   />
                 </PieChart>
               </ResponsiveContainer>
-            ) : <div className="h-full flex items-center justify-center" style={{ color: "#A3A3A3", fontSize: "13px" }}>No trades yet</div>}
+            ) : <div className="h-full flex items-center justify-center" style={{ color: "var(--text-secondary)", fontSize: "13px" }}>No trades yet</div>}
           </div>
         </Card>
 
@@ -597,12 +604,12 @@ export default function Dashboard() {
             {symPnlData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={symPnlData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" opacity={0.5} horizontal={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} horizontal={false} />
                   <XAxis type="number" hide />
                   <YAxis
                     dataKey="symbol"
                     type="category"
-                    tick={{ fill: "#FFFFFF", fontSize: 11 }}
+                    tick={{ fill: "var(--text)", fontSize: 11 }}
                     tickLine={false}
                     axisLine={false}
                     width={48}
@@ -613,7 +620,7 @@ export default function Dashboard() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            ) : <div className="h-full flex items-center justify-center" style={{ color: "#A3A3A3", fontSize: "13px" }}>No symbol data</div>}
+            ) : <div className="h-full flex items-center justify-center" style={{ color: "var(--text-secondary)", fontSize: "13px" }}>No symbol data</div>}
           </div>
         </Card>
 
@@ -623,10 +630,10 @@ export default function Dashboard() {
             {stats.monthlyData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" opacity={0.5} vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} vertical={false} />
                   <XAxis
                     dataKey="month"
-                    tick={{ fill: "#737373", fontSize: 10 }}
+                    tick={{ fill: "var(--text-tertiary)", fontSize: 10 }}
                     tickLine={false}
                     axisLine={false}
                   />
@@ -639,7 +646,7 @@ export default function Dashboard() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            ) : <div className="h-full flex items-center justify-center" style={{ color: "#A3A3A3", fontSize: "13px" }}>Monthly data pending</div>}
+            ) : <div className="h-full flex items-center justify-center" style={{ color: "var(--text-secondary)", fontSize: "13px" }}>Monthly data pending</div>}
           </div>
         </Card>
       </div>
@@ -659,8 +666,8 @@ export default function Dashboard() {
                 >
                   <RadialBar
                     dataKey="value"
-                    label={{ position: "insideStart", fill: "#FFFFFF", fontSize: 10 }}
-                    background={{ fill: "#1F1F1F" }}
+                    label={{ position: "insideStart", fill: "var(--text)", fontSize: 10 }}
+                    background={{ fill: "var(--surface-strong)" }}
                   >
                     {allocData.map((e, i) => <Cell key={i} fill={COLORS.chart[i % COLORS.chart.length]} />)}
                   </RadialBar>
@@ -668,7 +675,7 @@ export default function Dashboard() {
                   <Legend
                     iconType="circle"
                     iconSize={8}
-                    formatter={(v) => <span style={{ color: "#A3A3A3", fontSize: "10px" }}>{v}</span>}
+                    formatter={(v) => <span style={{ color: "var(--text-secondary)", fontSize: "10px" }}>{v}</span>}
                   />
                 </RadialBarChart>
               </ResponsiveContainer>
@@ -680,10 +687,10 @@ export default function Dashboard() {
               {stats.dayOfWeekData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.dayOfWeekData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" opacity={0.5} vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} vertical={false} />
                     <XAxis
                       dataKey="day"
-                      tick={{ fill: "#737373", fontSize: 11 }}
+                      tick={{ fill: "var(--text-tertiary)", fontSize: 11 }}
                       tickLine={false}
                       axisLine={false}
                     />
@@ -696,7 +703,7 @@ export default function Dashboard() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-              ) : <div className="h-full flex items-center justify-center" style={{ color: "#A3A3A3", fontSize: "13px" }}>No activity data</div>}
+              ) : <div className="h-full flex items-center justify-center" style={{ color: "var(--text-secondary)", fontSize: "13px" }}>No activity data</div>}
             </div>
           </Card>
         </div>
@@ -723,7 +730,7 @@ export default function Dashboard() {
             <span className="table-header-title">Recent Trades</span>
             <span className="table-badge">Latest</span>
             {filteredTrades.length !== trades.length && (
-              <span style={{ fontSize: "12px", color: "#A3A3A3" }}>
+              <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
                 ({filteredTrades.length} of {trades.length})
               </span>
             )}
@@ -734,9 +741,9 @@ export default function Dashboard() {
             style={{
               padding: "8px 12px",
               fontSize: "12px",
-              border: showFilters ? "1px solid #2A2A2A" : "1px solid transparent",
+              border: showFilters ? "1px solid var(--border)" : "1px solid transparent",
               borderRadius: "6px",
-              background: showFilters ? "#1A1A1A" : "transparent"
+              background: showFilters ? "var(--bg-card-hover)" : "transparent"
             }}
           >
             <Filter className="w-3 h-3" /> Filters
@@ -747,8 +754,8 @@ export default function Dashboard() {
           <div
             style={{
               padding: "16px 20px",
-              borderBottom: "1px solid #2A2A2A",
-              background: "#141414"
+              borderBottom: "1px solid var(--border)",
+              background: "var(--bg-card-hover)"
             }}
           >
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px" }}>
@@ -768,15 +775,15 @@ export default function Dashboard() {
                   style={{
                     padding: "10px 14px",
                     fontSize: "13px",
-                    background: "#0A0A0A",
-                    border: "1px solid #2A2A2A",
-                    color: "#FFFFFF",
+                    background: "var(--bg-input)",
+                    border: "1px solid var(--border)",
+                    color: "var(--text)",
                     borderRadius: "8px",
                     outline: "none",
                     transition: "border-color 0.2s ease"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#10B981"}
-                  onBlur={(e) => e.target.style.borderColor = "#2A2A2A"}
+                  onFocus={(e) => e.target.style.borderColor = "var(--brand)"}
+                  onBlur={(e) => e.target.style.borderColor = "var(--border)"}
                 />
               ))}
               <button
@@ -791,7 +798,7 @@ export default function Dashboard() {
                 style={{
                   padding: "10px 14px",
                   fontSize: "13px",
-                  border: "1px solid #2A2A2A",
+                  border: "1px solid var(--border)",
                   borderRadius: "8px"
                 }}
               >
@@ -805,7 +812,7 @@ export default function Dashboard() {
           <div className="table-scroll" style={{ maxHeight: "320px", overflow: "auto" }}>
             <table style={{ fontSize: "14px", minWidth: "600px", width: "100%" }}>
               <thead>
-                <tr style={{ borderBottom: "2px solid #2A2A2A" }}>
+                <tr style={{ borderBottom: "2px solid var(--border)" }}>
                   {["Date", "Symbol", "Side", "Qty", "Entry", "Exit", "P&L"].map((h, i) => (
                     <th
                       key={h}
@@ -816,7 +823,7 @@ export default function Dashboard() {
                         fontWeight: 600,
                         letterSpacing: "0.05em",
                         textTransform: "uppercase",
-                        color: "#737373"
+                        color: "var(--text-tertiary)"
                       }}
                     >
                       {h}
@@ -833,13 +840,13 @@ export default function Dashboard() {
                       style={{
                         transition: "background 0.15s ease",
                         cursor: "default",
-                        borderBottom: "1px solid #1F1F1F"
+                        borderBottom: "1px solid var(--border)"
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "#1F1F1F")}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-card-hover)")}
                       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                     >
-                      <td style={{ color: "#737373", padding: "16px" }}>{trade.date}</td>
-                      <td style={{ padding: "16px", fontWeight: 600, color: "#FFFFFF" }}>{trade.symbol}</td>
+                      <td style={{ color: "var(--text-tertiary)", padding: "16px" }}>{trade.date}</td>
+                      <td style={{ padding: "16px", fontWeight: 600, color: "var(--text)" }}>{trade.symbol}</td>
                       <td style={{ padding: "16px" }}>
                         <span
                           className={trade.side === "buy" ? "status-tag status-tag-success" : "status-tag status-tag-danger"}
@@ -870,7 +877,7 @@ export default function Dashboard() {
                             {pnl >= 0 ? "+" : ""}{formatCurrency(pnl)}
                           </span>
                         ) : (
-                          <span style={{ color: "#737373", fontSize: "12px" }}>Open</span>
+                          <span style={{ color: "var(--text-tertiary)", fontSize: "12px" }}>Open</span>
                         )}
                       </td>
                     </tr>
@@ -880,7 +887,7 @@ export default function Dashboard() {
             </table>
           </div>
         ) : (
-          <div className="text-center py-12" style={{ color: "#A3A3A3" }}>
+          <div className="text-center py-12" style={{ color: "var(--text-secondary)" }}>
             <BarChart3 className="w-12 h-12 mx-auto mb-3" style={{ opacity: 0.3 }} />
             <p style={{ fontSize: "14px" }}>No trades match your filters</p>
           </div>

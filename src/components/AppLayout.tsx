@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useState, useEffect } from "react";
 import { useTrades, getTradeStats } from "@/hooks/useTrades";
 import { formatCurrency } from "@/lib/psx";
@@ -48,7 +49,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const sidebarWidth = sidebarOpen ? 256 : 0;
 
   return (
-    <div className="brand-shell min-h-screen text-white">
+    <div className="brand-shell min-h-screen" style={{ color: "var(--text)" }}>
       <AnimatePresence initial={false}>
         {sidebarOpen && (
           <motion.aside
@@ -56,14 +57,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             animate={{ width: 256, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.26, ease: "easeInOut" }}
-            className="fixed left-0 top-0 z-50 flex h-screen flex-col overflow-hidden border-r border-white/8 bg-[rgba(7,7,7,0.92)] px-3 py-3 backdrop-blur-2xl"
+            className="fixed left-0 top-0 z-50 flex h-screen flex-col overflow-hidden border-r px-3 py-3 backdrop-blur-2xl"
+            style={{ borderColor: "var(--border)", background: "color-mix(in srgb, var(--bg-canvas) 92%, transparent)" }}
           >
             <div className="brand-panel-soft flex items-center justify-between rounded-[20px] px-3 py-3">
               <Logo height={24} />
               <button
                 type="button"
                 onClick={() => setSidebarOpen(false)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/8 bg-white/[0.03] text-white/56 transition-colors hover:text-white"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors"
+                style={{ borderColor: "var(--border)", background: "var(--surface)", color: "var(--text-muted)" }}
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -77,7 +80,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
                   PSXL
                 </p>
-                <p className="text-xs text-white/58">Trade with cleaner signal</p>
+                <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Trade with cleaner signal</p>
               </div>
             </div>
 
@@ -91,13 +94,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     className={`group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[13px] font-medium transition-all ${
                       active
                         ? "border border-[var(--brand-border)] bg-[var(--brand-soft)] text-white"
-                        : "border border-transparent text-white/58 hover:border-white/8 hover:bg-white/[0.03] hover:text-white"
+                        : "border border-transparent hover:bg-white/[0.03]"
                     }`}
+                    style={!active ? { color: "var(--text-secondary)" } : undefined}
                   >
                     <item.icon
                       className={`h-4 w-4 ${
-                        active ? "text-[var(--brand)]" : "text-white/40 group-hover:text-white/70"
+                        active ? "text-[var(--brand)]" : "group-hover:text-[var(--text)]"
                       }`}
+                      style={!active ? { color: "var(--text-tertiary)" } : undefined}
                     />
                     <span>{item.label}</span>
                   </NavLink>
@@ -112,10 +117,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <Wallet className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/38">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: "var(--text-tertiary)" }}>
                       Account Balance
                     </p>
-                    <p className="mt-1 text-[13px] font-semibold text-white">
+                    <p className="mt-1 text-[13px] font-semibold" style={{ color: "var(--text)" }}>
                       {formatCurrency(stats.totalPnL)}
                     </p>
                   </div>
@@ -128,7 +133,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <img
                       src={profilePicture}
                       alt="Profile"
-                      className="h-10 w-10 rounded-full border border-white/10 object-cover"
+                      className="h-10 w-10 rounded-full border object-cover"
+                      style={{ borderColor: "var(--border)" }}
                     />
                   ) : (
                     <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--brand-soft)] text-sm font-bold text-[var(--brand)]">
@@ -136,11 +142,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-[13px] font-semibold text-white">
+                    <p className="truncate text-[13px] font-semibold" style={{ color: "var(--text)" }}>
                       {user?.email?.split("@")[0] || "User"}
                     </p>
-                    <p className="truncate text-xs text-white/46">{user?.email || ""}</p>
+                    <p className="truncate text-xs" style={{ color: "var(--text-tertiary)" }}>{user?.email || ""}</p>
                   </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between rounded-2xl border px-3 py-2" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: "var(--text-tertiary)" }}>Theme</p>
+                    <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Light or dark</p>
+                  </div>
+                  <ThemeToggle />
                 </div>
                 <button onClick={signOut} className="btn-secondary mt-3 w-full text-[11px]">
                   <LogOut className="h-4 w-4" />
@@ -157,7 +170,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[rgba(10,10,10,0.88)] text-white/60 shadow-[0_20px_40px_rgba(0,0,0,0.22)] backdrop-blur-xl transition-colors hover:text-white"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full border shadow-[var(--shadow-soft)] backdrop-blur-xl transition-colors"
+            style={{ borderColor: "var(--border)", background: "color-mix(in srgb, var(--bg-card) 88%, transparent)", color: "var(--text-muted)" }}
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -165,13 +179,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       )}
 
       {isMobile && (
-        <div className="fixed left-0 right-0 top-0 z-40 border-b border-white/8 bg-[rgba(8,8,8,0.9)] px-4 py-3 backdrop-blur-xl lg:hidden">
+        <div className="fixed left-0 right-0 top-0 z-40 border-b px-4 py-3 backdrop-blur-xl lg:hidden" style={{ borderColor: "var(--border)", background: "color-mix(in srgb, var(--bg-card) 90%, transparent)" }}>
           <div className="flex items-center justify-between">
             <Logo height={28} />
             <button
               type="button"
               onClick={() => setSidebarOpen((value) => !value)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border"
+              style={{ borderColor: "var(--border)", background: "var(--surface)", color: "var(--text)" }}
             >
               {sidebarOpen ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
             </button>
@@ -180,7 +195,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       )}
 
       {isMobile && (
-        <div className="fixed bottom-3 left-3 right-3 z-40 rounded-full border border-white/10 bg-[rgba(8,8,8,0.9)] px-2 py-2 shadow-[0_24px_70px_rgba(0,0,0,0.32)] backdrop-blur-2xl lg:hidden">
+        <div className="fixed bottom-3 left-3 right-3 z-40 rounded-full border px-2 py-2 shadow-[var(--shadow-soft)] backdrop-blur-2xl lg:hidden" style={{ borderColor: "var(--border)", background: "color-mix(in srgb, var(--bg-card) 92%, transparent)" }}>
           <nav className="flex items-center justify-between">
             {navItems.map((item) => {
               const active = location.pathname === item.to;
@@ -189,8 +204,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   key={item.to}
                   to={item.to}
                   className={`flex flex-1 flex-col items-center gap-1 rounded-full px-2 py-2 text-[10px] font-semibold ${
-                    active ? "text-[var(--brand)]" : "text-white/44"
+                    active ? "text-[var(--brand)]" : ""
                   }`}
+                  style={!active ? { color: "var(--text-tertiary)" } : undefined}
                 >
                   <item.icon className="h-4 w-4" />
                   <span>{item.label}</span>

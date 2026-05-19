@@ -32,7 +32,7 @@ export function PublicNav() {
   return (
     <>
       <nav className="fixed left-0 right-0 top-0 z-50 px-3 py-3 md:px-5">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between rounded-full border border-white/10 bg-[var(--chrome-bg)] px-4 py-3 shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between rounded-full border px-4 py-3 shadow-[var(--shadow-soft)] backdrop-blur-2xl" style={{ borderColor: "var(--border)", background: "var(--chrome-bg)" }}>
           <Link to="/" className="flex items-center gap-3">
             <Logo height={28} />
           </Link>
@@ -46,7 +46,7 @@ export function PublicNav() {
                     <Link
                       to={item.href}
                       className={`text-[12px] font-semibold uppercase tracking-[0.18em] transition-colors ${
-                        active ? "text-[var(--brand)]" : "text-white/58 hover:text-white"
+                        active ? "text-[var(--brand)]" : "text-[color:var(--text-secondary)] hover:text-[var(--text)]"
                       }`}
                     >
                       {item.label}
@@ -72,7 +72,8 @@ export function PublicNav() {
               <button
                 type="button"
                 onClick={() => setOpen((value) => !value)}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border text-[var(--text)]"
+                style={{ borderColor: "var(--border)", background: "var(--surface)" }}
                 aria-label="Toggle navigation"
               >
                 {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -88,17 +89,19 @@ export function PublicNav() {
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
-            className="fixed left-3 right-3 top-[76px] z-40 overflow-hidden rounded-[28px] border border-white/10 bg-[rgba(8,8,8,0.96)] p-4 shadow-[0_32px_80px_rgba(0,0,0,0.4)] backdrop-blur-2xl"
+            className="fixed left-3 right-3 top-[76px] z-40 overflow-hidden rounded-[28px] border p-4 shadow-[var(--shadow-soft)] backdrop-blur-2xl"
+            style={{ borderColor: "var(--border)", background: "var(--bg-card)" }}
           >
             <div className="space-y-2">
               {NAV_LINKS.map((item) => (
                 <Link
                   key={item.href}
                   to={item.href}
-                  className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 text-sm font-medium text-white/78"
+                  className="flex items-center justify-between rounded-2xl border px-4 py-4 text-sm font-medium"
+                  style={{ borderColor: "var(--border)", background: "var(--surface)", color: "var(--text-secondary)" }}
                 >
                   {item.label}
-                  <ChevronRight className="h-4 w-4 text-white/40" />
+                  <ChevronRight className="h-4 w-4" style={{ color: "var(--text-tertiary)" }} />
                 </Link>
               ))}
             </div>
@@ -123,7 +126,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="brand-shell min-h-screen text-white">
+    <div className="brand-shell min-h-screen" style={{ color: "var(--text)" }}>
       <PublicNav />
       <main className="flex-1 pt-[88px]">{children}</main>
       <KresnaFooter />

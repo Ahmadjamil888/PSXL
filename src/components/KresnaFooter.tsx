@@ -145,7 +145,7 @@ const footerStyles = `
   }
 
   .footer-right {
-    background: #f0f1f5;
+    background: #ffffff;
     border-radius: 28px;
     padding: 40px;
     overflow: visible;
@@ -455,8 +455,8 @@ export default function KresnaFooter() {
           </video>
 
           <div className="footer-logo">
-            <div className="footer-logo-mark">K</div>
-            <span className="footer-logo-name">Kresna</span>
+            <div className="footer-logo-mark">P</div>
+            <span className="footer-logo-name">PSXL</span>
           </div>
 
           <div className="footer-tagline-container">
@@ -484,7 +484,7 @@ export default function KresnaFooter() {
         <div className="footer-right">
           <div className="footer-lucky-graphic">
             <div className="lucky-cube">
-              <span className="lucky-cube-mark">K</span>
+              <span className="lucky-cube-mark">P</span>
             </div>
             <div className="lucky-text-row">
               <svg className="lucky-arrow" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -517,13 +517,13 @@ export default function KresnaFooter() {
           </div>
 
           <div className="footer-bottom">
-            <div className="footer-copyright">© 2025 Kresna. All rights reserved.</div>
+            <div className="footer-copyright">© 2026 PSXL. All rights reserved.</div>
 
             <div className="footer-cta-mini">
               <h4>
                 AI moves fast.
                 <br />
-                <strong>Stay ahead with Kresna.</strong>
+                <strong>Stay ahead with PSXL.</strong>
               </h4>
 
               <div className="footer-subscribe-row">
@@ -543,7 +543,7 @@ export default function KresnaFooter() {
           xmlns="http://www.w3.org/2000/svg"
         >
           <text id="watermarkText" x="500" y="240" textAnchor="middle" fontSize="320">
-            Kresna
+            PSXL
           </text>
         </svg>
       </div>
