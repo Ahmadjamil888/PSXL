@@ -74,7 +74,7 @@ const faqs = [
 ];
 
 const sectionShell =
-  "relative flex min-h-[100dvh] flex-col justify-between overflow-hidden rounded-[36px] border px-6 py-8 shadow-[var(--shadow-card)] md:px-10 md:py-10 lg:px-14 lg:py-14";
+  "relative flex min-h-[100dvh] flex-col justify-between overflow-hidden rounded-[36px] border border-white/8 px-6 py-8 shadow-[0_36px_110px_rgba(0,0,0,0.24)] md:px-10 md:py-10 lg:px-14 lg:py-14";
 
 function SectionIntro({
   kicker,
@@ -88,10 +88,10 @@ function SectionIntro({
   return (
     <div className="max-w-[760px]">
       <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--brand)]">{kicker}</p>
-      <h2 className="mt-4 font-display text-[36px] font-bold leading-[0.95] tracking-[-0.05em] text-[var(--text)] md:text-[52px]">
+      <h2 className="mt-4 font-display text-[36px] font-medium leading-[0.95] tracking-[-0.05em] text-white md:text-[52px]">
         {title}
       </h2>
-      <p className="mt-5 max-w-[64ch] text-sm leading-7 text-[var(--text-secondary)] md:text-[15px]">{copy}</p>
+      <p className="mt-5 max-w-[64ch] text-sm leading-7 text-white/62 md:text-[15px]">{copy}</p>
     </div>
   );
 }
@@ -102,7 +102,7 @@ export default function Landing() {
   return (
     <div className="px-4 py-6 md:px-6 md:py-8">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-6">
-        <section className={`${sectionShell}`} style={{ borderColor: "var(--border)", background: "#ffffff" }}>
+        <section className={`${sectionShell} border-white/10 bg-black`}>
           <div className="absolute inset-0">
             <video
               src={HERO_VIDEO_URL}
@@ -110,9 +110,9 @@ export default function Landing() {
               loop
               muted
               playsInline
-              className="h-full w-full object-cover opacity-[0.08]"
+              className="h-full w-full object-cover opacity-24"
             />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(29,78,216,0.10),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.72),rgba(255,255,255,0.97))]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(159,232,112,0.22),transparent_28%),linear-gradient(135deg,rgba(0,0,0,0.16),rgba(0,0,0,0.88))]" />
           </div>
 
           <div className="relative z-10 grid min-h-full gap-10 lg:grid-cols-[minmax(0,1.08fr)_360px] lg:items-between">
@@ -122,16 +122,16 @@ export default function Landing() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2 text-[17px] font-semibold text-[var(--brand)]" style={{ fontFamily: "var(--font-script)" }}>
+                <div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
                   <Sparkles className="h-3.5 w-3.5" />
                   Trading journal for disciplined review
                 </div>
 
-                <h1 className="mt-7 max-w-[11ch] font-display text-[44px] font-bold leading-[0.92] tracking-[-0.06em] text-[var(--text)] md:text-[72px]">
+                <h1 className="mt-7 max-w-[11ch] font-display text-[44px] font-medium leading-[0.92] tracking-[-0.06em] text-white md:text-[72px]">
                   Track every trade without losing the truth behind it.
                 </h1>
 
-                <p className="mt-6 max-w-[58ch] text-[15px] leading-7 text-[var(--text-secondary)] md:text-[17px]">
+                <p className="mt-6 max-w-[58ch] text-[15px] leading-7 text-white/66 md:text-[17px]">
                   PSXL gives PSX traders a cleaner journal, a harder performance read,
                   and a calmer workflow for reviewing what actually happened.
                 </p>
@@ -151,21 +151,20 @@ export default function Landing() {
                 {stats.map((item) => (
                   <div
                     key={item.label}
-                    className="rounded-[28px] border px-5 py-5"
-                    style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)" }}
+                    className="rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] px-5 py-5 shadow-[0_24px_70px_rgba(0,0,0,0.18)]"
                   >
-                    <p className="font-display text-[30px] font-bold tracking-[-0.05em] text-[var(--text)] md:text-[34px]">{item.value}</p>
-                    <p className="mt-2 text-sm text-[var(--text-secondary)]">{item.label}</p>
+                    <p className="font-display text-[30px] font-medium tracking-[-0.05em] text-white md:text-[34px]">{item.value}</p>
+                    <p className="mt-2 text-sm text-white/54">{item.label}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="flex flex-col justify-between rounded-[28px] border p-5 backdrop-blur-xl" style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.92)" }}>
-              <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: "var(--border)" }}>
+            <div className="flex flex-col justify-between rounded-[28px] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+              <div className="flex items-center justify-between border-b border-white/8 pb-4">
                 <div>
-                  <p className="text-[18px] font-semibold text-[var(--brand)]" style={{ fontFamily: "var(--font-script)" }}>Today</p>
-                  <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--text)]">Review Faster</p>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">Today</p>
+                  <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Review Faster</p>
                 </div>
                 <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
                   <TrendingUp className="h-5 w-5" />
@@ -180,8 +179,7 @@ export default function Landing() {
                 ].map((item) => (
                   <div
                     key={item}
-                    className="flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm"
-                    style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)", color: "var(--text-secondary)" }}
+                    className="flex items-center gap-3 rounded-2xl border border-white/8 bg-black/40 px-4 py-3 text-sm text-white/76"
                   >
                     <Check className="h-4 w-4 text-[var(--brand)]" />
                     <span>{item}</span>
@@ -189,17 +187,17 @@ export default function Landing() {
                 ))}
               </div>
 
-              <div className="rounded-[22px] border px-4 py-4" style={{ borderColor: "var(--border)", background: "#ffffff" }}>
-                <p className="text-[18px] font-semibold text-[var(--brand)]" style={{ fontFamily: "var(--font-script)" }}>Why it works</p>
-                <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
-                  The landing page now uses the footer’s typography direction and a pure white visual system, so the site reads as one product instead of two separate styles.
+              <div className="rounded-[22px] border border-white/8 bg-black px-4 py-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/42">Why it works</p>
+                <p className="mt-3 text-sm leading-7 text-white/64">
+                  The landing experience now uses full-height sections and keeps the same dark visual system as the product, so the page feels deliberate instead of clipped.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className={sectionShell} style={{ borderColor: "var(--border)", background: "#ffffff" }}>
+        <section className={`${sectionShell} bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))]`}>
           <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <SectionIntro
               kicker="Section 2"
@@ -209,30 +207,30 @@ export default function Landing() {
 
             <div className="grid gap-4">
               {painPoints.map((item, index) => (
-                <div key={item} className="rounded-[28px] border px-5 py-5" style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)" }}>
+                <div key={item} className="rounded-[28px] border border-white/8 bg-black/40 px-5 py-5">
                   <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--brand)]">Pressure {index + 1}</p>
-                  <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">{item}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/68">{item}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="mt-10 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-[32px] border p-6" style={{ borderColor: "var(--border)", background: "#ffffff" }}>
-              <p className="text-[18px] font-semibold text-[var(--brand)]" style={{ fontFamily: "var(--font-script)" }}>System gap</p>
-              <p className="mt-4 max-w-[28ch] text-2xl font-semibold tracking-[-0.04em] text-[var(--text)]">
+            <div className="rounded-[32px] border border-white/8 bg-black p-6">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/42">System gap</p>
+              <p className="mt-4 max-w-[28ch] text-2xl font-semibold tracking-[-0.04em] text-white">
                 If the note, chart, and reasoning vanish, the review becomes fiction.
               </p>
             </div>
-            <div className="rounded-[32px] border p-6" style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)" }}>
-              <p className="text-sm leading-7 text-[var(--text-secondary)]">
+            <div className="rounded-[32px] border border-white/8 bg-white/[0.03] p-6">
+              <p className="text-sm leading-7 text-white/62">
                 PSXL is aimed at preserving the part of the trade that usually disappears first: why you entered, what you saw, what rule you ignored, and whether that pattern keeps repeating.
               </p>
             </div>
           </div>
         </section>
 
-        <section className={sectionShell} style={{ borderColor: "var(--border)", background: "#ffffff" }}>
+        <section className={`${sectionShell} bg-black`}>
           <SectionIntro
             kicker="Section 3"
             title="Core tools built around daily review instead of generic finance clutter."
@@ -243,20 +241,19 @@ export default function Landing() {
             {featureCards.map((card) => (
               <div
                 key={card.title}
-                className="flex min-h-[220px] flex-col justify-between rounded-[30px] border p-6 shadow-[var(--shadow-soft)]"
-                style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)" }}
+                className="flex min-h-[220px] flex-col justify-between rounded-[30px] border border-white/8 bg-white/[0.03] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.2)]"
               >
                 <div>
-                  <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--text)]">{card.title}</p>
-                  <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">{card.copy}</p>
+                  <p className="text-lg font-semibold tracking-[-0.03em] text-white">{card.title}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/62">{card.copy}</p>
                 </div>
-                <div className="mt-6 h-px w-full" style={{ background: "var(--border)" }} />
+                <div className="mt-6 h-px w-full bg-white/8" />
               </div>
             ))}
           </div>
         </section>
 
-        <section className={sectionShell} style={{ borderColor: "var(--border)", background: "#ffffff" }}>
+        <section className={`${sectionShell} bg-[linear-gradient(135deg,rgba(159,232,112,0.08),rgba(255,255,255,0.02))]`}>
           <SectionIntro
             kicker="Section 4"
             title="A three-step review loop that stays usable even on busy trading days."
@@ -265,19 +262,19 @@ export default function Landing() {
 
           <div className="mt-10 grid flex-1 gap-4 lg:grid-cols-3">
             {workflow.map((item) => (
-              <div key={item.step} className="flex min-h-[280px] flex-col justify-between rounded-[30px] border p-6" style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)" }}>
+              <div key={item.step} className="flex min-h-[280px] flex-col justify-between rounded-[30px] border border-white/10 bg-black/50 p-6">
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">{item.step}</p>
-                  <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[var(--text)]">{item.title}</p>
-                  <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">{item.copy}</p>
+                  <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">{item.title}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/64">{item.copy}</p>
                 </div>
-                <p className="text-xs uppercase tracking-[0.16em] text-[var(--text-tertiary)]">Built for repetition, not ceremony</p>
+                <p className="text-xs uppercase tracking-[0.16em] text-white/34">Built for repetition, not ceremony</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className={sectionShell} style={{ borderColor: "var(--border)", background: "#ffffff" }}>
+        <section className={`${sectionShell} bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]`}>
           <SectionIntro
             kicker="Section 5"
             title="Gemini can read the account, not just the chat box."
@@ -285,40 +282,40 @@ export default function Landing() {
           />
 
           <div className="mt-10 grid flex-1 gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-[32px] border p-5" style={{ borderColor: "var(--border)", background: "#ffffff" }}>
+            <div className="rounded-[32px] border border-white/8 bg-black p-5">
               <div className="grid gap-4 md:grid-cols-3">
                 {[
                   { label: "Trades", value: "Synced", sub: "Supabase-backed account context" },
                   { label: "Holdings", value: "Mapped", sub: "open positions and concentration" },
                   { label: "Co-Trader", value: "Sharper", sub: "points out issues and next action" },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-[24px] border p-4" style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)" }}>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-tertiary)]">{item.label}</p>
-                    <p className="mt-3 font-display text-[28px] font-bold tracking-[-0.04em] text-[var(--text)]">{item.value}</p>
-                    <p className="mt-2 text-xs leading-6 text-[var(--text-secondary)]">{item.sub}</p>
+                  <div key={item.label} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/42">{item.label}</p>
+                    <p className="mt-3 font-display text-[28px] font-medium tracking-[-0.04em] text-white">{item.value}</p>
+                    <p className="mt-2 text-xs leading-6 text-white/56">{item.sub}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="flex flex-col justify-between rounded-[32px] border p-6" style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)" }}>
+            <div className="flex flex-col justify-between rounded-[32px] border border-white/8 bg-white/[0.03] p-6">
               <div>
-                <p className="text-[18px] font-semibold text-[var(--brand)]" style={{ fontFamily: "var(--font-script)" }}>Account Review</p>
-                <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[var(--text)]">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">Account Review</p>
+                <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">
                   The AI now looks into the user account data and points out what needs attention.
                 </p>
-                <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
+                <p className="mt-4 text-sm leading-7 text-white/62">
                   That includes trades fetched from Supabase, current holdings, rule breaks, recurring mistakes, and whether one position is carrying too much weight.
                 </p>
               </div>
-              <div className="mt-8 rounded-[24px] border p-4 text-sm leading-7 text-[var(--text-secondary)]" style={{ borderColor: "var(--border)", background: "#ffffff" }}>
+              <div className="mt-8 rounded-[24px] border border-white/8 bg-black/40 p-4 text-sm leading-7 text-white/60">
                 Output stays on analysis and process correction. It does not switch into trade signals.
               </div>
             </div>
           </div>
         </section>
 
-        <section className={sectionShell} style={{ borderColor: "var(--border)", background: "#ffffff" }}>
+        <section className={`${sectionShell} bg-black`}>
           <SectionIntro
             kicker="Section 6"
             title="A simple product story with enough proof to earn the next click."
@@ -327,19 +324,19 @@ export default function Landing() {
 
           <div className="mt-10 grid flex-1 gap-4 lg:grid-cols-3">
             {proofCards.map((card) => (
-              <div key={card.title} className="flex min-h-[260px] flex-col justify-between rounded-[28px] border p-6" style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)" }}>
+              <div key={card.title} className="flex min-h-[260px] flex-col justify-between rounded-[28px] border border-white/8 bg-white/[0.03] p-6">
                 <div>
                   <ShieldCheck className="h-5 w-5 text-[var(--brand)]" />
-                  <p className="mt-4 text-lg font-semibold tracking-[-0.03em] text-[var(--text)]">{card.title}</p>
-                  <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">{card.copy}</p>
+                  <p className="mt-4 text-lg font-semibold tracking-[-0.03em] text-white">{card.title}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/62">{card.copy}</p>
                 </div>
-                <div className="mt-6 h-px w-full" style={{ background: "var(--border)" }} />
+                <div className="mt-6 h-px w-full bg-white/8" />
               </div>
             ))}
           </div>
         </section>
 
-        <section className={sectionShell} style={{ borderColor: "var(--border)", background: "#ffffff" }}>
+        <section className={`${sectionShell} bg-[linear-gradient(135deg,rgba(255,255,255,0.04),rgba(159,232,112,0.06))]`}>
           <div className="grid flex-1 gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <div className="flex h-full flex-col justify-between">
               <SectionIntro
@@ -361,9 +358,9 @@ export default function Landing() {
 
             <div className="grid gap-4">
               {faqs.map((item) => (
-                <div key={item.q} className="rounded-[28px] border p-5" style={{ borderColor: "var(--border)", background: "var(--bg-card-hover)" }}>
-                  <p className="text-base font-semibold tracking-[-0.02em] text-[var(--text)]">{item.q}</p>
-                  <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">{item.a}</p>
+                <div key={item.q} className="rounded-[28px] border border-white/8 bg-black/45 p-5">
+                  <p className="text-base font-semibold tracking-[-0.02em] text-white">{item.q}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/62">{item.a}</p>
                 </div>
               ))}
             </div>

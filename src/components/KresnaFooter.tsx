@@ -13,9 +13,9 @@ const footerStyles = `
   }
 
   .footer-section {
-    background: #ffffff;
+    background: #050505;
     padding: 48px 24px 24px;
-    color: #2d3148;
+    color: #f5f7f3;
     position: relative;
   }
 
@@ -145,11 +145,11 @@ const footerStyles = `
   }
 
   .footer-right {
-    background: #ffffff;
+    background: #101010;
     border-radius: 28px;
     padding: 40px;
     overflow: visible;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.24);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -203,7 +203,7 @@ const footerStyles = `
   .lucky-arrow {
     width: 22px;
     height: 22px;
-    color: #9ca3af;
+    color: #6b7280;
   }
 
   .lucky-arrow path {
@@ -216,7 +216,7 @@ const footerStyles = `
 
   .lucky-text {
     font: 600 20px 'Caveat', cursive;
-    color: #9ca3af;
+    color: #6b7280;
     white-space: nowrap;
   }
 
@@ -231,21 +231,21 @@ const footerStyles = `
 
   .footer-col-title {
     font: italic 600 24px 'Caveat', cursive;
-    color: #9ca3af;
+    color: #9fe870;
     margin-bottom: 18px;
   }
 
   .footer-col a {
     display: block;
     font: 600 14px 'DM Sans', sans-serif;
-    color: #111827;
+    color: rgba(245,247,243,0.86);
     margin-bottom: 14px;
     text-decoration: none;
     transition: color 0.2s;
   }
 
   .footer-col a:hover {
-    color: #1f65d6;
+    color: #9fe870;
   }
 
   .footer-bottom {
@@ -258,7 +258,7 @@ const footerStyles = `
 
   .footer-copyright {
     font: 500 12.5px 'DM Sans', sans-serif;
-    color: #9ca3af;
+    color: rgba(245,247,243,0.42);
   }
 
   .footer-cta-mini {
@@ -269,24 +269,24 @@ const footerStyles = `
 
   .footer-cta-mini h4 {
     font: 400 15px/1.45 'DM Sans', sans-serif;
-    color: #6b7280;
+    color: rgba(245,247,243,0.62);
   }
 
   .footer-cta-mini h4 strong {
     display: block;
     font-size: 19px;
     font-weight: 700;
-    color: #111827;
+    color: #ffffff;
   }
 
   .footer-subscribe-row {
     display: flex;
     width: 310px;
-    background: #fff;
-    border: 1px solid #e5e7eb;
+    background: #171717;
+    border: 1px solid #2a2a2a;
     border-radius: 12px;
     padding: 5px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.16);
   }
 
   .footer-subscribe-row input {
@@ -296,11 +296,11 @@ const footerStyles = `
     border: 0;
     outline: 0;
     font: 400 13.5px 'DM Sans', sans-serif;
-    color: #111827;
+    color: #ffffff;
   }
 
   .footer-subscribe-row input::placeholder {
-    color: #9ca3af;
+    color: #6b7280;
   }
 
   .footer-subscribe-row button {
@@ -342,7 +342,7 @@ const footerStyles = `
     font-family: 'DM Sans', sans-serif;
     font-weight: 700;
     letter-spacing: -0.03em;
-    fill: rgba(0, 0, 0, 0.04);
+    fill: rgba(255, 255, 255, 0.05);
   }
 
   @media (max-width: 860px) {

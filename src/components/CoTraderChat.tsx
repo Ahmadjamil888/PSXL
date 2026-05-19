@@ -42,11 +42,10 @@ export default function CoTraderChat({ context }: { context?: Partial<AIAnalysis
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-6 z-50 flex items-center gap-3 rounded-full border px-4 py-3 text-sm font-semibold transition-all"
-        style={{ background: "var(--accent)", color: "var(--accent-foreground)", borderColor: "var(--accent)", boxShadow: 'var(--shadow-soft)' }}
+        className="fixed bottom-24 right-6 z-50 bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"
+        style={{ boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)' }}
       >
         <Bot className="w-6 h-6" />
-        <span>Toggle AI Chat</span>
       </motion.button>
     );
   }
@@ -56,30 +55,30 @@ export default function CoTraderChat({ context }: { context?: Partial<AIAnalysis
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.95 }}
-      className="fixed bottom-24 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] overflow-hidden rounded-2xl border"
-      style={{ background: "var(--bg-card)", borderColor: "var(--border)", boxShadow: 'var(--shadow-soft)' }}
+      className="fixed bottom-24 right-6 z-50 w-96 max-w-[calc(100vw-3rem)] bg-[#1a1a1a] rounded-2xl shadow-2xl border border-[#2a2a2a] overflow-hidden"
+      style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3" style={{ background: "var(--accent)", color: "var(--accent-foreground)" }}>
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Bot className="w-5 h-5" />
-          <span className="font-semibold">AI Co-Trader</span>
+          <Bot className="w-5 h-5 text-white" />
+          <span className="text-white font-semibold">AI Co-Trader</span>
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={() => setIsMinimized(!isMinimized)}
-            className="rounded-lg p-1.5 transition-colors hover:bg-black/10"
+            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
           >
-            {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
+            {isMinimized ? <Maximize2 className="w-4 h-4 text-white" /> : <Minimize2 className="w-4 h-4 text-white" />}
           </button>
           <button
             onClick={() => {
               setIsOpen(false);
               clearChat();
             }}
-            className="rounded-lg p-1.5 transition-colors hover:bg-black/10"
+            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 text-white" />
           </button>
         </div>
       </div>
@@ -93,12 +92,12 @@ export default function CoTraderChat({ context }: { context?: Partial<AIAnalysis
             className="flex flex-col"
           >
             {/* Messages */}
-            <div className="h-80 space-y-4 overflow-y-auto p-4" style={{ background: "var(--bg-card-hover)" }}>
+            <div className="h-80 overflow-y-auto p-4 space-y-4 bg-[#141414]">
               {messages.length === 0 && (
                 <div className="text-center py-8">
-                  <Bot className="mx-auto mb-3 h-12 w-12 text-[var(--brand)]" />
-                  <p className="mb-2 text-sm" style={{ color: "var(--text-secondary)" }}>Hi, I'm your AI Co-Trader</p>
-                  <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>I can read your trades, holdings, and behavior tags to surface account-level analysis.</p>
+                  <Bot className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
+                  <p className="text-gray-400 text-sm mb-2">Hi, I'm your AI Co-Trader</p>
+                  <p className="text-gray-500 text-xs">I can read your trades, holdings, and behavior tags to point out account risks.</p>
                   <div className="mt-4 flex flex-wrap justify-center gap-2">
                     {QUICK_PROMPTS.map((prompt) => (
                       <button
@@ -106,8 +105,7 @@ export default function CoTraderChat({ context }: { context?: Partial<AIAnalysis
                         type="button"
                         onClick={() => void sendMessage(prompt, context)}
                         disabled={isLoading}
-                        className="rounded-full border px-3 py-2 text-[11px] transition-colors disabled:opacity-60"
-                        style={{ borderColor: "var(--border)", background: "var(--bg-card)", color: "var(--text-secondary)" }}
+                        className="rounded-full border border-[#2f2f2f] bg-[#1d1d1d] px-3 py-2 text-[11px] text-gray-300 transition-colors hover:border-emerald-500/40 hover:text-white disabled:opacity-60"
                       >
                         {prompt}
                       </button>
@@ -124,24 +122,20 @@ export default function CoTraderChat({ context }: { context?: Partial<AIAnalysis
                   transition={{ delay: index * 0.05 }}
                   className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
                 >
-                  <div
-                    className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
-                    style={{ background: message.role === 'user' ? "var(--info)" : "var(--brand)" }}
-                  >
+                  <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                    message.role === 'user' ? 'bg-blue-600' : 'bg-emerald-600'
+                  }`}>
                     {message.role === 'user' ? (
                       <User className="w-4 h-4 text-white" />
                     ) : (
                       <Bot className="w-4 h-4 text-white" />
                     )}
                   </div>
-                  <div
-                    className="max-w-[75%] rounded-2xl px-4 py-2"
-                    style={{
-                      background: message.role === 'user' ? "var(--info)" : "var(--bg-card)",
-                      color: message.role === 'user' ? "#ffffff" : "var(--text)",
-                      border: message.role === 'user' ? "none" : "1px solid var(--border)",
-                    }}
-                  >
+                  <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${
+                    message.role === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-[#2a2a2a] text-gray-200'
+                  }`}>
                     <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                     <p className="text-xs mt-1 opacity-60">
                       {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -156,11 +150,11 @@ export default function CoTraderChat({ context }: { context?: Partial<AIAnalysis
                   animate={{ opacity: 1 }}
                   className="flex gap-3"
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "var(--brand)" }}>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-emerald-600">
                     <Bot className="w-4 h-4 text-white" />
                   </div>
-                  <div className="rounded-2xl px-4 py-3" style={{ background: "var(--bg-card)" }}>
-                    <Loader2 className="w-4 h-4 animate-spin text-[var(--brand)]" />
+                  <div className="bg-[#2a2a2a] rounded-2xl px-4 py-3">
+                    <Loader2 className="w-4 h-4 text-emerald-500 animate-spin" />
                   </div>
                 </motion.div>
               )}
@@ -169,7 +163,7 @@ export default function CoTraderChat({ context }: { context?: Partial<AIAnalysis
             </div>
 
             {/* Input */}
-            <form onSubmit={handleSend} className="border-t p-4" style={{ background: "var(--bg-card)", borderColor: "var(--border)" }}>
+            <form onSubmit={handleSend} className="p-4 bg-[#1a1a1a] border-t border-[#2a2a2a]">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -177,13 +171,12 @@ export default function CoTraderChat({ context }: { context?: Partial<AIAnalysis
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about your trading..."
                   disabled={isLoading}
-                  className="input-field flex-1 rounded-xl px-4 py-2 text-sm disabled:opacity-50"
+                  className="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isLoading}
-                  className="rounded-xl p-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                  style={{ background: "var(--brand)" }}
+                  className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white p-2 rounded-xl transition-colors"
                 >
                   <Send className="w-4 h-4" />
                 </button>

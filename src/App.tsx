@@ -17,7 +17,6 @@ import { ChatProvider } from "@/contexts/ChatContext";
 import { DynamicFavicon } from "@/components/DynamicFavicon";
 import AppLayout from "@/components/AppLayout";
 import PublicLayout from "@/components/PublicLayout";
-import { ThemeProvider } from "@/components/theme-provider";
 import RouteSeo from "@/components/RouteSeo";
 import GuestBanner from "@/components/GuestBanner";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -93,19 +92,18 @@ function AuthRoute() {
 
 export default function App() {
   return (
-    <ThemeProvider defaultTheme="light">
-      <QueryClientProvider client={queryClient}>
-        <DynamicFavicon />
-        <TooltipProvider>
-          <Sonner />
-          <BrowserRouter>
-            <RouteSeo />
-            <AuthProvider>
-              <GuestProvider>
-                <AIProvider>
-                  <DisciplineProvider>
-                    <ChatProvider>
-                      <Routes>
+    <QueryClientProvider client={queryClient}>
+      <DynamicFavicon />
+      <TooltipProvider>
+        <Sonner />
+        <BrowserRouter>
+          <RouteSeo />
+          <AuthProvider>
+            <GuestProvider>
+              <AIProvider>
+                <DisciplineProvider>
+                  <ChatProvider>
+                    <Routes>
                       <Route
                         path="/"
                         element={
@@ -187,15 +185,14 @@ export default function App() {
                       />
 
                       <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </ChatProvider>
-                  </DisciplineProvider>
-                </AIProvider>
-              </GuestProvider>
-            </AuthProvider>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+                    </Routes>
+                  </ChatProvider>
+                </DisciplineProvider>
+              </AIProvider>
+            </GuestProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }

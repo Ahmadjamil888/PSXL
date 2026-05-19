@@ -2,7 +2,7 @@ import { useTrades, getTradeStats, calcPnL, computeHoldings } from "@/hooks/useT
 import { formatCurrency, formatPercent } from "@/lib/psx";
 import TradeForm from "@/components/TradeForm";
 import CoTraderChat from "@/components/CoTraderChat";
-import ThemeToggle from "@/components/ThemeToggle";
+import AccountInsightPanel from "@/components/AccountInsightPanel";
 import { BarChart3, HelpCircle, Filter, X, TrendingUp, Package, AlertTriangle, Target, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -153,18 +153,9 @@ export default function Dashboard() {
           <h1 className="dash-page-title">Dashboard</h1>
           <p className="dash-page-desc">Uncomfortable truths about your trading behavior.</p>
         </div>
-        <div className="flex w-full flex-col gap-3 sm:w-auto sm:shrink-0 sm:items-end">
-          <div className="flex items-center gap-3 rounded-full border px-4 py-2" style={{ borderColor: "var(--border)", background: "var(--bg-card)" }}>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--text-tertiary)" }}>Dashboard Theme</p>
-              <p className="text-xs" style={{ color: "var(--text-secondary)" }}>Switch light and dark</p>
-            </div>
-            <ThemeToggle />
-          </div>
-          <div className="w-full sm:w-auto" style={{ position: "relative" }}>
-            <TradeForm />
-            <span style={{ position: "absolute", top: "-4px", right: "-4px", width: "8px", height: "8px", borderRadius: "50%", background: "var(--green)", animation: "pulse 2s infinite" }} />
-          </div>
+        <div className="w-full sm:w-auto sm:shrink-0" style={{ position: "relative" }}>
+          <TradeForm />
+          <span style={{ position: "absolute", top: "-4px", right: "-4px", width: "8px", height: "8px", borderRadius: "50%", background: "var(--green)", animation: "pulse 2s infinite" }} />
         </div>
       </div>
 
@@ -193,6 +184,8 @@ export default function Dashboard() {
           </div>
         </div>
       </motion.div>
+
+      <AccountInsightPanel trades={trades} />
 
       {/* Stat cards */}
       <div className="stat-grid">
