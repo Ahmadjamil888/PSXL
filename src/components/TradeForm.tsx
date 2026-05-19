@@ -4,7 +4,6 @@ import { usePSXCompanies } from "@/hooks/usePSXCompanies";
 import { toast } from "sonner";
 import { Plus, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import "@/styles/landing.css";
 
 interface Suggestion { symbol: string; name: string; sector?: string; }
 const ACCEPTED_IMAGE_TYPES = "image/*";
@@ -151,7 +150,11 @@ export default function TradeForm() {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <button
+        onClick={() => setOpen(true)}
+        className="btn-primary"
+        style={{ display: "flex", alignItems: "center", gap: "8px" }}
+      >
         <Plus className="w-4 h-4" />
         Log Trade
       </button>
@@ -160,20 +163,23 @@ export default function TradeForm() {
         {open && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "flex-start", justifyContent: "center", background: "rgba(0,0,0,0.85)", backdropFilter: "blur(4px)", overflowY: "auto" }}
+            style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "flex-start", justifyContent: "center", background: "rgba(0,0,0,0.85)", backdropFilter: "blur(10px)", overflowY: "auto" }}
             onClick={() => setOpen(false)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.97, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 16 }}
-              style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "8px", padding: "24px", width: "100%", maxWidth: "480px", margin: "16px", marginBottom: "32px" }}
+              style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)), var(--bg-card)", border: "1px solid var(--border)", borderRadius: "28px", padding: "24px", width: "100%", maxWidth: "560px", margin: "16px", marginBottom: "32px", boxShadow: "0 32px 80px rgba(0,0,0,0.35)" }}
               onClick={e => e.stopPropagation()}
             >
               {/* Header */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
-                <h2 style={{ fontSize: "18px", fontWeight: 600, color: "var(--text)" }}>Log Trade</h2>
-                <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "var(--text2)", cursor: "pointer", padding: "4px" }}>
+                <div>
+                  <p style={{ fontSize: "11px", fontWeight: 700, color: "var(--brand)", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: "8px" }}>PSXL Journal</p>
+                  <h2 style={{ fontSize: "24px", fontWeight: 600, letterSpacing: "-0.03em", color: "var(--text)" }}>Log Trade</h2>
+                </div>
+                <button onClick={() => setOpen(false)} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)", color: "var(--text2)", cursor: "pointer", padding: "10px", borderRadius: "999px" }}>
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -184,8 +190,8 @@ export default function TradeForm() {
                   <label style={{ display: "block", fontSize: "12px", fontWeight: 400, color: "var(--text)", marginBottom: "6px" }}>
                     Company / Symbol
                   </label>
-                  <div style={{ position: "relative" }}>
-                    <Search size={13} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text3)", pointerEvents: "none" }} />
+                    <div style={{ position: "relative" }}>
+                      <Search size={13} style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text3)", pointerEvents: "none" }} />
                     <input
                       ref={inputRef}
                       type="text"
@@ -217,9 +223,9 @@ export default function TradeForm() {
                           transition={{ duration: 0.12 }}
                           style={{
                             position: "absolute", zIndex: 20, width: "100%", top: "calc(100% + 4px)",
-                            background: "var(--surface)", border: "1px solid var(--border)",
-                            borderRadius: "6px", overflow: "hidden",
-                            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+                            background: "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)), var(--bg-card)", border: "1px solid var(--border)",
+                            borderRadius: "18px", overflow: "hidden",
+                            boxShadow: "0 20px 60px rgba(0,0,0,0.28)",
                           }}
                         >
                           {suggestions.map((s, i) => {
@@ -278,9 +284,9 @@ export default function TradeForm() {
                       <button key={s} type="button" onClick={() => setSide(s)} style={{
                         flex: 1, padding: "10px", fontSize: "12px", fontWeight: 400,
                         letterSpacing: "0.12em", textTransform: "uppercase",
-                        background: side === s ? (s === "buy" ? "var(--green)" : "var(--red)") : "transparent",
+                        background: side === s ? (s === "buy" ? "var(--green)" : "var(--red)") : "rgba(255,255,255,0.03)",
                         color: side === s ? "#000" : "var(--text2)",
-                        border: "1px solid var(--border2)", cursor: "pointer", transition: "all 0.2s",
+                        border: "1px solid var(--border)", cursor: "pointer", transition: "all 0.2s", borderRadius: "999px",
                       }}>
                         {s.toUpperCase()}
                       </button>

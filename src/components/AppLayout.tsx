@@ -1,6 +1,17 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { LayoutDashboard, BookOpen, BarChart3, LogOut, Settings, User, ChevronLeft, ChevronRight, Brain, Wallet } from "lucide-react";
+import {
+  BarChart3,
+  BookOpen,
+  Brain,
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
 import { useState, useEffect } from "react";
@@ -25,289 +36,176 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-      if (window.innerWidth < 1024) {
-        setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
-      }
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      setSidebarOpen(!mobile);
     };
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const sidebarWidth = sidebarOpen ? 296 : 0;
+
   return (
-    <div className="min-h-screen flex" style={{ background: "var(--bg)", color: "var(--text)" }}>
-      {/* Animated Sidebar - Fixed Height */}
+    <div className="brand-shell min-h-screen text-white">
       <AnimatePresence initial={false}>
         {sidebarOpen && (
           <motion.aside
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 280, opacity: 1 }}
+            animate={{ width: 296, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="flex flex-col shrink-0 overflow-hidden fixed left-0 top-0 h-screen"
-            style={{
-              borderRight: "1px solid var(--border)",
-              background: "var(--chrome-bg)",
-              zIndex: 100,
-            }}
+            transition={{ duration: 0.26, ease: "easeInOut" }}
+            className="fixed left-0 top-0 z-50 flex h-screen flex-col overflow-hidden border-r border-white/8 bg-[rgba(7,7,7,0.88)] px-4 py-4 backdrop-blur-2xl"
           >
-            {/* Header */}
-            <div
-              className="p-5 flex items-center justify-between"
-              style={{ borderBottom: "1px solid var(--border)" }}
-            >
-              <div className="flex items-center gap-3">
-                <Logo />
+            <div className="brand-panel-soft flex items-center justify-between rounded-[24px] px-4 py-4">
+              <Logo height={28} />
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(false)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/8 bg-white/[0.03] text-white/56 transition-colors hover:text-white"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="brand-panel mt-4 flex items-center gap-3 px-4 py-4">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
+                <Sparkles className="h-5 w-5" />
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-2 transition-colors"
-                  style={{
-                    color: "var(--text2)",
-                    background: "transparent",
-                    border: "1px solid var(--border)",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "var(--text)";
-                    e.currentTarget.style.borderColor = "var(--border2)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "var(--text2)";
-                    e.currentTarget.style.borderColor = "var(--border)";
-                  }}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
+                  PSXL
+                </p>
+                <p className="text-sm text-white/58">Trade with cleaner signal</p>
               </div>
             </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+            <nav className="mt-5 flex-1 space-y-2 overflow-y-auto">
               {navItems.map((item) => {
-                const isActive = location.pathname === item.to;
+                const active = location.pathname === item.to;
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    className="flex items-center gap-3 px-3 py-2.5 text-xs font-medium transition-all relative"
-                    style={{
-                      color: isActive ? "var(--nav-accent)" : "var(--text2)",
-                      background: isActive ? "var(--surface)" : "transparent",
-                      border: isActive ? "1px solid var(--border)" : "1px solid transparent",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = "var(--bg2)";
-                        e.currentTarget.style.color = "var(--text)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.color = "var(--text2)";
-                      }
-                    }}
+                    className={`group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all ${
+                      active
+                        ? "border border-[var(--brand-border)] bg-[var(--brand-soft)] text-white"
+                        : "border border-transparent text-white/58 hover:border-white/8 hover:bg-white/[0.03] hover:text-white"
+                    }`}
                   >
-                    <item.icon className="w-4 h-4 relative z-10" />
-                    <span className="relative z-10">{item.label}</span>
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeNav"
-                        className="absolute left-0 top-0 bottom-0 w-0.5"
-                        style={{ background: "var(--nav-accent)" }}
-                        transition={{ type: "spring", duration: 0.3 }}
-                      />
-                    )}
+                    <item.icon
+                      className={`h-4 w-4 ${
+                        active ? "text-[var(--brand)]" : "text-white/40 group-hover:text-white/70"
+                      }`}
+                    />
+                    <span>{item.label}</span>
                   </NavLink>
                 );
               })}
             </nav>
 
-            {/* Account Balance */}
-            <div className="p-3" style={{ borderTop: "1px solid var(--border)" }}>
-              <div
-                className="px-3 py-2.5 mb-3 flex items-center gap-3"
-                style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)" }}
-              >
-                <Wallet className="w-4 h-4" style={{ color: "var(--green)" }} />
-                <div className="flex-1">
-                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>Account Balance</p>
-                  <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>
-                    {formatCurrency(stats.totalPnL)}
-                  </p>
+            <div className="space-y-3">
+              <div className="brand-panel rounded-[24px] px-4 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--brand-soft)] text-[var(--brand)]">
+                    <Wallet className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/38">
+                      Account Balance
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-white">
+                      {formatCurrency(stats.totalPnL)}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Dark Mode Toggle */}
-              <div
-                className="px-3 py-2.5 mb-3 flex items-center gap-3"
-                style={{ background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)" }}
-              >
-                {profilePicture ? (
-                  <img
-                    src={profilePicture}
-                    alt="Profile"
-                    className="w-8 h-8 object-cover"
-                    style={{ borderRadius: "50%", border: "2px solid var(--accent)" }}
-                  />
-                ) : (
-                  <div
-                    className="w-8 h-8 flex items-center justify-center text-xs font-medium"
-                    style={{
-                      background: "var(--accent)",
-                      color: "#000",
-                      borderRadius: "50%",
-                    }}
-                  >
-                    {user?.email?.charAt(0).toUpperCase() || "U"}
+              <div className="brand-panel rounded-[24px] px-4 py-4">
+                <div className="flex items-center gap-3">
+                  {profilePicture ? (
+                    <img
+                      src={profilePicture}
+                      alt="Profile"
+                      className="h-11 w-11 rounded-full border border-white/10 object-cover"
+                    />
+                  ) : (
+                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-soft)] text-sm font-bold text-[var(--brand)]">
+                      {user?.email?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-white">
+                      {user?.email?.split("@")[0] || "User"}
+                    </p>
+                    <p className="truncate text-xs text-white/46">{user?.email || ""}</p>
                   </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p
-                    className="truncate text-xs font-medium"
-                    style={{ color: "var(--text-primary)", fontFamily: "var(--font-main)" }}
-                  >
-                    {user?.email?.split("@")[0] || "User"}
-                  </p>
-                  <p className="truncate text-[10px]" style={{ color: "var(--text-muted)" }}>
-                    {user?.email || ""}
-                  </p>
                 </div>
+                <button onClick={signOut} className="btn-secondary mt-4 w-full">
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </button>
               </div>
-              <button
-                onClick={signOut}
-                className="flex items-center gap-2 px-3 py-2.5 text-xs font-medium transition-all w-full"
-                style={{
-                  color: "var(--text-muted)",
-                  background: "transparent",
-                  border: "1px solid var(--border-subtle)",
-                  borderRadius: "var(--radius-sm)",
-                  cursor: "pointer",
-                  fontFamily: "var(--font-main)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "var(--red)";
-                  e.currentTarget.style.background = "var(--surface)";
-                  e.currentTarget.style.borderColor = "var(--red)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "var(--text-muted)";
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.borderColor = "var(--border-subtle)";
-                }}
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                Sign Out
-              </button>
             </div>
           </motion.aside>
         )}
       </AnimatePresence>
 
-      {/* Collapsed Sidebar Toggle Button */}
       {!sidebarOpen && !isMobile && (
-        <motion.div
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          className="fixed left-4 top-4 z-50"
-        >
+        <div className="fixed left-5 top-5 z-50">
           <button
+            type="button"
             onClick={() => setSidebarOpen(true)}
-            className="p-3 transition-all"
-            style={{
-              color: "var(--text2)",
-              background: "var(--surface)",
-              border: "1px solid var(--border)",
-              cursor: "pointer",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "var(--text)";
-              e.currentTarget.style.borderColor = "var(--border2)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "var(--text2)";
-              e.currentTarget.style.borderColor = "var(--border)";
-            }}
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[rgba(10,10,10,0.88)] text-white/60 shadow-[0_20px_40px_rgba(0,0,0,0.22)] backdrop-blur-xl transition-colors hover:text-white"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="h-5 w-5" />
           </button>
-        </motion.div>
+        </div>
       )}
 
-      {/* Mobile Header */}
-      <div
-        className="fixed top-0 left-0 right-0 z-40 lg:hidden"
-        style={{
-          borderBottom: "1px solid var(--border)",
-          background: "var(--chrome-bg)",
-          backdropFilter: "blur(10px)",
-        }}
-      >
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <Logo />
+      {isMobile && (
+        <div className="fixed left-0 right-0 top-0 z-40 border-b border-white/8 bg-[rgba(8,8,8,0.9)] px-4 py-3 backdrop-blur-xl lg:hidden">
+          <div className="flex items-center justify-between">
+            <Logo height={28} />
+            <button
+              type="button"
+              onClick={() => setSidebarOpen((value) => !value)}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white"
+            >
+              {sidebarOpen ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Mobile Nav - Compact */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
-        style={{
-          borderTop: "1px solid var(--border)",
-          background: "var(--chrome-bg)",
-          height: '64px',
-        }}
-      >
-        <nav className="flex items-center justify-around h-full">
-          {navItems.slice(0, 5).map((item) => {
-            const isActive = location.pathname === item.to;
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className="flex flex-col items-center gap-0.5 px-2 py-1 text-[10px]"
-                style={{
-                  color: isActive ? "var(--nav-accent)" : "var(--text2)",
-                }}
-              >
-                <item.icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{item.label}</span>
-              </NavLink>
-            );
-          })}
-          <button
-            onClick={signOut}
-            className="flex flex-col items-center gap-0.5 px-2 py-1 text-[10px]"
-            style={{ color: "var(--text2)" }}
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Out</span>
-          </button>
-        </nav>
-      </div>
+      {isMobile && (
+        <div className="fixed bottom-3 left-3 right-3 z-40 rounded-full border border-white/10 bg-[rgba(8,8,8,0.9)] px-2 py-2 shadow-[0_24px_70px_rgba(0,0,0,0.32)] backdrop-blur-2xl lg:hidden">
+          <nav className="flex items-center justify-between">
+            {navItems.map((item) => {
+              const active = location.pathname === item.to;
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={`flex flex-1 flex-col items-center gap-1 rounded-full px-2 py-2 text-[10px] font-semibold ${
+                    active ? "text-[var(--brand)]" : "text-white/44"
+                  }`}
+                >
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                </NavLink>
+              );
+            })}
+          </nav>
+        </div>
+      )}
 
-      {/* Content */}
       <main
-        className="flex-1 overflow-auto min-w-0"
-        style={{
-          paddingLeft: isMobile ? 0 : sidebarOpen ? "280px" : "80px",
-        }}
+        className="min-w-0 flex-1 transition-[padding] duration-300"
+        style={{ paddingLeft: isMobile ? 0 : sidebarWidth }}
       >
-        <div
-          className="w-full max-w-[1600px] mx-auto box-border min-w-0 px-4 sm:px-5 lg:px-8"
-          style={{
-            paddingTop: isMobile ? "72px" : "32px",
-            paddingBottom: isMobile
-              ? "calc(96px + env(safe-area-inset-bottom, 0px))"
-              : "32px",
-          }}
-        >
+        <div className="mx-auto w-full max-w-[1640px] px-4 pb-[104px] pt-[82px] sm:px-6 lg:px-8 lg:pb-8 lg:pt-8">
           {children}
         </div>
       </main>

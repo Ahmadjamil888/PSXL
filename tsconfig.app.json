@@ -17,6 +17,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
+      "motion/react": [
+        "./src/lib/motion-react.ts"
+      ],
       "@/*": [
         "./src/*"
       ]

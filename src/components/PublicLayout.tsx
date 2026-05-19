@@ -1,6 +1,15 @@
-import { useState, useEffect } from "react";
-import { Menu, X, Twitter, Github, Linkedin, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  ChevronRight,
+  Github,
+  Linkedin,
+  Menu,
+  Sparkles,
+  Twitter,
+  X,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
 
 const NAV_LINKS = [
@@ -30,195 +39,147 @@ const FOOTER_LINKS = {
   ],
 };
 
-function useResolvedTheme(): "dark" | "light" {
-  return "dark";
-}
-
 export function PublicNav() {
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
-  const resolved = useResolvedTheme();
 
-  // Track viewport width to switch between mobile/desktop nav
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => setIsMobile(window.innerWidth < 1024);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Close menu on route change
-  useEffect(() => { setOpen(false); }, [location.pathname]);
-
-  const navBg = "var(--chrome-bg)";
-  const borderColor = resolved === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
-  const textColor = resolved === "dark" ? "#ffffff" : "#000000";
-  const textMuted = resolved === "dark" ? "#888888" : "#666666";
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   return (
     <>
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        height: "56px", display: "flex", alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 clamp(16px, 4vw, 40px)",
-        borderBottom: `1px solid ${borderColor}`,
-        background: navBg,
-      }}>
-        {/* Logo */}
-        <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0 }}>
-          <Logo height={30} />
-        </Link>
+      <nav className="fixed left-0 right-0 top-0 z-50 px-3 py-3 md:px-5">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between rounded-full border border-white/10 bg-[var(--chrome-bg)] px-4 py-3 shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+          <Link to="/" className="flex items-center gap-3">
+            <Logo height={28} />
+          </Link>
 
-        {/* Desktop links */}
-        {!isMobile && (
-          <ul style={{ display: "flex", gap: "clamp(16px, 3vw, 32px)", listStyle: "none", margin: 0, padding: 0 }}>
-            {NAV_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link to={l.href} style={{
-                  fontSize: "12px", fontWeight: 500, letterSpacing: "0.08em",
-                  textTransform: "uppercase", textDecoration: "none",
-                  color: location.pathname === l.href ? textColor : textMuted,
-                  transition: "color 0.2s",
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.color = textColor)}
-                  onMouseLeave={e => (e.currentTarget.style.color = location.pathname === l.href ? textColor : textMuted)}
-                >{l.label}</Link>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {/* Right side */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Get Started + Try as Guest — desktop only */}
           {!isMobile && (
-            <>
-              <Link to="/dashboard?mode=guest" style={{
-                padding: "9px 18px", fontSize: "11px", fontWeight: 600,
-                letterSpacing: "0.1em", textTransform: "uppercase",
-                background: "transparent", color: textColor,
-                border: `1px solid ${borderColor}`,
-                borderRadius: "4px", textDecoration: "none",
-                whiteSpace: "nowrap", transition: "border-color 0.2s",
-              }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--green)")}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = borderColor)}
-              >
-                Try as Guest
-              </Link>
-              <Link to="/auth" style={{
-                padding: "9px 18px", fontSize: "11px", fontWeight: 600,
-                letterSpacing: "0.1em", textTransform: "uppercase",
-                background: "var(--green)", color: "#000",
-                borderRadius: "4px", textDecoration: "none",
-                whiteSpace: "nowrap",
-              }}>
-                Get Started
-              </Link>
-            </>
+            <ul className="flex items-center gap-8">
+              {NAV_LINKS.map((item) => {
+                const active = location.pathname === item.href;
+                return (
+                  <li key={item.href}>
+                    <Link
+                      to={item.href}
+                      className={`text-[12px] font-semibold uppercase tracking-[0.18em] transition-colors ${
+                        active ? "text-[var(--brand)]" : "text-white/58 hover:text-white"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           )}
 
-          {/* Hamburger — mobile only */}
-          {isMobile && (
-            <button
-              onClick={() => setOpen(v => !v)}
-              style={{
-                background: "none", border: `1px solid ${borderColor}`,
-                padding: "7px", cursor: "pointer", color: textColor,
-                borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center",
-              }}
-              aria-label="Toggle menu"
-            >
-              {open ? <X size={18} /> : <Menu size={18} />}
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {!isMobile && (
+              <>
+                <Link to="/dashboard?mode=guest" className="btn-secondary">
+                  Explore Demo
+                </Link>
+                <Link to="/auth" className="btn-primary">
+                  Start Tracking
+                </Link>
+              </>
+            )}
+            {isMobile && (
+              <button
+                type="button"
+                onClick={() => setOpen((value) => !value)}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white"
+                aria-label="Toggle navigation"
+              >
+                {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            )}
+          </div>
         </div>
       </nav>
 
-      {/* Mobile slide-down menu */}
-      {isMobile && open && (
-        <div style={{
-          position: "fixed", top: "56px", left: 0, right: 0, zIndex: 99,
-          background: navBg, borderBottom: `1px solid ${borderColor}`,
-          padding: "8px clamp(16px, 4vw, 40px) 20px",
-          boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-        }}>
-          {NAV_LINKS.map((l) => (
-            <Link key={l.href} to={l.href} style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "14px 0", fontSize: "15px", fontWeight: 500,
-              color: location.pathname === l.href ? "var(--green)" : textColor,
-              textDecoration: "none",
-              borderBottom: `1px solid ${borderColor}`,
-            }}>
-              {l.label}
-              <ChevronRight size={14} style={{ color: textMuted }} />
-            </Link>
-          ))}
-          <Link to="/auth" style={{
-            marginTop: "16px", textAlign: "center", textDecoration: "none",
-            display: "block", padding: "14px", borderRadius: "4px",
-            background: "var(--green)", color: "#000",
-            fontSize: "12px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
-          }}>
-            Get Started — Free
-          </Link>
-          <Link to="/dashboard?mode=guest" style={{
-            marginTop: "8px", textAlign: "center", textDecoration: "none",
-            display: "block", padding: "13px", borderRadius: "4px",
-            background: "transparent", color: textColor,
-            border: `1px solid ${borderColor}`,
-            fontSize: "12px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
-          }}>
-            Try as Guest
-          </Link>
-        </div>
-      )}
+      <AnimatePresence>
+        {isMobile && open && (
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            className="fixed left-3 right-3 top-[76px] z-40 overflow-hidden rounded-[28px] border border-white/10 bg-[rgba(8,8,8,0.96)] p-4 shadow-[0_32px_80px_rgba(0,0,0,0.4)] backdrop-blur-2xl"
+          >
+            <div className="space-y-2">
+              {NAV_LINKS.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 text-sm font-medium text-white/78"
+                >
+                  {item.label}
+                  <ChevronRight className="h-4 w-4 text-white/40" />
+                </Link>
+              ))}
+            </div>
+            <div className="mt-4 flex flex-col gap-2">
+              <Link to="/auth" className="btn-primary">
+                Start Tracking
+              </Link>
+              <Link to="/dashboard?mode=guest" className="btn-secondary">
+                Explore Demo
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
 
 export function PublicFooter() {
-  const resolved = useResolvedTheme();
-  const borderColor = resolved === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
-  const textMuted = resolved === "dark" ? "#555555" : "#999999";
-  const textSub = resolved === "dark" ? "#888888" : "#666666";
-  const textMain = resolved === "dark" ? "#ffffff" : "#000000";
-
   return (
-    <footer style={{ background: "var(--chrome-bg)", borderTop: `1px solid ${borderColor}`, padding: "clamp(40px, 8vw, 64px) clamp(16px, 4vw, 40px) 0", marginTop: 0 }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "clamp(160px, 20%, 200px) 1fr", gap: "clamp(32px, 6vw, 80px)", paddingBottom: "clamp(32px, 5vw, 48px)", borderBottom: `1px solid ${borderColor}` }}>
-          {/* Brand */}
+    <footer className="px-4 pb-8 pt-12 md:px-6">
+      <div className="mx-auto max-w-[1400px] rounded-[36px] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] px-6 py-8 shadow-[0_24px_70px_rgba(0,0,0,0.24)] md:px-10 md:py-10">
+        <div className="grid gap-10 border-b border-white/8 pb-8 md:grid-cols-[minmax(220px,280px)_1fr]">
           <div>
-            <div style={{ marginBottom: "16px" }}><Logo height={28} /></div>
-            <p style={{ fontSize: "13px", fontWeight: 300, color: textSub, lineHeight: 1.7, maxWidth: "200px" }}>
-              Not a journal. A system that fixes your trading behavior.
+            <Logo height={30} />
+            <p className="mt-4 max-w-[240px] text-sm leading-7 text-white/58">
+              Precision tools for PSX traders who want a cleaner ledger, sharper
+              insight, and better decisions.
             </p>
-            <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
-              {[Twitter, Github, Linkedin].map((Icon, i) => (
-                <a key={i} href="#" style={{ color: textMuted, transition: "color 0.2s" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = textMain)}
-                  onMouseLeave={e => (e.currentTarget.style.color = textMuted)}>
-                  <Icon size={16} />
+            <div className="mt-5 flex items-center gap-3">
+              {[Twitter, Github, Linkedin].map((Icon, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/48 transition-colors hover:text-white"
+                >
+                  <Icon className="h-4 w-4" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Links */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(16px, 3vw, 40px)" }}>
-            {Object.entries(FOOTER_LINKS).map(([cat, items]) => (
-              <div key={cat}>
-                <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: textMuted, marginBottom: "14px" }}>{cat}</p>
-                <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div className="grid gap-8 sm:grid-cols-3">
+            {Object.entries(FOOTER_LINKS).map(([group, items]) => (
+              <div key={group}>
+                <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--brand)]">
+                  {group}
+                </p>
+                <ul className="space-y-3">
                   {items.map((item) => (
                     <li key={item.href}>
-                      <Link to={item.href} style={{ fontSize: "13px", color: textSub, textDecoration: "none", transition: "color 0.2s" }}
-                        onMouseEnter={e => (e.currentTarget.style.color = textMain)}
-                        onMouseLeave={e => (e.currentTarget.style.color = textSub)}>
+                      <Link
+                        to={item.href}
+                        className="text-sm text-white/58 transition-colors hover:text-white"
+                      >
                         {item.label}
                       </Link>
                     </li>
@@ -229,24 +190,19 @@ export function PublicFooter() {
           </div>
         </div>
 
-        {/* Financial Disclaimer Banner - YMYL Requirement */}
-        <div style={{ background: "rgba(163,196,90,0.05)", border: "1px solid rgba(163,196,90,0.2)", borderRadius: "8px", padding: "16px 20px", marginBottom: "20px" }}>
-          <p style={{ fontSize: "12px", color: textSub, lineHeight: 1.6, margin: 0 }}>
-            <strong style={{ color: "var(--green)" }}>Important:</strong> Content on PSXL is for informational purposes only and does not constitute financial, investment, tax, or legal advice. Always consult a qualified professional before making investment decisions. Past performance does not guarantee future results.
-          </p>
+        <div className="mt-6 rounded-[24px] border border-[var(--brand-border)] bg-[var(--brand-soft)] px-4 py-4 text-sm leading-6 text-white/70">
+          <span className="font-semibold text-[var(--brand)]">Important:</span>{" "}
+          PSXL is an educational tracking platform, not financial or tax advice.
+          Always verify decisions and filings with a qualified professional.
         </div>
 
-        {/* Bottom bar */}
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "20px 0", borderTop: `1px solid ${borderColor}` }}>
-          <span style={{ fontSize: "12px", color: textMuted }}>© {new Date().getFullYear()} PSX Ledger Pro. All rights reserved.</span>
-          <div style={{ display: "flex", gap: "20px" }}>
-            {[{ label: "Privacy", href: "/privacy" }, { label: "Terms", href: "/terms" }, { label: "Disclaimer", href: "/disclaimer" }].map(l => (
-              <Link key={l.href} to={l.href} style={{ fontSize: "12px", color: textMuted, textDecoration: "none", transition: "color 0.2s" }}
-                onMouseEnter={e => (e.currentTarget.style.color = textMain)}
-                onMouseLeave={e => (e.currentTarget.style.color = textMuted)}>
-                {l.label}
-              </Link>
-            ))}
+        <div className="mt-6 flex flex-col gap-4 text-xs text-white/40 md:flex-row md:items-center md:justify-between">
+          <span>© {new Date().getFullYear()} PSXL. All rights reserved.</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="inline-flex items-center gap-2 text-white/46">
+              <Sparkles className="h-3.5 w-3.5 text-[var(--brand)]" />
+              Built for disciplined Pakistan Stock Exchange traders
+            </span>
           </div>
         </div>
       </div>
@@ -254,13 +210,15 @@ export function PublicFooter() {
   );
 }
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+export default function PublicLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg)", color: "var(--text)" }}>
+    <div className="brand-shell min-h-screen text-white">
       <PublicNav />
-      <main style={{ flex: 1, paddingTop: "56px" }}>
-        {children}
-      </main>
+      <main className="flex-1 pt-[88px]">{children}</main>
       <PublicFooter />
     </div>
   );

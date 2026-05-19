@@ -1,1416 +1,187 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useLiveTicker } from "@/hooks/useLiveTicker";
-import { getSortedPosts, formatDate } from "@/data/blogPosts";
+import { ChevronRight } from "lucide-react";
+import { motion } from "motion/react";
+import { Link, useNavigate } from "react-router-dom";
 
-const ff = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+const HERO_VIDEO_URL =
+  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260505_101331_74f9b798-3f00-4e86-8a01-377aa16ffeaa.mp4";
 
-// ─── STYLE CONSTANTS ─────────────────────────────────────────────────────────
-const btnPrimary: React.CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontFamily: ff,
-  fontSize: "clamp(10px, 2vw, 11px)",
-  fontWeight: 600,
-  letterSpacing: "0.12em",
-  textTransform: "uppercase",
-  color: "#000",
-  background: "var(--lgrn)",
-  border: "none",
-  padding: "clamp(14px, 2vw, 16px) clamp(24px, 4vw, 32px)",
-  textDecoration: "none",
-  cursor: "pointer",
-  whiteSpace: "nowrap",
-  borderRadius: "2px",
-  transition: "all 0.2s ease",
-  boxShadow: "0 0 0 rgba(163, 202, 87, 0)",
+type LogoCard = {
+  src: string;
+  alt: string;
+  gradient: {
+    from: string;
+    to: string;
+  };
 };
 
-const btnPrimaryHover: React.CSSProperties = {
-  boxShadow: "0 0 20px rgba(163, 202, 87, 0.35)",
-  transform: "translateY(-1px)",
-};
-
-const btnGhost: React.CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontFamily: ff,
-  fontSize: "clamp(10px, 2vw, 11px)",
-  fontWeight: 500,
-  letterSpacing: "0.12em",
-  textTransform: "uppercase",
-  color: "var(--ltx)",
-  background: "transparent",
-  border: "1px solid rgba(255,255,255,0.15)",
-  padding: "clamp(12px, 2vw, 14px) clamp(20px, 4vw, 28px)",
-  textDecoration: "none",
-  cursor: "pointer",
-  whiteSpace: "nowrap",
-  borderRadius: "2px",
-  transition: "all 0.2s ease",
-};
-
-const sectionBase = (bg: string): React.CSSProperties => ({
-  background: bg,
-  padding: "clamp(60px, 10vw, 120px) clamp(16px, 5vw, 40px)",
-  width: "100%",
-  boxSizing: "border-box",
-  display: "flex",
-  flexDirection: "column",
-  margin: 0,
-});
-
-interface BlogPostPreview { slug: string; title: string; excerpt: string; category: string; date: string; }
-interface Stock       { sym: string; val: string; chg: string; pct: string; pos: boolean; }
-interface Trade       { date: string; sym: string; sector: string; type: "BUY" | "SELL"; qty: number; rate: number; value: number; charges: number; pl: number | null; }
-interface Feature     { num: string; title: string; body: string; tag: string; icon: React.ReactNode; }
-interface Step        { num: string; title: string; body: string; lineH: number; }
-interface Plan        { name: string; price: string; priceNote: string; desc: string; features: string[]; inactive: string[]; badge?: string; featured?: boolean; cta: string; }
-interface Testimonial { quote: string; name: string; role: string; avatar: string; }
-interface SecItem     { title: string; body: string; icon: React.ReactNode; }
-interface FaqItem     { q: string; a: string; }
-
-// ─── ICONS ───────────────────────────────────────────────────────────────────
-const IconCalendar = () => (<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:32,height:32}}><rect x="4" y="6" width="24" height="20" rx="1"/><line x1="4" y1="11" x2="28" y2="11"/><line x1="10" y1="6" x2="10" y2="11"/><line x1="22" y1="6" x2="22" y2="11"/><line x1="10" y1="17" x2="22" y2="17"/><line x1="10" y1="21" x2="18" y2="21"/></svg>);
-const IconChart    = () => (<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:32,height:32}}><polyline points="4,24 10,16 16,20 22,10 28,6"/><line x1="4" y1="28" x2="28" y2="28"/></svg>);
-const IconHex      = () => (<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:32,height:32}}><path d="M16 4 L28 12 L28 24 L16 28 L4 24 L4 12 Z"/><circle cx="16" cy="16" r="4"/></svg>);
-const IconBar      = () => (<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:32,height:32}}><rect x="6" y="14" width="5" height="12"/><rect x="13" y="10" width="5" height="16"/><rect x="20" y="6" width="5" height="20"/><line x1="4" y1="28" x2="28" y2="28"/></svg>);
-const IconTax      = () => (<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:32,height:32}}><path d="M8 26 L8 12 M14 26 L14 18 M20 26 L20 8 M26 26 L26 14"/><path d="M4 8 Q10 4 16 10 Q22 16 28 6"/></svg>);
-const IconExport   = () => (<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:32,height:32}}><path d="M6 26 L6 6 L26 6"/><rect x="10" y="16" width="4" height="10"/><rect x="17" y="11" width="4" height="15"/><line x1="6" y1="13" x2="26" y2="13"/></svg>);
-const IconShield   = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 2 L15 5 L15 10 C15 13.3 12.3 16 9 17 C5.7 16 3 13.3 3 10 L3 5 Z"/></svg>);
-const IconClock    = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="9" r="7"/><polyline points="9,5 9,9 12,11"/></svg>);
-const IconLock     = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="8" width="12" height="8" rx="1"/><path d="M6 8 L6 5 C6 3.3 7.3 2 9 2 C10.7 2 12 3.3 12 5 L12 8"/></svg>);
-const IconInfoSec  = () => (<svg style={{width:18,height:18}} viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="9" r="7"/><line x1="9" y1="6" x2="9" y2="9"/><line x1="9" y1="12" x2="9" y2="12.5" strokeWidth="2"/></svg>);
-
-const LogoImg = ({ height = 32 }: { height?: number }) => (
-  <img
-    src="/logo-dark.png"
-    alt="PSX Ledger Pro"
-    style={{ height: `${height}px`, width: "auto", display: "block" }}
-  />
-);
-
-// ─── DATA ────────────────────────────────────────────────────────────────────
-const STOCKS: Stock[] = [
-  {sym:"OGDC",val:"187.40",chg:"+2.30",pct:"+1.24%",pos:true},
-  {sym:"HBL", val:"221.15",chg:"-3.20",pct:"-1.43%",pos:false},
-  {sym:"PSO", val:"312.80",chg:"+5.60",pct:"+1.82%",pos:true},
-  {sym:"LUCK",val:"924.50",chg:"+12.70",pct:"+1.39%",pos:true},
-  {sym:"SYS", val:"582.30",chg:"+8.90",pct:"+1.55%",pos:true},
-  {sym:"MCB", val:"344.20",chg:"-1.80",pct:"-0.52%",pos:false},
-  {sym:"ENGRO",val:"326.40",chg:"+4.10",pct:"+1.27%",pos:true},
-  {sym:"PPL", val:"142.60",chg:"-2.40",pct:"-1.66%",pos:false},
-  {sym:"FFBL",val:"56.80", chg:"+0.90",pct:"+1.61%",pos:true},
-  {sym:"EFERT",val:"128.30",chg:"+2.10",pct:"+1.66%",pos:true},
-  {sym:"UBL", val:"278.90",chg:"-4.20",pct:"-1.48%",pos:false},
-  {sym:"MARI",val:"2340.50",chg:"+34.70",pct:"+1.50%",pos:true},
-  {sym:"HUBC",val:"118.70",chg:"+1.40",pct:"+1.19%",pos:true},
-  {sym:"FCCL",val:"38.20", chg:"-0.60",pct:"-1.55%",pos:false},
-  {sym:"BAHL",val:"103.40",chg:"+2.80",pct:"+2.78%",pos:true},
+const logos: LogoCard[] = [
+  {
+    src: "https://svgl.app/procure.svg",
+    alt: "Procure",
+    gradient: { from: "#60a5fa", to: "#2563eb" },
+  },
+  {
+    src: "https://svgl.app/shopify.svg",
+    alt: "Shopify",
+    gradient: { from: "#facc15", to: "#f59e0b" },
+  },
+  {
+    src: "https://svgl.app/blender.svg",
+    alt: "Blender",
+    gradient: { from: "#7dd3fc", to: "#2563eb" },
+  },
+  {
+    src: "https://svgl.app/figma.svg",
+    alt: "Figma",
+    gradient: { from: "#c084fc", to: "#7c3aed" },
+  },
+  {
+    src: "https://svgl.app/spotify.svg",
+    alt: "Spotify",
+    gradient: { from: "#fb7185", to: "#ef4444" },
+  },
+  {
+    src: "https://svgl.app/lottielab.svg",
+    alt: "Lottielab",
+    gradient: { from: "#facc15", to: "#84cc16" },
+  },
+  {
+    src: "https://svgl.app/google-cloud.svg",
+    alt: "Google Cloud",
+    gradient: { from: "#93c5fd", to: "#38bdf8" },
+  },
+  {
+    src: "https://svgl.app/bing.svg",
+    alt: "Bing",
+    gradient: { from: "#67e8f9", to: "#14b8a6" },
+  },
 ];
 
-const TRADES: Trade[] = [
-  {date:"24 Mar 26",sym:"LUCK", sector:"Cement", type:"BUY", qty:200,rate:912.00,value:182400,charges:1640,pl:null},
-  {date:"21 Mar 26",sym:"SYS",  sector:"Tech",   type:"SELL",qty:100,rate:578.40,value:57840, charges:521, pl:5240},
-  {date:"19 Mar 26",sym:"OGDC", sector:"E&P",    type:"BUY", qty:500,rate:183.20,value:91600, charges:824, pl:null},
-  {date:"17 Mar 26",sym:"HBL",  sector:"Banking",type:"SELL",qty:150,rate:228.50,value:34275, charges:308, pl:-1820},
-  {date:"14 Mar 26",sym:"ENGRO",sector:"Fert.",  type:"BUY", qty:75, rate:320.10,value:24008, charges:216, pl:null},
-  {date:"12 Mar 26",sym:"PSO",  sector:"OMC",    type:"SELL",qty:200,rate:308.40,value:61680, charges:555, pl:7200},
-  {date:"10 Mar 26",sym:"MCB",  sector:"Banking",type:"BUY", qty:300,rate:341.80,value:102540,charges:923, pl:null},
-  {date:"07 Mar 26",sym:"MARI", sector:"E&P",    type:"SELL",qty:10, rate:2310.00,value:23100,charges:208, pl:3400},
-  {date:"05 Mar 26",sym:"HUBC", sector:"Power",  type:"BUY", qty:500,rate:116.50,value:58250, charges:524, pl:null},
-  {date:"03 Mar 26",sym:"FCCL", sector:"Cement", type:"SELL",qty:800,rate:39.10, value:31280, charges:281, pl:-1120},
-  {date:"28 Feb 26",sym:"UBL",  sector:"Banking",type:"BUY", qty:200,rate:272.30,value:54460, charges:490, pl:null},
-  {date:"25 Feb 26",sym:"SYS",  sector:"Tech",   type:"BUY", qty:100,rate:526.40,value:52640, charges:474, pl:null},
-  {date:"22 Feb 26",sym:"PPL",  sector:"E&P",    type:"SELL",qty:400,rate:148.20,value:59280, charges:534, pl:4860},
-  {date:"20 Feb 26",sym:"EFERT",sector:"Fert.",  type:"BUY", qty:300,rate:124.80,value:37440, charges:337, pl:null},
-  {date:"17 Feb 26",sym:"BAHL", sector:"Banking",type:"SELL",qty:250,rate:101.20,value:25300, charges:228, pl:1750},
-];
+const marqueeItems = [...logos, ...logos];
 
-const MONTHS   = ["J","F","M","A","M","J","J","A","S","O","N","D"];
-const BAR_VALS = [8.2,-2.1,14.3,6.7,11.2,-4.8,9.1,7.4,21.3,5.9,-1.2,13.6];
-
-const FEATURES: Feature[] = [
-  {num:"01",title:"Trade Entry & History",     body:"Log buy and sell transactions with full metadata — quantity, rate, brokerage, CDC charges, Zakat, and settlement date. Nothing is left unaccounted.",tag:"T+2 Settlement",icon:<IconCalendar/>},
-  {num:"02",title:"Real-Time P&L Tracking",    body:"See your realised and unrealised gain or loss per position and at portfolio level, updated with each entry. Weighted average cost computed automatically.",tag:"FIFO / WAC",icon:<IconChart/>},
-  {num:"03",title:"Sector & Scrip Breakdown",  body:"View exposure by KSE sector — Cement, Banking, E&P, Tech, and more. Instantly understand concentration risk across your holdings.",tag:"KSE-100 Mapped",icon:<IconHex/>},
-  {num:"04",title:"Dividend Tracker",          body:"Record cash and bonus dividends, right issues, and stock splits. Adjust cost basis automatically and track dividend yield per holding.",tag:"Corporate Actions",icon:<IconBar/>},
-  {num:"05",title:"Tax Computation",           body:"Capital gains tax, withholding tax on dividends, and Zakat deductions — all calculated per FBR rules. Export a ready report for your tax consultant.",tag:"FBR Compliant",icon:<IconTax/>},
-  {num:"06",title:"Export & Reports",          body:"Generate portfolio statements, gain/loss summaries, and broker reconciliation sheets. Export to Excel or PDF in one click.",tag:"Excel · PDF",icon:<IconExport/>},
-];
-
-const STEPS: Step[] = [
-  {num:"01",title:"Create Your Account",  body:"Sign up with your email. No broker API keys required. Your data is yours and stays private on your ledger.",lineH:40},
-  {num:"02",title:"Import Past Trades",   body:"Upload a CSV from your broker or paste entries manually. PSXL maps fields automatically for all major PSX brokers.",lineH:60},
-  {num:"03",title:"Log New Entries",      body:"After each trade, enter it in seconds. PSXL computes all charges, updates P&L, and reflects the new portfolio state instantly.",lineH:50},
-  {num:"04",title:"Review & Export",      body:"Generate monthly or annual reports. Share with your accountant or archive for your own records. PDF and Excel formats supported.",lineH:80},
-];
-
-const PLANS: Plan[] = [
-  {name:"Starter",price:"Free",priceNote:"",desc:"For investors just getting organised.",features:["Up to 100 trade entries","Basic P&L report","3 symbols tracked","CSV export"],inactive:["Dividend tracker","Tax report","Broker reconciliation"],cta:"Start Free"},
-  {name:"Pro",price:"₨1,499",priceNote:"/ month",desc:"For active traders who need the full picture.",features:["Unlimited trade entries","Full P&L & analytics dashboard","Unlimited symbols","CSV & Excel export","Dividend & corporate actions","FBR tax computation","Broker reconciliation"],inactive:[],badge:"Most Popular",featured:true,cta:"Get Pro"},
-  {name:"Firm",price:"₨5,999",priceNote:"/ month",desc:"For advisory firms and family offices.",features:["Everything in Pro","Multi-account management","Client-level reporting","PDF branded statements","Priority support","Audit trail & permissions","Custom data export"],inactive:[],cta:"Contact Sales"},
-];
-
-const TESTIMONIALS: Testimonial[] = [
-  {quote:"I used to maintain everything in a messy spreadsheet. PSXL replaced it entirely. The tax report alone saves me hours every year when filing with FBR.",name:"Farrukh Malik",role:"Retail Investor — Lahore",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=Farrukh&backgroundColor=b6e3f4"},
-  {quote:"The ledger is exactly how a professional desk would want it. Clean rows, correct charges, automatic WAC. Nothing like this existed for PSX before.",name:"Sana Qureshi",role:"Portfolio Manager — Karachi",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=Sana&backgroundColor=c0aede"},
-  {quote:"We use PSXL for our advisory clients. The multi-account view and detailed reports have genuinely improved how we present to investors.",name:"Ahmed Raza",role:"Director — Raza Capital Islamabad",avatar:"https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed&backgroundColor=ffdfbf"},
-];
-
-const SEC_ITEMS: SecItem[] = [
-  {title:"End-to-End Encryption",body:"All ledger data encrypted at rest with AES-256 and in transit with TLS 1.3.",icon:<IconShield/>},
-  {title:"Immutable Audit Trail", body:"Every change is timestamped and logged. Your historical record can never be silently altered.",icon:<IconClock/>},
-  {title:"No Broker Access",      body:"PSXL is a manual ledger. It never connects to your brokerage account or places orders on your behalf.",icon:<IconLock/>},
-  {title:"Zero Data Selling",     body:"Your portfolio data is never shared with third parties, advertisers, or financial institutions.",icon:<IconInfoSec/>},
-];
-
-const SEC_STATUS = [
-  {key:"Encryption",    val:"AES-256-GCM ✓",        danger:false},
-  {key:"Transport",     val:"TLS 1.3 ✓",             danger:false},
-  {key:"Auth",          val:"MFA Enabled ✓",          danger:false},
-  {key:"Backup",        val:"Daily · 30d Retention",  danger:false},
-  {key:"Uptime (30d)",  val:"99.97%",                 danger:false},
-  {key:"Data Residency",val:"Pakistan · ISO 27001",   danger:false},
-  {key:"Broker Access", val:"None · Read-only",        danger:true},
-  {key:"Last Audit",    val:"Feb 2026",                danger:false},
-];
-
-const FAQS: FaqItem[] = [
-  {q:"Is PSXL connected to my broker?",a:"No. PSXL is a completely manual ledger. You enter trades yourself. It never connects to your brokerage account, cannot place orders, and has no access to your broker login credentials."},
-  {q:"Which brokers are supported for CSV import?",a:"PSXL supports direct CSV import from AKD Securities, JS Global, Topline Securities, Arif Habib, and most other PSX brokers. For unsupported formats, you can use the standard PSXL CSV template."},
-  {q:"How is weighted average cost calculated?",a:"PSXL uses the Weighted Average Cost (WAC) method as the standard for PSX equities. This ensures accurate P&L calculations for all your trades."},
-  {q:"Is the tax calculation legally accurate?",a:"PSXL computes capital gains tax and withholding tax based on FBR rates as currently published. Always confirm figures with a qualified tax consultant before filing. PSXL is a ledger tool, not a tax advisory service."},
-  {q:"Is my data backed up?",a:"Yes. All data is automatically backed up daily with 30 days of retention. You can also manually export your entire ledger to Excel or CSV at any time from the dashboard."},
-  {q:"Is PSXL really free?",a:"Yes, PSXL is completely free to use. All features are available without any charges. We believe in providing professional-grade tools accessible to all PSX investors."},
-];
-
-// ─── SCOPED CSS ───────────────────────────────────────────────────────────────
-const SCOPED_CSS = `
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html, body, #root {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  @import url('https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@100;300;400;500;700;900&display=swap');
-
-  @keyframes psxl-fadeUp {
-    from { opacity:0; transform:translateY(30px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
-  @keyframes psxl-fadeIn {
-    from { opacity:0; } to { opacity:1; }
-  }
-  @keyframes psxl-ticker {
-    from { transform:translateX(0); }
-    to   { transform:translateX(-50%); }
-  }
-
-  .psxl-root {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-    line-height: 1;
-    box-sizing: border-box;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-
-    /* Force Dark Mode Only */
-    --lbg:  #000000; --lbg2: #0a0a0a; --lbg3: #141414;
-    --lsrf: #1a1a1a; --lbdr: rgba(255,255,255,0.08); --lbdr2:rgba(255,255,255,0.16);
-    --ltx:  #ffffff; --ltx2: #999999; --ltx3: #555555;
-    --lgrn: #a3c45a; --lgrnD:#8db84a; --lred: #ef4444;
-  }
-
-  .psxl-root ::-webkit-scrollbar       { width: 2px; }
-  .psxl-root ::-webkit-scrollbar-track { background: var(--lbg); }
-  .psxl-root ::-webkit-scrollbar-thumb { background: var(--lgrn); }
-
-  main {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  .psxl-nav          { animation: psxl-fadeIn 0.6s ease both; }
-  .psxl-hero-eyebrow { animation: psxl-fadeUp 0.6s 0.2s ease both; }
-  .psxl-hero-h1      { animation: psxl-fadeUp 0.6s 0.3s ease both; }
-  .psxl-hero-desc    { animation: psxl-fadeUp 0.6s 0.4s ease both; }
-  .psxl-hero-actions { animation: psxl-fadeUp 0.6s 0.5s ease both; }
-  .psxl-hero-right   { animation: psxl-fadeIn 0.8s 0.4s ease both; }
-
-  .psxl-ticker-track { animation: psxl-ticker 60s linear infinite; }
-
-  .psxl-reveal         { opacity:0; transform:translateY(24px); transition: opacity .7s ease, transform .7s ease; }
-  .psxl-reveal.visible { opacity:1; transform:translateY(0); }
-
-  /* ─── RESPONSIVE ─── */
-
-  @media (max-width: 1200px) {
-    .psxl-grid-2 { grid-template-columns: 1fr !important; }
-    .psxl-grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
-    .psxl-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
-  }
-
-  @media (max-width: 768px) {
-    .psxl-grid-3,
-    .psxl-grid-4 {
-      grid-template-columns: 1fr !important;
-    }
-
-    .psxl-nav-links {
-      display: none !important;
-    }
-
-    .psxl-nav-cta {
-      display: none !important;
-    }
-
-    .psxl-mobile-menu {
-      display: flex !important;
-    }
-
-    .psxl-hero {
-      grid-template-columns: 1fr !important;
-      height: auto !important;
-      min-height: auto !important;
-      display: flex !important;
-      flex-direction: column !important;
-    }
-
-    .psxl-hero-left {
-      padding: clamp(24px, 5vw, 48px) clamp(20px, 4vw, 32px) !important;
-      border-right: none !important;
-      border-bottom: 1px solid var(--lbdr) !important;
-      order: 1 !important;
-      width: 100% !important;
-    }
-
-    .psxl-hero-right {
-      order: 2 !important;
-      padding: clamp(24px, 5vw, 48px) clamp(20px, 4vw, 32px) !important;
-      width: 100% !important;
-      display: flex !important;
-      justify-content: center !important;
-      align-items: center !important;
-    }
-
-    .psxl-hero-right > div {
-      padding: 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-
-    .psxl-table {
-      font-size: 9px !important;
-    }
-    
-    .psxl-table th,
-    .psxl-table td {
-      padding: 8px 8px !important;
-    }
-
-    .psxl-hero-actions {
-      flex-direction: column !important;
-      gap: 12px !important;
-      width: 100% !important;
-    }
-    
-    .psxl-hero-actions a,
-    .psxl-hero-actions button {
-      width: 100% !important;
-      padding: 14px 16px !important;
-      text-align: center !important;
-    }
-
-    .psxl-two-col {
-      grid-template-columns: 1fr !important;
-      gap: 40px !important;
-    }
-
-    .psxl-footer-grid {
-      grid-template-columns: 1fr !important;
-      gap: 40px !important;
-    }
-
-    .psxl-footer-cols {
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 24px !important;
-    }
-
-    .psxl-footer-bottom {
-      flex-direction: column !important;
-      align-items: flex-start !important;
-      gap: 16px !important;
-    }
-
-    .psxl-faq-grid {
-      grid-template-columns: 1fr !important;
-      gap: 40px !important;
-    }
-
-    .psxl-ledger-grid {
-      grid-template-columns: 1fr !important;
-      gap: 40px !important;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .psxl-section {
-      padding: clamp(30px, 6vw, 60px) clamp(12px, 3vw, 20px) !important;
-    }
-
-    .psxl-footer-cols {
-      grid-template-columns: 1fr !important;
-    }
-
-    .psxl-cta-form {
-      flex-direction: column !important;
-    }
-
-    .psxl-cta-input {
-      width: 100% !important;
-    }
-
-    .psxl-cta-button {
-      width: 100% !important;
-    }
-  }
-`;
-
-// ─── HELPER COMPONENTS ───────────────────────────────────────────────────────
-function Reveal({ children, style, delay = 0 }: { children: React.ReactNode; style?: React.CSSProperties; delay?: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setVisible(true);
-        io.unobserve(el);
-      }
-    }, { threshold: 0.1 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
+function MarqueeScroller() {
   return (
-    <div ref={ref} style={{ ...style, transitionDelay: `${delay}ms` }} className={visible ? "psxl-reveal visible" : "psxl-reveal"}>
-      {children}
-    </div>
-  );
-}
-
-const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <span style={{ fontSize: "clamp(9px, 2vw, 10px)", fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--lgrn)" }}>{children}</span>
-);
-
-const Divider = () => <div style={{ height: 1, background: "var(--lbdr)", margin: "clamp(16px, 3vw, 24px) 0" }} />;
-
-const SectionH2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 style={{ fontSize: "clamp(28px, 6vw, 56px)", fontWeight: 700, letterSpacing: -2, lineHeight: 1.05, color: "var(--ltx)" }}>{children}</h2>
-);
-
-const SectionDesc = ({ children, maxWidth = 480 }: { children: React.ReactNode; maxWidth?: number }) => (
-  <p style={{ fontSize: "clamp(13px, 2vw, 15px)", fontWeight: 300, lineHeight: 1.7, color: "var(--ltx2)", maxWidth, marginTop: "clamp(12px, 2vw, 24px)" }}>{children}</p>
-);
-
-const FeatureCard = ({ f }: { f: Feature }) => (
-  <div style={{
-    background: "var(--lbg)",
-    padding: "clamp(24px, 4vw, 40px)",
-    display: "flex",
-    flexDirection: "column",
-    gap: "clamp(12px, 2vw, 20px)",
-    height: "100%"
-  }}>
-    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-      <div style={{ width: 48, height: 48, background: "var(--lsrf)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--lgrn)" }}>
-        {f.icon}
-      </div>
-      <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", fontWeight: 500, letterSpacing: "0.1em", color: "var(--ltx3)", textTransform: "uppercase" }}>{f.num}</span>
-    </div>
-    <div>
-      <h3 style={{ fontSize: "clamp(16px, 2.5vw, 20px)", fontWeight: 600, color: "var(--ltx)", marginBottom: "clamp(8px, 1.5vw, 12px)", lineHeight: 1.3 }}>{f.title}</h3>
-      <p style={{ fontSize: "clamp(12px, 1.8vw, 14px)", fontWeight: 300, lineHeight: 1.6, color: "var(--ltx2)" }}>{f.body}</p>
-    </div>
-    <div style={{ marginTop: "auto", paddingTop: "clamp(12px, 2vw, 16px)", borderTop: "1px solid var(--lbdr)" }}>
-      <span style={{ fontSize: "clamp(9px, 1.5vw, 10px)", fontWeight: 500, letterSpacing: "0.1em", color: "var(--lgrn)", textTransform: "uppercase" }}>{f.tag}</span>
-    </div>
-  </div>
-);
-
-// ─── TICKER ──────────────────────────────────────────────────────────────────
-function Ticker() {
-  const { items, isLive } = useLiveTicker();
-  // ... (rest of the code remains the same)
-  return (
-    <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, minHeight: "clamp(28px, 5vw, 36px)", paddingBottom: "env(safe-area-inset-bottom, 0px)", background: "var(--lbg)", borderTop: "1px solid var(--lbdr)", display: "flex", alignItems: "center", overflow: "hidden", zIndex: 50 }}>
-      {isLive && (
-        <span style={{ flexShrink: 0, fontSize: "9px", fontWeight: 700, letterSpacing: "0.1em", color: "var(--lgrn)", padding: "0 8px", borderRight: "1px solid var(--lbdr)", whiteSpace: "nowrap" }}>LIVE</span>
-      )}
-      <div className="psxl-ticker-track" style={{ display: "flex", gap: "clamp(20px, 4vw, 40px)", whiteSpace: "nowrap" }}>
-        {[...items, ...items].map((s, i) => (
-          <span key={i} style={{ fontSize: "clamp(9px, 1.5vw, 11px)", fontWeight: 500, color: s.pos ? "var(--lgrn)" : "var(--lred)", display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ color: "var(--ltx)", fontWeight: 600 }}>{s.sym}</span>
-            <span>{s.val}</span>
-            <span>{s.chg} ({s.pct})</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── NAV ─────────────────────────────────────────────────────────────────────
-function Nav() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <nav className="psxl-nav" style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      minHeight: "clamp(50px, 8vw, 56px)", display: "flex", alignItems: "center",
-      justifyContent: "space-between",
-      maxWidth: "1280px",
-      marginLeft: "auto",
-      marginRight: "auto",
-      paddingLeft: "32px",
-      paddingRight: "32px",
-      paddingTop: "max(0px, env(safe-area-inset-top, 0px))",
-      paddingBottom: 0,
-      borderBottom: "1px solid var(--lbdr)", background: "var(--lbg)"
-    }}>
-      
-      {/* Logo */}
-      <a href="#psxl-top" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-        <LogoImg height={32} />
-      </a>
-
-      {/* Desktop Links */}
-      <ul className="psxl-nav-links" style={{ display: "flex", gap: "clamp(16px, 3vw, 24px)", listStyle: "none" }}>
-        {["Features", "Blog", "FAQ"].map((label) => (
-          <li key={label}>
-            <a href={label === "Blog" ? "/blog" : `#psxl-${label.toLowerCase()}`} style={{ fontSize: "clamp(11px, 1.5vw, 12px)", color: "var(--ltx2)", textDecoration: "none", fontWeight: 400, letterSpacing: "0.05em" }}>
-              {label}
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      {/* Right Side */}
-      <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 2vw, 16px)" }}>
-        
-        {/* Get Started Button - Desktop */}
-        <a href="/auth" style={{...btnPrimary, "&:hover": btnPrimaryHover}} onMouseEnter={(e) => Object.assign(e.currentTarget.style, btnPrimaryHover)} onMouseLeave={(e) => e.currentTarget.style.boxShadow = "0 0 0 rgba(163, 202, 87, 0)"}>Get Started</a>
-
-        {/* Hamburger */}
-        <div
-          className="psxl-mobile-menu"
-          onClick={() => setOpen(!open)}
-          style={{
-            display: "none",
-            flexDirection: "column",
-            gap: 4,
-            cursor: "pointer"
-          }}
-        >
-          <span style={{ width: 20, height: 2, background: "var(--ltx)" }} />
-          <span style={{ width: 20, height: 2, background: "var(--ltx)" }} />
-          <span style={{ width: 20, height: 2, background: "var(--ltx)" }} />
-        </div>
-      </div>
-
-      {/* Mobile Dropdown */}
-      {open && (
-        <div style={{
-          position: "absolute",
-          top: "100%",
-          left: 0,
-          right: 0,
-          background: "var(--lbg)",
-          borderBottom: "1px solid var(--lbdr)",
-          display: "flex",
-          flexDirection: "column",
-          padding: "clamp(12px, 3vw, 20px)",
-          gap: 16,
-          zIndex: 50
-        }}>
-          <div style={{display:"flex",flexDirection:"column",gap:16}}>
-            {["Features", "Blog", "FAQ"].map((label) => (
-              <a key={label} href={label === "Blog" ? "/blog" : `#psxl-${label.toLowerCase()}`} style={{ color: "var(--ltx)", textDecoration: "none", fontSize: "clamp(12px, 2vw, 14px)", padding: "8px 0" }}>
-                {label}
-              </a>
-            ))}
-            <a href="/auth" style={{...btnPrimary, padding: "clamp(11px, 2vw, 12px) 20px", fontSize: "clamp(10px, 1.5vw, 12px)", marginTop: 8, width: "100%", textAlign: "center"}}>
-              Get Started
-            </a>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-}
-
-// ─── HERO ────────────────────────────────────────────────────────────────────
-function Hero() {
-  const stats = [
-    {label:"Traders Improved",       val:"2,847",     sub:"Based on real PSXL users",cls:"pos"},
-    {label:"Impulsive Trades Flagged",val:"12,453",  sub:"Blocked before execution", cls:"pos"},
-    {label:"Discipline Score Change",val:"42 → 68",  sub:"Average improvement per user",cls:""},
-    {label:"AI Coaching Sessions",    val:"89,234",   sub:"Delivered to active traders",  cls:""},
-  ];
-  return (
-    <section id="psxl-top" style={{
-      minHeight: "clamp(500px, 70vh, 700px)",
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: 0,
-      alignItems: "center",
-      background: "var(--lbg)",
-      position: "relative"
-    }}>
-      {/* Left */}
-      <div className="psxl-hero-left" style={{
-        padding: "clamp(40px, 6vw, 80px) clamp(20px, 4vw, 40px)",
-        borderRight: "1px solid var(--lbdr)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        textAlign: "left"
-      }}>
-        <SectionLabel style={{ textAlign: "left" }}>PSX Ledger Pro</SectionLabel>
-        <h1 className="psxl-hero-h1" style={{
-          fontSize: "clamp(36px, 7vw, 72px)",
-          fontWeight: 700,
-          letterSpacing: -2,
-          lineHeight: 1.05,
-          color: "var(--ltx)",
-          marginTop: "clamp(12px, 2vw, 24px)",
-          marginBottom: "clamp(12px, 2vw, 24px)",
-          textAlign: "left"
-        }}>
-          Trading Ledger<br/>for PSX Investors
-        </h1>
-        <p className="psxl-hero-desc" style={{
-          fontSize: "clamp(13px, 2vw, 16px)",
-          fontWeight: 300,
-          lineHeight: 1.7,
-          color: "var(--ltx2)",
-          maxWidth: 480,
-          marginBottom: "clamp(20px, 4vw, 32px)",
-          textAlign: "left"
-        }}>
-          Track every trade, calculate P&L automatically, and generate FBR-compliant tax reports. Built for Pakistan Stock Exchange investors.
-        </p>
-        <div className="psxl-hero-actions" style={{ display: "flex", gap: "clamp(12px, 2vw, 16px)", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-start" }}>
-          <a href="/auth" style={{...btnPrimary, "&:hover": btnPrimaryHover}} onMouseEnter={(e) => Object.assign(e.currentTarget.style, btnPrimaryHover)} onMouseLeave={(e) => e.currentTarget.style.boxShadow = "0 0 0 rgba(163, 202, 87, 0)"}>Get Started Free</a>
-          <a href="#psxl-features" style={btnGhost}>View Features</a>
-        </div>
-        <Divider />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(16px, 3vw, 24px)", width: "100%" }}>
-          {stats.map((s, i) => (
-            <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4, textAlign: "left" }}>
-              <span style={{ fontSize: "clamp(20px, 4vw, 32px)", fontWeight: 700, color: "var(--lgrn)", lineHeight: 1 }}>{s.val}</span>
-              <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx3)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{s.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Right */}
-      <div className="psxl-hero-right" style={{
-        background: "radial-gradient(circle at center, rgba(163, 202, 87, 0.08), transparent 60%)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "clamp(20px, 4vw, 40px)",
-        position: "relative"
-      }}>
-        <div style={{
-          width: "100%",
-          maxWidth: "400px",
-          background: "var(--lbg3)",
-          border: "1px solid var(--lbdr)",
-          borderRadius: "12px",
-          padding: "clamp(20px, 3vw, 32px)",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-          animation: "psxl-float 6s ease-in-out infinite",
-          position: "relative"
-        }}>
-          {/* Floating Profit Badge */}
-          <div style={{
-            position: "absolute",
-            top: "-12px",
-            right: "-12px",
-            background: "rgba(163, 202, 87, 0.15)",
-            backdropFilter: "blur(8px)",
-            border: "1px solid rgba(163, 202, 87, 0.3)",
-            borderRadius: "8px",
-            padding: "8px 12px",
-            fontSize: "clamp(10px, 1.5vw, 11px)",
-            fontWeight: 600,
-            color: "var(--lgrn)",
-            letterSpacing: "0.05em"
-          }}>
-            +18.4% THIS MONTH
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: "clamp(16px, 2.5vw, 24px)" }}>
-            <div style={{ width: 40, height: 40, background: "var(--lgrn)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <IconCalendar />
-            </div>
-            <div>
-              <div style={{ fontSize: "clamp(10px, 1.5vw, 11px)", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ltx3)" }}>Live Demo</div>
-              <div style={{ fontSize: "clamp(14px, 2vw, 16px)", fontWeight: 600, color: "var(--ltx)" }}>Trade Ledger</div>
-            </div>
-          </div>
-          
-          <div style={{ background: "var(--lbg2)", borderRadius: "8px", padding: "clamp(12px, 2vw, 16px)", marginBottom: "clamp(12px, 2vw, 16px)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "clamp(9px, 1.5vw, 11px)" }}>
-              <thead>
-                <tr style={{ borderBottom: "1px solid var(--lbdr)" }}>
-                  <th style={{ textAlign: "left", padding: "8px 4px", color: "var(--ltx3)", fontWeight: 500, letterSpacing: "0.05em" }}>Symbol</th>
-                  <th style={{ textAlign: "right", padding: "8px 4px", color: "var(--ltx3)", fontWeight: 500, letterSpacing: "0.05em" }}>P&L</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { sym: "LUCK", pl: "+₨12,450", pos: true },
-                  { sym: "OGDC", pl: "+₨8,230", pos: true },
-                  { sym: "HBL", pl: "-₨1,820", pos: false },
-                  { sym: "SYS", pl: "+₨5,240", pos: true },
-                ].map((t, i) => (
-                  <tr key={i} style={{ borderBottom: i < 3 ? "1px solid var(--lbdr2)" : "none" }}>
-                    <td style={{ padding: "8px 4px", color: "var(--ltx)", fontWeight: 500 }}>{t.sym}</td>
-                    <td style={{ padding: "8px 4px", textAlign: "right", color: t.pos ? "var(--lgrn)" : "var(--lred)", fontWeight: 600 }}>{t.pl}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <div style={{ fontSize: "clamp(9px, 1.5vw, 10px)", color: "var(--ltx3)", marginBottom: 4 }}>Total P&L</div>
-              <div style={{ fontSize: "clamp(18px, 3vw, 22px)", fontWeight: 700, color: "var(--lgrn)" }}>+₨24,100</div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: "clamp(9px, 1.5vw, 10px)", color: "var(--ltx3)", marginBottom: 4 }}>Win Rate</div>
-              <div style={{ fontSize: "clamp(18px, 3vw, 22px)", fontWeight: 700, color: "var(--lgrn)" }}>75%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Features() {
-  return (
-    <section id="psxl-features" style={{...sectionBase("var(--lbg2)")}}>
-      <Reveal style={{maxWidth:600,marginBottom:"clamp(40px, 8vw, 80px)"}}>
-        <SectionLabel>Core Capabilities</SectionLabel><Divider/>
-        <SectionH2>Every tool a PSX trader needs.</SectionH2>
-        <SectionDesc>Built ground-up for the Pakistan Stock Exchange settlement cycle, tax regime, and broker ecosystem. No generic solutions.</SectionDesc>
-      </Reveal>
-      <div className="psxl-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:"var(--lbdr)",width:"100%"}}>
-        {FEATURES.map((f,i)=><Reveal key={i} delay={i*60}><FeatureCard f={f}/></Reveal>)}
-      </div>
-    </section>
-  );
-}
-
-// ─── LEDGER DEMO ─────────────────────────────────────────────────────────────
-function TradeRow({t}: {t:Trade}) {
-  const [hov,setHov]=useState(false);
-  const td=(content:React.ReactNode, extra?:React.CSSProperties)=>(
-    <td style={{padding:"clamp(8px, 1.5vw, 12px) clamp(8px, 1.5vw, 14px)",fontWeight:300,...extra}}>{content}</td>
-  );
-  return (
-    <tr onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{borderBottom:"1px solid var(--lbdr)",background:hov?"var(--lbg3)":"transparent",transition:"background .15s"}}>
-      {td(t.date,{fontSize:"clamp(9px, 1.5vw, 11px)",color:"var(--ltx3)"})}
-      {td(t.sym,{fontWeight:600,fontSize:"clamp(11px, 1.8vw, 13px)"})}
-      {td(t.sector,{fontSize:"clamp(9px, 1.5vw, 11px)",color:"var(--ltx3)"})}
-      {td(t.type,{color:t.type==="BUY"?"var(--lgrn)":"var(--lred)",fontWeight:500,fontSize:"clamp(9px, 1.5vw, 11px)"})}
-      {td(t.qty.toLocaleString(),{fontSize:"clamp(10px, 1.5vw, 12px)"})}
-      {td(`₨${t.rate.toFixed(2)}`,{fontSize:"clamp(10px, 1.5vw, 12px)"})}
-      {td(`₨${t.value.toLocaleString()}`,{fontSize:"clamp(10px, 1.5vw, 12px)"})}
-      {td(`₨${t.charges.toLocaleString()}`,{color:"var(--ltx3)",fontSize:"clamp(9px, 1.5vw, 11px)"})}
-      {td(t.pl===null?"—":`${t.pl>=0?"+":""}₨${Math.abs(t.pl).toLocaleString()}`,
-        {color:t.pl===null?"var(--ltx3)":t.pl>=0?"var(--lgrn)":"var(--lred)",fontSize:"clamp(9px, 1.5vw, 11px)"})}
-    </tr>
-  );
-}
-
-function LedgerDemo() {
-  return (
-    <section id="psxl-ledger" style={{...sectionBase("var(--lbg)")}}>
-      <div className="psxl-ledger-grid" style={{display:"grid",gridTemplateColumns:"clamp(280px, 35%, 380px) 1fr",gap:"clamp(30px, 5vw, 60px)",alignItems:"start",width:"100%"}}>
-        <Reveal>
-          <SectionLabel>The Ledger</SectionLabel><Divider/>
-          <SectionH2>Clean entries.<br/>Zero ambiguity.</SectionH2>
-          <SectionDesc maxWidth={380}>Every row tells the complete story of a trade. Built like a double-entry accounting ledger — the standard institutions rely on.</SectionDesc>
-          <ul style={{listStyle:"none",display:"flex",flexDirection:"column",marginTop:"clamp(24px, 4vw, 40px)",borderTop:"1px solid var(--lbdr)"}}>
-            {["Automatic brokerage & levy calculation","Weighted average cost per symbol","Running portfolio balance after each trade","Broker statement reconciliation","Date-wise gain/loss summary","Unrealised position marking to market"].map((item,i)=>(
-              <li key={i} style={{padding:"clamp(12px, 2vw, 16px) 0",borderBottom:"1px solid var(--lbdr)",fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,color:"var(--ltx2)",display:"flex",alignItems:"center",gap:12}}>
-                <span style={{width:6,height:6,borderRadius:"50%",background:"var(--lgrn)",flexShrink:0,display:"inline-block"}}/>{item}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-        <Reveal>
-          <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",overflow:"hidden",display:"flex",flexDirection:"column",maxHeight:"clamp(400px, 60vh, 620px)",width:"100%"}}>
-            <div style={{padding:"clamp(12px, 2vw, 16px) clamp(16px, 2vw, 24px)",borderBottom:"1px solid var(--lbdr)",display:"flex",alignItems:"center",justifyContent:"space-between",background:"var(--lbg3)"}}>
-              <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:500,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--ltx2)"}}>Trade Ledger — Q1 2026</span>
-              <span style={{fontSize:"clamp(9px, 1.5vw, 10px)",padding:"3px 10px",background:"var(--lgrn)",color:"#000",fontWeight:600,letterSpacing:"0.08em"}}>Live</span>
-            </div>
-            <div style={{overflowY:"auto",flex:1}}>
-              <table className="psxl-table" style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead>
-                  <tr>{["Date","Symbol","Sector","Type","Qty","Rate","Value","Charges","P&L"].map(h=>(
-                    <th key={h} style={{padding:"clamp(8px, 1.5vw, 10px) clamp(8px, 1.5vw, 14px)",textAlign:"left",fontSize:"clamp(8px, 1.2vw, 10px)",fontWeight:500,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--ltx3)",borderBottom:"1px solid var(--lbdr)",background:"var(--lbg3)",position:"sticky",top:0}}>{h}</th>
-                  ))}</tr>
-                </thead>
-                <tbody>{TRADES.map((t,i)=><TradeRow key={i} t={t}/>)}</tbody>
-              </table>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-// ─── ANALYTICS ───────────────────────────────────────────────────────────────
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine, AreaChart, Area, PieChart, Pie } from 'recharts';
-
-const monthlyData = [
-  { month: 'Jan', value: 8.2, label: '+8.2%' },
-  { month: 'Feb', value: -2.1, label: '-2.1%' },
-  { month: 'Mar', value: 14.3, label: '+14.3%' },
-  { month: 'Apr', value: 6.7, label: '+6.7%' },
-  { month: 'May', value: 11.2, label: '+11.2%' },
-  { month: 'Jun', value: -4.8, label: '-4.8%' },
-  { month: 'Jul', value: 9.1, label: '+9.1%' },
-  { month: 'Aug', value: 7.4, label: '+7.4%' },
-  { month: 'Sep', value: 21.3, label: '+21.3%' },
-  { month: 'Oct', value: 5.9, label: '+5.9%' },
-  { month: 'Nov', value: -1.2, label: '-1.2%' },
-  { month: 'Dec', value: 13.6, label: '+13.6%' },
-];
-
-const sectorData = [
-  { name: 'Banking', value: 35, color: '#a3c45a' },
-  { name: 'Cement', value: 25, color: '#8db84a' },
-  { name: 'E&P', value: 20, color: '#6fa33a' },
-  { name: 'Tech', value: 12, color: '#4a8a2a' },
-  { name: 'Fertilizer', value: 8, color: '#2d6a1a' },
-];
-
-function Analytics() {
-  const metrics = [
-    { label: "Win Rate", val: "68.4%", cls: "pos" },
-    { label: "Avg Hold", val: "18.2d", cls: "" },
-    { label: "Max Drawdown", val: "−8.1%", cls: "neg" },
-    { label: "Sharpe Ratio", val: "1.74", cls: "pos" },
-    { label: "Best Month", val: "+21.3%", cls: "pos" },
-    { label: "Profit Factor", val: "2.31", cls: "pos" },
-  ];
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const val = payload[0].value;
-      return (
-        <div style={{
-          background: 'var(--lbg2)',
-          border: '1px solid var(--lbdr)',
-          borderRadius: '4px',
-          padding: '8px 12px',
-          fontSize: '12px',
-          color: 'var(--ltx)'
-        }}>
-          <strong>{label}</strong>
-          <div style={{ color: val >= 0 ? 'var(--lgrn)' : 'var(--lred)', fontWeight: 600 }}>
-            {val > 0 ? '+' : ''}{val}%
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  return (
-    <section id="psxl-analytics" style={{ ...sectionBase("var(--lbg2)") }}>
-      <div className="psxl-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(40px, 8vw, 80px)", alignItems: "start", width: "100%" }}>
-        <Reveal>
-          <SectionLabel>Analytics</SectionLabel>
-          <Divider />
-          <SectionH2>Numbers that drive decisions.</SectionH2>
-          <SectionDesc>Institutional reporting metrics presented cleanly. Understand your edge, your drawdowns, and your consistency over time.</SectionDesc>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, background: "var(--lbdr)", marginTop: "clamp(30px, 5vw, 48px)", width: "100%" }}>
-            {metrics.map((m, i) => (
-              <div key={i} style={{ background: "var(--lsrf)", padding: "clamp(16px, 2.5vw, 20px) clamp(16px, 2.5vw, 24px)" }}>
-                <div style={{ fontSize: "clamp(9px, 1.5vw, 10px)", textTransform: "uppercase", letterSpacing: "0.15em", color: "var(--ltx3)", marginBottom: 6 }}>{m.label}</div>
-                <div style={{ fontSize: "clamp(18px, 3vw, 24px)", fontWeight: 700, letterSpacing: -0.5, color: m.cls === "pos" ? "var(--lgrn)" : m.cls === "neg" ? "var(--lred)" : "var(--ltx)" }}>{m.val}</div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-        <Reveal>
-          <div style={{ background: "var(--lsrf)", border: "1px solid var(--lbdr)", borderRadius: "4px", padding: "clamp(20px, 3vw, 32px)", width: "100%" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "clamp(20px, 3vw, 32px)" }}>
-              <span style={{ fontSize: "clamp(12px, 2vw, 13px)", fontWeight: 500, color: "var(--ltx)" }}>Monthly P&L Performance</span>
-              <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx3)", letterSpacing: "0.1em" }}>2025</span>
-            </div>
-            <div style={{ height: "clamp(180px, 30vh, 220px)", width: "100%" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="gainGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#a3c45a" stopOpacity={1} />
-                      <stop offset="100%" stopColor="#8db84a" stopOpacity={0.8} />
-                    </linearGradient>
-                    <linearGradient id="lossGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#ef4444" stopOpacity={0.9} />
-                      <stop offset="100%" stopColor="#dc2626" stopOpacity={0.7} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis
-                    dataKey="month"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: 'var(--ltx3)', fontSize: 10, fontWeight: 300 }}
-                    dy={10}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: 'var(--ltx3)', fontSize: 10, fontWeight: 300 }}
-                    tickFormatter={(val) => `${val}%`}
-                  />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--lbg)', opacity: 0.5 }} />
-                  <ReferenceLine y={0} stroke="var(--lbdr2)" strokeDasharray="3 3" />
-                  <Bar dataKey="value" radius={[3, 3, 3, 3]} maxBarSize={32}>
-                    {monthlyData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.value >= 0 ? 'url(#gainGradient)' : 'url(#lossGradient)'} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div style={{ marginTop: "clamp(16px, 2vw, 24px)", borderTop: "1px solid var(--lbdr)", paddingTop: "clamp(12px, 2vw, 20px)", display: "flex", gap: "clamp(12px, 2vw, 24px)", flexWrap: "wrap", justifyContent: "center" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx2)" }}>
-                <span style={{ width: 12, height: 12, background: "linear-gradient(135deg, #a3c45a, #8db84a)", borderRadius: "2px", display: "inline-block" }} /> Gain
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx2)" }}>
-                <span style={{ width: 12, height: 12, background: "linear-gradient(135deg, #ef4444, #dc2626)", borderRadius: "2px", display: "inline-block" }} /> Loss
-              </div>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-
-      {/* Second Row - Portfolio Allocation & Performance Trend */}
-      <div className="psxl-two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(40px, 8vw, 80px)", marginTop: "clamp(40px, 6vw, 60px)", width: "100%" }}>
-        <Reveal>
-          <div style={{ background: "var(--lsrf)", border: "1px solid var(--lbdr)", borderRadius: "4px", padding: "clamp(20px, 3vw, 32px)", width: "100%" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "clamp(16px, 2vw, 24px)" }}>
-              <span style={{ fontSize: "clamp(12px, 2vw, 13px)", fontWeight: 500, color: "var(--ltx)" }}>Portfolio Allocation</span>
-              <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--ltx3)", letterSpacing: "0.1em" }}>By Sector</span>
-            </div>
-            <div style={{ height: "clamp(180px, 30vh, 220px)", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <defs>
-                    {sectorData.map((entry, index) => (
-                      <linearGradient key={`grad-${index}`} id={`sectorGrad-${index}`} x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stopColor={entry.color} stopOpacity={1} />
-                        <stop offset="100%" stopColor={entry.color} stopOpacity={0.7} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <Pie
-                    data={sectorData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={3}
-                    dataKey="value"
-                    animationBegin={0}
-                    animationDuration={1000}
-                  >
-                    {sectorData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={`url(#sectorGrad-${index})`} stroke="var(--lsrf)" strokeWidth={2} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    content={({ active, payload }: any) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div style={{
-                            background: 'var(--lbg2)',
-                            border: '1px solid var(--lbdr)',
-                            borderRadius: '4px',
-                            padding: '8px 12px',
-                            fontSize: '12px',
-                            color: 'var(--ltx)'
-                          }}>
-                            <strong>{payload[0].name}</strong>
-                            <div style={{ color: 'var(--lgrn)', fontWeight: 600 }}>{payload[0].value}%</div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "clamp(8px, 1.5vw, 12px)", justifyContent: "center", marginTop: "clamp(12px, 2vw, 16px)" }}>
-              {sectorData.map((s, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "clamp(9px, 1.3vw, 11px)", color: "var(--ltx2)" }}>
-                  <span style={{ width: 8, height: 8, background: s.color, borderRadius: "50%", display: "inline-block" }} />
-                  {s.name}
-                </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
-        <Reveal>
-          <div style={{ background: "var(--lsrf)", border: "1px solid var(--lbdr)", borderRadius: "4px", padding: "clamp(20px, 3vw, 32px)", width: "100%" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "clamp(16px, 2vw, 24px)" }}>
-              <span style={{ fontSize: "clamp(12px, 2vw, 13px)", fontWeight: 500, color: "var(--ltx)" }}>Cumulative Returns</span>
-              <span style={{ fontSize: "clamp(10px, 1.5vw, 11px)", color: "var(--lgrn)", fontWeight: 600 }}>+94.3% YTD</span>
-            </div>
-            <div style={{ height: "clamp(180px, 30vh, 220px)", width: "100%" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={monthlyData.map((d, i) => ({ ...d, cumulative: monthlyData.slice(0, i + 1).reduce((acc, curr) => acc + curr.value, 100) }))} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#a3c45a" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#a3c45a" stopOpacity={0.05} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis
-                    dataKey="month"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: 'var(--ltx3)', fontSize: 10, fontWeight: 300 }}
-                    dy={10}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: 'var(--ltx3)', fontSize: 10, fontWeight: 300 }}
-                    tickFormatter={(val) => `${val}%`}
-                    domain={['dataMin - 10', 'dataMax + 10']}
-                  />
-                  <Tooltip
-                    content={({ active, payload, label }: any) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div style={{
-                            background: 'var(--lbg2)',
-                            border: '1px solid var(--lbdr)',
-                            borderRadius: '4px',
-                            padding: '8px 12px',
-                            fontSize: '12px',
-                            color: 'var(--ltx)'
-                          }}>
-                            <strong>{label}</strong>
-                            <div style={{ color: 'var(--lgrn)', fontWeight: 600 }}>
-                              Portfolio: {payload[0].value.toFixed(1)}%
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="cumulative"
-                    stroke="#a3c45a"
-                    strokeWidth={2}
-                    fill="url(#areaGradient)"
-                    animationDuration={1500}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-// ─── HOW IT WORKS ─────────────────────────────────────────────────────────────
-function StepCard({s}: {s:Step}) {
-  const [hov,setHov]=useState(false);
-  return (
-    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 32px)",position:"relative",transition:"background .2s",height:"100%"}}>
-      <div style={{position:"absolute",top:0,left:0,width:2,height:s.lineH,background:"var(--lgrn)"}}/>
-      <div style={{fontSize:"clamp(32px, 5vw, 48px)",fontWeight:700,letterSpacing:-2,color:"var(--lbdr2)",lineHeight:1,marginBottom:"clamp(16px, 3vw, 24px)"}}>{s.num}</div>
-      <h3 style={{fontSize:"clamp(14px, 2vw, 16px)",fontWeight:600,letterSpacing:-0.3,color:"var(--ltx)",marginBottom:"clamp(8px, 1.5vw, 12px)"}}>{s.title}</h3>
-      <p style={{fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)"}}>{s.body}</p>
-    </div>
-  );
-}
-
-function HowItWorks() {
-  return (
-    <section id="psxl-how" style={{...sectionBase("var(--lbg)")}}>
-      <Reveal style={{maxWidth:480,marginBottom:"clamp(40px, 8vw, 80px)"}}>
-        <SectionLabel>Getting Started</SectionLabel><Divider/>
-        <SectionH2>Up and running in minutes.</SectionH2>
-        <SectionDesc>No complex setup. No data migration headaches. Just log your first trade and PSXL takes over from there.</SectionDesc>
-      </Reveal>
-      <div className="psxl-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,background:"var(--lbdr)",marginTop:"clamp(40px, 8vw, 80px)",width:"100%"}}>
-        {STEPS.map((s,i)=><Reveal key={i} delay={i*80}><StepCard s={s}/></Reveal>)}
-      </div>
-    </section>
-  );
-}
-
-// ─── TESTIMONIALS ─────────────────────────────────────────────────────────────
-function TestiCard({t}: {t:Testimonial}) {
-  const [hov,setHov]=useState(false);
-  return (
-    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:20,transition:"background .2s",height:"100%"}}>
-      <p style={{fontSize:"clamp(12px, 1.8vw, 14px)",fontWeight:300,lineHeight:1.75,color:"var(--ltx2)",flex:1}}>
-        <span style={{color:"var(--lgrn)",fontSize:"clamp(20px, 3vw, 28px)",lineHeight:0,verticalAlign:-12,marginRight:4}}>"</span>
-        {t.quote}
-      </p>
-      <div style={{height:1,background:"var(--lbdr)"}}/>
-      <div style={{display:"flex",alignItems:"center",gap:12}}>
-        <img src={t.avatar} alt={t.name} style={{width:44,height:44,borderRadius:"50%",background:"var(--lbg3)"}}/>
-        <div style={{display:"flex",flexDirection:"column",gap:3}}>
-          <span style={{fontSize:"clamp(12px, 2vw, 13px)",fontWeight:600,color:"var(--ltx)"}}>{t.name}</span>
-          <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",letterSpacing:"0.05em"}}>{t.role}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Testimonials() {
-  return (
-    <section id="psxl-testimonials" style={{...sectionBase("var(--lbg)")}}>
-      <Reveal style={{maxWidth:480,marginBottom:"clamp(40px, 8vw, 80px)"}}>
-        <SectionLabel>From Investors</SectionLabel><Divider/>
-        <SectionH2>What traders say.</SectionH2>
-      </Reveal>
-      <div className="psxl-grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:"var(--lbdr)",width:"100%"}}>
-        {TESTIMONIALS.map((t,i)=><Reveal key={i} delay={i*80}><TestiCard t={t}/></Reveal>)}
-      </div>
-    </section>
-  );
-}
-
-// ─── SECURITY ────────────────────────────────────────────────────────────────
-function Security() {
-  return (
-    <section id="psxl-security" style={{...sectionBase("var(--lbg2)")}}>
-      <div className="psxl-two-col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"clamp(60px, 10vw, 120px)",alignItems:"start",width:"100%"}}>
-        <Reveal>
-          <SectionLabel>Security & Privacy</SectionLabel><Divider/>
-          <SectionH2>Your data.<br/>Your ledger.</SectionH2>
-          <SectionDesc>We hold financial records to the highest standard of privacy. PSXL never sells data, never connects to your broker, and never executes trades.</SectionDesc>
-          <div style={{display:"flex",flexDirection:"column",borderTop:"1px solid var(--lbdr)",marginTop:"clamp(24px, 4vw, 40px)"}}>
-            {SEC_ITEMS.map((s,i)=>(
-              <div key={i} style={{padding:"clamp(16px, 2.5vw, 24px) 0",borderBottom:"1px solid var(--lbdr)",display:"flex",gap:"clamp(12px, 2vw, 20px)",alignItems:"flex-start"}}>
-                <div style={{color:"var(--lgrn)",flexShrink:0,marginTop:2}}>{s.icon}</div>
-                <div>
-                  <div style={{fontSize:"clamp(12px, 2vw, 14px)",fontWeight:600,color:"var(--ltx)",marginBottom:4}}>{s.title}</div>
-                  <div style={{fontSize:"clamp(11px, 1.7vw, 13px)",fontWeight:300,color:"var(--ltx2)",lineHeight:1.6}}>{s.body}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-        <Reveal>
-          <div style={{background:"var(--lsrf)",border:"1px solid var(--lbdr)",padding:"clamp(24px, 4vw, 40px)",width:"100%"}}>
-            <div style={{fontSize:"clamp(9px, 1.5vw, 10px)",textTransform:"uppercase",letterSpacing:"0.15em",color:"var(--ltx3)",paddingBottom:"clamp(12px, 2vw, 20px)",borderBottom:"1px solid var(--lbdr)",marginBottom:"clamp(12px, 2vw, 20px)"}}>System Security Status</div>
-            {SEC_STATUS.map((s,i)=> (
-              <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"clamp(6px, 1.5vw, 10px) 0",borderBottom:i<SEC_STATUS.length-1?"1px solid var(--lbdr)":"none"}}>
-                <span style={{fontSize:"clamp(11px, 1.7vw, 12px)",fontWeight:300,color:"var(--ltx2)"}}>{s.key}</span>
-                <span style={{fontSize:"clamp(10px, 1.5vw, 12px)",fontWeight:500,color:s.danger?"var(--lred)":"var(--lgrn)",fontFamily:"monospace"}}>{s.val}</span>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-// ─── FAQ ─────────────────────────────────────────────────────────────────────
-function FAQ() {
-  const [open,setOpen]=useState<number|null>(null);
-  const toggle=useCallback((i:number)=>setOpen(p=>p===i?null:i),[]);
-  return (
-    <section id="psxl-faq" style={{...sectionBase("var(--lbg)")}}>
-      <div className="psxl-faq-grid" style={{display:"grid",gridTemplateColumns:"clamp(280px, 30%, 320px) 1fr",gap:"clamp(40px, 8vw, 120px)",alignItems:"start",width:"100%"}}>
-        <Reveal>
-          <SectionLabel>FAQ</SectionLabel><Divider/>
-          <SectionH2>Common questions.</SectionH2>
-          <SectionDesc maxWidth={300}>Everything you need to know before you start.</SectionDesc>
-        </Reveal>
-        <Reveal>
-          <div style={{display:"flex",flexDirection:"column",borderTop:"1px solid var(--lbdr)",width:"100%"}}>
-            {FAQS.map((f,i)=>(
-              <div key={i} style={{borderBottom:"1px solid var(--lbdr)",overflow:"hidden"}}>
-                <button onClick={()=>toggle(i)} style={{width:"100%",background:"none",border:"none",fontFamily:ff,fontSize:"clamp(12px, 1.8vw, 14px)",fontWeight:400,color:open===i?"var(--lgrn)":"var(--ltx)",textAlign:"left",padding:"clamp(14px, 2vw, 20px) 0",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16,transition:"color .2s"}}>
-                  {f.q}
-                  <span style={{width:12,height:12,borderRight:"1.5px solid currentColor",borderBottom:"1.5px solid currentColor",transform:open===i?"rotate(225deg)":"rotate(45deg)",transition:"transform .3s",flexShrink:0,display:"inline-block"}}/>
-                </button>
-                <div style={{maxHeight:open===i?200:0,overflow:"hidden",transition:"max-height .4s ease"}}>
-                  <p style={{fontSize:"clamp(11px, 1.7vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",paddingBottom:"clamp(12px, 2vw, 20px)"}}>{f.a}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-// ─── CTA ─────────────────────────────────────────────────────────────────────
-function CTA() {
-  const [email,setEmail]=useState("");
-  return (
-    <section id="psxl-cta" style={{...sectionBase("var(--lbg2)"),alignItems:"center",justifyContent:"center",width:"100%"}}>
-      <Reveal style={{maxWidth:680,textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",gap:"clamp(16px, 3vw, 24px)",width:"100%"}}>
-        <SectionLabel>Start Today</SectionLabel>
-        <h2 style={{fontSize:"clamp(32px, 6vw, 80px)",fontWeight:700,letterSpacing:-3,lineHeight:0.95,color:"var(--ltx)"}}>
-          Your PSX ledger,<br/><em style={{fontStyle:"normal",color:"var(--lgrn)"}}>done right.</em>
-        </h2>
-        <p style={{fontSize:"clamp(12px, 1.8vw, 15px)",fontWeight:300,color:"var(--ltx2)",lineHeight:1.6}}>
-          Join investors across Pakistan who track their trades the professional way. Free to start. No credit card required.
-        </p>
-        <div className="psxl-cta-form" style={{display:"flex",width:"100%",maxWidth:420,border:"1px solid var(--lbdr2)",overflow:"hidden",borderRadius:"2px"}}>
-          <input className="psxl-cta-input" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com"
-            style={{flex:1,fontFamily:ff,fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,color:"var(--ltx)",background:"var(--lbg)",border:"none",padding:"clamp(12px, 2vw, 14px) clamp(14px, 2vw, 20px)",outline:"none"}}/>
-          <button className="psxl-cta-button" style={{fontFamily:ff,fontSize:"clamp(9px, 1.5vw, 11px)",fontWeight:500,letterSpacing:"0.12em",textTransform:"uppercase",color:"#000",background:"var(--lgrn)",border:"none",padding:"clamp(12px, 2vw, 14px) clamp(16px, 2vw, 24px)",cursor:"pointer",whiteSpace:"nowrap",transition:"background 0.2s ease"}}>
-            Get Access
-          </button>
-        </div>
-        <span style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",letterSpacing:"0.05em"}}>Free plan · No credit card · Cancel any time</span>
-      </Reveal>
-    </section>
-  );
-}
-
-// ─── FOOTER ──────────────────────────────────────────────────────────────────
-function Footer() {
-  const cols=[
-    {title:"Product",   links:[{label:"Features",href:"#psxl-features"},{label:"How It Works",href:"#psxl-how"},{label:"Security",href:"#psxl-security"}]},
-    {title:"Resources", links:[{label:"Documentation",href:"/docs"},{label:"CSV Templates",href:"/templates"},{label:"Tax Guide",href:"/tax-guide"},{label:"FAQ",href:"#psxl-faq"}]},
-    {title:"Company",   links:[{label:"About",href:"/about"},{label:"Contact",href:"/contact"},{label:"Blog",href:"/blog"}]},
-    {title:"Legal",     links:[{label:"Privacy Policy",href:"/privacy"},{label:"Terms of Use",href:"/terms"},{label:"Disclaimer",href:"/disclaimer"}]},
-  ];
-  return (
-    <footer style={{background:"var(--lbg)",borderTop:"1px solid var(--lbdr)",padding:"clamp(40px, 8vw, 60px) clamp(16px, 4vw, 40px)",fontFamily:ff,width:"100%",boxSizing:"border-box",margin:0}}>
-      <div className="psxl-footer-grid" style={{display:"grid",gridTemplateColumns:"clamp(200px, 25%, 240px) 1fr",gap:"clamp(40px, 6vw, 80px)",paddingBottom:"clamp(30px, 5vw, 48px)",borderBottom:"1px solid var(--lbdr)",marginBottom:"clamp(24px, 4vw, 40px)",width:"100%"}}>
-        <div>
-          <a href="/" style={{marginBottom:16,display:"flex",alignItems:"center",textDecoration:"none"}}>
-            <LogoImg height={36}/>
-          </a>
-          <p style={{fontSize:"clamp(11px, 1.6vw, 12px)",fontWeight:300,color:"var(--ltx3)",lineHeight:1.6}}>The institutional-grade trading ledger built exclusively for PSX investors. Record, analyse, and report your equity positions with the clarity of a professional desk.</p>
-        </div>
-        <div className="psxl-footer-cols" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"clamp(20px, 3vw, 40px)",width:"100%"}}>
-          {cols.map((c,i)=>(
-            <div key={i}>
-              <h4 style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:500,letterSpacing:"0.15em",textTransform:"uppercase",color:"var(--ltx)",marginBottom:"clamp(12px, 2vw, 20px)"}}>{c.title}</h4>
-              <ul style={{listStyle:"none",display:"flex",flexDirection:"column",gap:"clamp(8px, 1.5vw, 12px)"}}>
-                {c.links.map((l,j)=>(
-                  <li key={j}>
-                    <a href={l.href} style={{fontSize:"clamp(11px, 1.6vw, 13px)",fontWeight:300,color:"var(--ltx2)",textDecoration:"none"}}>{l.label}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="psxl-footer-bottom" style={{display:"flex",justifyContent:"space-between",alignItems:"center",width:"100%",gap:"clamp(16px, 2vw, 24px)"}}>
-        <p style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)"}}>&copy; 2026 PSXL. All rights reserved. Not affiliated with the Pakistan Stock Exchange.</p>
-        <div style={{display:"flex",gap:"clamp(12px, 2vw, 24px)",flexWrap:"wrap"}}>
-          <a href="/privacy" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Privacy</a>
-          <a href="/terms" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Terms</a>
-          <a href="/disclaimer" style={{fontSize:"clamp(10px, 1.5vw, 11px)",fontWeight:300,color:"var(--ltx3)",textDecoration:"none"}}>Disclaimer</a>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-// ─── BLOGS ──────────────────────────────────────────────────────────────────
-function BlogCard({post}: {post:BlogPostPreview}) {
-  const [hov,setHov]=useState(false);
-  return (
-    <a href={`/blog/${post.slug}`} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
-      style={{background:hov?"var(--lbg2)":"var(--lbg)",padding:"clamp(24px, 4vw, 40px) clamp(20px, 3vw, 36px)",display:"flex",flexDirection:"column",gap:16,transition:"background .2s",height:"100%",textDecoration:"none",minWidth:"clamp(280px, 30vw, 360px)"}}>
-      <h3 style={{fontSize:"clamp(16px, 2.5vw, 18px)",fontWeight:600,letterSpacing:-0.5,color:"var(--ltx)",lineHeight:1.2}}>{post.title}</h3>
-      <p style={{fontSize:"clamp(12px, 1.8vw, 13px)",fontWeight:300,lineHeight:1.7,color:"var(--ltx2)",flex:1}}>{post.excerpt}</p>
-      <div style={{display:"flex",alignItems:"center",gap:8,fontSize:"clamp(10px, 1.5vw, 11px)",color:"var(--ltx3)"}}>
-        <span style={{color:"var(--lgrn)"}}>{formatDate(post.date)}</span>
-        <span style={{color:"var(--ltx3)"}}> · </span>
-        <span style={{color:"var(--ltx3)"}}>{post.category}</span>
-      </div>
-    </a>
-  );
-}
-
-function Blogs() {
-  const posts = getSortedPosts().slice(0, 4);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % posts.length);
-  };
-  
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + posts.length) % posts.length);
-  };
-  
-  const scrollToIndex = (index: number) => {
-    if (containerRef.current) {
-      const cardWidth = containerRef.current.scrollWidth / posts.length;
-      containerRef.current.scrollTo({ left: cardWidth * index, behavior: 'smooth' });
-    }
-  };
-  
-  useEffect(() => {
-    scrollToIndex(currentIndex);
-  }, [currentIndex]);
-  
-  return (
-    <section id="psxl-blogs" style={{...sectionBase("var(--lbg)"), overflow:"hidden"}}>
-      <Reveal style={{maxWidth:480,marginBottom:"clamp(40px, 8vw, 80px)"}}>
-        <SectionLabel>Blog</SectionLabel><Divider/>
-        <SectionH2>Insights from the PSX community.</SectionH2>
-      </Reveal>
-      
-      {/* Carousel Container */}
-      <div style={{position:"relative",width:"100%",maxWidth:1400,margin:"0 auto"}}>
-        {/* Navigation Buttons */}
-        <button 
-          onClick={prevSlide}
-          style={{
-            position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",
-            zIndex:10,width:44,height:44,borderRadius:"50%",border:"1px solid var(--lbdr)",
-            background:"var(--lbg)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
-            fontSize:20,color:"var(--ltx)",transition:"all 0.2s"
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = "var(--lbg2)"}
-          onMouseLeave={(e) => e.currentTarget.style.background = "var(--lbg)"}
-        >
-          ←
-        </button>
-        <button 
-          onClick={nextSlide}
-          style={{
-            position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",
-            zIndex:10,width:44,height:44,borderRadius:"50%",border:"1px solid var(--lbdr)",
-            background:"var(--lbg)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
-            fontSize:20,color:"var(--ltx)",transition:"all 0.2s"
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.background = "var(--lbg2)"}
-          onMouseLeave={(e) => e.currentTarget.style.background = "var(--lbg)"}
-        >
-          →
-        </button>
-        
-        {/* Carousel */}
-        <div 
-          ref={containerRef}
-          style={{
-            display:"flex",
-            gap:"clamp(16px, 2vw, 24px)",
-            overflowX:"auto",
-            scrollSnapType:"x mandatory",
-            scrollbarWidth:"none",
-            msOverflowStyle:"none",
-            padding:"0 clamp(50px, 5vw, 80px)",
-            WebkitOverflowScrolling:"touch"
-          }}
-        >
-          {posts.map((post, i) => (
-            <div key={i} style={{scrollSnapAlign:"center",flex:"0 0 auto"}}>
-              <Reveal delay={i * 60}>
-                <BlogCard post={post}/>
-              </Reveal>
-            </div>
-          ))}
-        </div>
-        
-        {/* Dots Indicator */}
-        <div style={{display:"flex",justifyContent:"center",gap:8,marginTop:32}}>
-          {posts.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
+    <div
+      className="mt-10 overflow-hidden"
+      style={{
+        maskImage:
+          "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+        WebkitMaskImage:
+          "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+      }}
+    >
+      <div className="marquee-track flex w-max items-center gap-4 py-2 hover:[animation-play-state:paused]">
+        {marqueeItems.map((logo, index) => (
+          <div
+            key={`${logo.alt}-${index}`}
+            className="group relative h-24 w-40 shrink-0 flex items-center justify-center rounded-full bg-white border border-slate-200/60 shadow-sm hover:border-slate-300 transition-all overflow-hidden"
+          >
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 scale-[1.5] opacity-0 transition-all duration-500 group-hover:scale-100 group-hover:opacity-100"
               style={{
-                width:8,
-                height:8,
-                borderRadius:"50%",
-                border:"none",
-                cursor:"pointer",
-                background: i === currentIndex ? "var(--lgrn)" : "var(--lbdr2)",
-                transition:"background 0.2s"
+                background: `radial-gradient(circle at top, ${logo.gradient.from}, ${logo.gradient.to})`,
               }}
             />
-          ))}
-        </div>
-        
-        {/* View All Link */}
-        <div style={{textAlign:"center",marginTop:32}}>
-          <a href="/blog" style={{fontSize:"clamp(12px, 1.5vw, 14px)",color:"var(--lgrn)",textDecoration:"none",fontWeight:500,letterSpacing:"0.05em"}}>
-            View all articles →
-          </a>
-        </div>
+            <img
+              src={logo.src}
+              alt={logo.alt}
+              className="relative z-10 h-8 w-auto transition-all duration-300 group-hover:brightness-0 group-hover:invert"
+              loading="lazy"
+            />
+          </div>
+        ))}
       </div>
-    </section>
+    </div>
   );
 }
 
-// ─── LANDING PAGE ─────────────────────────────────────────────────────────────
 export default function Landing() {
+  const navigate = useNavigate();
+
   return (
-    <div className="psxl-root" style={{fontFamily:ff,overflowX:"hidden",width:"100%",margin:0,padding:0}}>
-      <style>{SCOPED_CSS}</style>
-      <main style={{width:"100%",margin:0,padding:0}}>
-        <Hero/>
-        <Features/>
-        <LedgerDemo/>
-        <Analytics/>
-        <HowItWorks/>
-        <Testimonials/>
-        <Blogs/>
-        <Security/>
-        <FAQ/>
-        <CTA/>
-      </main>
+    <div className="px-4 py-8 md:px-8 md:py-12">
+      <div className="mx-auto flex max-w-[1440px] flex-col">
+        <section className="relative w-full max-w-[1400px] mx-auto rounded-[48px] bg-white border border-slate-200/50 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.03)] overflow-hidden h-[600px] flex flex-col">
+          <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden select-none">
+            <video
+              src={HERO_VIDEO_URL}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover scale-105 transition-transform duration-1000"
+            />
+          </div>
+
+          <div className="relative z-20 flex-1 px-8 md:px-16 pt-12 md:pt-16 flex flex-col items-start">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="max-w-[620px]"
+            >
+              <h1 className="font-display text-[42px] font-medium leading-[0.98] tracking-[-0.04em] text-[#0a1b33] md:text-[56px]">
+                Foundation of the
+                <br />
+                new digital epoch
+              </h1>
+              <p className="mt-6 max-w-[540px] font-sans text-[14px] leading-6 text-slate-500 md:text-[15px]">
+                Designing products, powering ecosystems and laying the foundation
+                of a decentralized web for enterprises, builders and communities
+                alike.
+              </p>
+              <div className="mt-8">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate("/contact")}
+                  className="rounded-full bg-[#0a152d] px-6 py-3 font-sans text-sm font-medium text-white shadow-[0_10px_30px_rgba(10,21,45,0.18)]"
+                >
+                  Contact Us
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+
+          <div
+            className="absolute bottom-10 left-1/2 z-30 -translate-x-1/2"
+            style={{ maxWidth: "calc(100% - 2rem)" }}
+          >
+            <motion.nav
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center bg-white/90 backdrop-blur-2xl px-1.5 py-1.5 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.08)] border border-slate-200/40"
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-100 bg-white text-sm text-[#0a1b33] shadow-sm">
+                ✦
+              </div>
+              <Link
+                to="/features"
+                className="px-4 py-2 text-[12px] font-semibold text-slate-500 transition-colors hover:text-[#0a1b33]"
+              >
+                Products
+              </Link>
+              <a
+                href="/docs"
+                className="px-4 py-2 text-[12px] font-semibold text-slate-500 transition-colors hover:text-[#0a1b33]"
+              >
+                Docs
+              </a>
+              <Link
+                to="/contact"
+                className="ml-1 flex items-center gap-1.5 bg-white px-5 py-2 rounded-full text-[12px] font-semibold text-[#0a1b33] border border-slate-200/60 shadow-sm hover:border-slate-300 transition-all"
+              >
+                Get in touch
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
+            </motion.nav>
+          </div>
+        </section>
+
+        <MarqueeScroller />
+      </div>
     </div>
   );
 }

@@ -1,6 +1,12 @@
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate, useSearchParams } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useSearchParams,
+} from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
@@ -38,32 +44,32 @@ import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Guest mode is activated inside ProtectedRoute when ?mode=guest is detected
-
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const { isGuest, enterGuestMode } = useGuest();
   const [params] = useSearchParams();
 
-  // Activate guest mode immediately if ?mode=guest is present
   useEffect(() => {
     if (params.get("mode") === "guest" && !isGuest) enterGuestMode();
   }, [params, isGuest, enterGuestMode]);
 
-  if (loading) return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--bg-canvas)]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--brand)] border-t-transparent" />
+      </div>
+    );
+  }
 
-  // Allow guest mode through
-  if (isGuest || params.get("mode") === "guest") return (
-    <AppLayout>
-      <GuestBanner />
-      {children}
-      <UpgradeModal />
-    </AppLayout>
-  );
+  if (isGuest || params.get("mode") === "guest") {
+    return (
+      <AppLayout>
+        <GuestBanner />
+        {children}
+        <UpgradeModal />
+      </AppLayout>
+    );
+  }
 
   if (!user) return <Navigate to="/auth" replace />;
   return <AppLayout>{children}</AppLayout>;
@@ -71,62 +77,122 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AuthRoute() {
   const { user, loading } = useAuth();
-  if (loading) return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--bg-canvas)]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--brand)] border-t-transparent" />
+      </div>
+    );
+  }
+
   if (user) return <Navigate to="/dashboard" replace />;
   return <AuthPage />;
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <DynamicFavicon />
-    <TooltipProvider>
-      <Sonner />
-      <BrowserRouter>
-        <RouteSeo />
-        <AuthProvider>
-          <GuestProvider>
-            <AIProvider>
-              <DisciplineProvider>
-                <ChatProvider>
-                  <Routes>
-                {/* Public pages */}
-                <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/privacy" element={<PrivacyPage />} />
-                <Route path="/terms" element={<TermsPage />} />
-                <Route path="/disclaimer" element={<DisclaimerPage />} />
-                <Route path="/features" element={<FeaturesPage />} />
-                <Route path="/security" element={<SecurityPage />} />
-                <Route path="/careers" element={<CareersPage />} />
-                <Route path="/analytics-info" element={<AnalyticsInfoPage />} />
-                <Route path="/blog" element={<BlogPage />} />
-                <Route path="/blog/:slug" element={<BlogPostPage />} />
-                {/* Auth */}
-                <Route path="/auth" element={<AuthRoute />} />
-                <Route path="/auth/callback" element={<AuthPage />} />
-                {/* App — accessible to both authed users and guests */}
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
-                <Route path="/performance" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-                <Route path="/psychology" element={<ProtectedRoute><Psychology /></ProtectedRoute>} />
-                <Route path="/companies" element={<ProtectedRoute><Companies /></ProtectedRoute>} />
-                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </ChatProvider>
-            </DisciplineProvider>
-          </AIProvider>
-        </GuestProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  </TooltipProvider>
-</QueryClientProvider>
-);
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <DynamicFavicon />
+      <TooltipProvider>
+        <Sonner />
+        <BrowserRouter>
+          <RouteSeo />
+          <AuthProvider>
+            <GuestProvider>
+              <AIProvider>
+                <DisciplineProvider>
+                  <ChatProvider>
+                    <Routes>
+                      <Route
+                        path="/"
+                        element={
+                          <PublicLayout>
+                            <Landing />
+                          </PublicLayout>
+                        }
+                      />
+                      <Route path="/about" element={<AboutPage />} />
+                      <Route path="/contact" element={<ContactPage />} />
+                      <Route path="/privacy" element={<PrivacyPage />} />
+                      <Route path="/terms" element={<TermsPage />} />
+                      <Route path="/disclaimer" element={<DisclaimerPage />} />
+                      <Route path="/features" element={<FeaturesPage />} />
+                      <Route path="/security" element={<SecurityPage />} />
+                      <Route path="/careers" element={<CareersPage />} />
+                      <Route path="/analytics-info" element={<AnalyticsInfoPage />} />
+                      <Route path="/blog" element={<BlogPage />} />
+                      <Route path="/blog/:slug" element={<BlogPostPage />} />
 
-export default App;
+                      <Route path="/auth" element={<AuthRoute />} />
+                      <Route path="/auth/callback" element={<AuthPage />} />
+
+                      <Route
+                        path="/dashboard"
+                        element={
+                          <ProtectedRoute>
+                            <Dashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/journal"
+                        element={
+                          <ProtectedRoute>
+                            <Journal />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/performance"
+                        element={
+                          <ProtectedRoute>
+                            <Analytics />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/psychology"
+                        element={
+                          <ProtectedRoute>
+                            <Psychology />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/companies"
+                        element={
+                          <ProtectedRoute>
+                            <Companies />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/settings"
+                        element={
+                          <ProtectedRoute>
+                            <Settings />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/profile"
+                        element={
+                          <ProtectedRoute>
+                            <Profile />
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </ChatProvider>
+                </DisciplineProvider>
+              </AIProvider>
+            </GuestProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
